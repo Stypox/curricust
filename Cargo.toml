@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 yaml-rust = "0.4"
 multimap = "0.9.0"
+derive_builder = "0.12.0"

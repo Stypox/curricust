@@ -18,3 +18,11 @@ impl TextWithAttributes {
         Ok((name, TextWithAttributes { text: value, attrs: attributes }))
     }
 }
+
+
+pub trait TextWithAttributesCollection {
+}
+
+impl TextWithAttributesCollection for Vec<TextWithAttributes> {
+
+}

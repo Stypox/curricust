@@ -1,15 +1,18 @@
 
 use std::path::Path;
 
-use crate::{element::text_with_attributes::TextWithAttributes, util::file::include_file};
+use crate::{element::text_with_attributes::TextWithAttributes, util::{file::include_file, error::ErrorToString}};
 use multimap::MultiMap;
 use crate::util::yaml::YamlConversions;
 use yaml_rust::Yaml;
+
+use super::header::{HeaderElement, HeaderElementBuilder};
 
 #[derive(Debug)]
 pub struct BaseElement {
     locale: String,
     dictionary: MultiMap<String, TextWithAttributes>,
+    header: HeaderElement,
 }
 
 impl BaseElement {
@@ -26,6 +29,7 @@ impl BaseElement {
         let array = array.einto_vec()?;
         let mut locale = None;
         let mut dictionary = MultiMap::new();
+        let mut header = HeaderElementBuilder::default();
 
         for yaml in array {
             let (element_type, element_value) = yaml.einto_single_element_hash()?;
@@ -34,11 +38,14 @@ impl BaseElement {
                 "locale" => locale = Some(element_value.einto_string()?),
                 "dictionary" => Self::parse_dictionary(&mut dictionary, element_value)?,
                 "include-dictionary" => Self::parse_dictionary(&mut dictionary, include_file(root, element_value)?)?,
+                "header" => header = HeaderElement::parse(header, element_value)?,
+                "include-header" => header = HeaderElement::parse(header, include_file(root, element_value)?)?,
                 _ => {}//return Err(format!("Base element can't have children of type {element_type:?}")),
             }
         }
 
         let locale = locale.ok_or("Did not find locale in base element")?;
-        Ok(BaseElement { locale, dictionary })
+        let header = header.build().err_str()?;
+        Ok(BaseElement { locale, dictionary, header })
     }
 }

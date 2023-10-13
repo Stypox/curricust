@@ -1,6 +1,6 @@
-use std::env;
+use std::{env, path::PathBuf};
 
-use crate::{element::base::BaseElement, util::yaml::yaml_from_file};
+use crate::{element::base::BaseElement, util::file::yaml_from_file};
 
 extern crate yaml_rust;
 
@@ -15,10 +15,12 @@ fn main() -> Result<(), String> {
         return Err(usage());
     }
     let filename = args.get(1).ok_or_else(usage)?;
+    let filename = PathBuf::from(filename);
+    let root = filename.parent().ok_or("Filename does not have a parent")?;
 
-    let yaml = yaml_from_file(filename)?;
+    let yaml = yaml_from_file(&filename)?;
     println!("{yaml:?}\n");
-    let base_element = BaseElement::new(yaml)?;
+    let base_element = BaseElement::new(root, yaml)?;
     println!("Base element: {base_element:?}");
     Ok(())
 }

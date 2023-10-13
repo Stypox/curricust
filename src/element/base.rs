@@ -1,5 +1,7 @@
 
-use crate::element::text_with_attributes::TextWithAttributes;
+use std::path::Path;
+
+use crate::{element::text_with_attributes::TextWithAttributes, util::file::include_file};
 use multimap::MultiMap;
 use crate::util::yaml::YamlConversions;
 use yaml_rust::Yaml;
@@ -20,7 +22,7 @@ impl BaseElement {
         Ok(())
     }
 
-    pub fn new(array: Yaml) -> Result<BaseElement, String> {
+    pub fn new(root: &Path, array: Yaml) -> Result<BaseElement, String> {
         let array = array.einto_vec()?;
         let mut locale = None;
         let mut dictionary = MultiMap::new();
@@ -31,6 +33,7 @@ impl BaseElement {
             match element_type.as_str() {
                 "locale" => locale = Some(element_value.einto_string()?),
                 "dictionary" => Self::parse_dictionary(&mut dictionary, element_value)?,
+                "include-dictionary" => Self::parse_dictionary(&mut dictionary, include_file(root, element_value)?)?,
                 _ => {}//return Err(format!("Base element can't have children of type {element_type:?}")),
             }
         }

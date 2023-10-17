@@ -2,7 +2,7 @@ use std::{env, path::PathBuf};
 
 use crate::{
     element::base::BaseElement,
-    printers::{rmarkdown::RMarkdownPrinter, printer::Printer},
+    printers::{printer::Printer, rmarkdown::RMarkdownPrinter},
     util::{error::ErrorToString, file::yaml_from_file},
 };
 
@@ -32,8 +32,6 @@ fn main() -> Result<(), String> {
     let base_element = BaseElement::new(root, yaml)?;
     println!("Base element: {base_element:?}\n");
 
-    base_element
-        .rmarkdown_print(&mut Printer {})
-        .err_str()?;
+    base_element.rmarkdown_print(&mut Printer {}).err_str()?;
     Ok(())
 }

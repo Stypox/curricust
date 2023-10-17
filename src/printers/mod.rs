@@ -1,2 +1,2 @@
-pub mod rmarkdown;
 pub mod printer;
+pub mod rmarkdown;

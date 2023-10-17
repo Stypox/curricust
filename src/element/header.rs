@@ -2,7 +2,10 @@ use std::io::Write;
 
 use yaml_rust::Yaml;
 
-use crate::{printers::{rmarkdown::RMarkdownPrinter, printer::Printer}, util::yaml::YamlConversions};
+use crate::{
+    printers::{printer::Printer, rmarkdown::RMarkdownPrinter},
+    util::yaml::YamlConversions,
+};
 
 use super::text_with_attributes::{TextWithAttributes, TextWithAttributesCollection};
 

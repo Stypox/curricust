@@ -1,33 +1,36 @@
-use std::{io::Write, fmt::Debug};
+use std::{fmt::Debug, io::Write};
 
-use crate::printers::{rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem}, printer::Printer};
+use crate::printers::{
+    printer::Printer,
+    rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem},
+};
 
 #[derive(Debug)]
-struct SectionElement<T> {
-    title: String,
-    description: Option<String>,
-    items: Vec<T>,
+pub struct SectionElement<T> {
+    pub title: String,
+    pub description: Option<String>,
+    pub items: Vec<T>,
 }
 
-impl<T: RMarkdownPrinter + RMarkdownSectionItem + Debug> RMarkdownPrinter
-    for SectionElement<T>
-{
+impl<T: RMarkdownPrinter + RMarkdownSectionItem> RMarkdownPrinter for SectionElement<T> {
     fn rmarkdown_print(&self, f: &mut Printer) -> std::io::Result<()> {
         writeln!(f, "# {}\n", self.title)?;
 
         if let Some(description) = &self.description {
-            writeln!(f, "{description}")?;
+            writeln!(f, "{description}\n")?;
         }
 
         writeln!(f, "```{{r section}}\ntribble(")?;
 
         let fields = T::get_field_names();
-        writeln!(f, "  {}", fields.join(", "))?;
+        write!(f, "  ~ {}", fields.join(", ~ "))?;
 
         for item in &self.items {
             write!(f, ",\n  ")?;
             item.rmarkdown_print(f)?;
         }
+        writeln!(f, "\n)")?;
+        writeln!(f, "```")?;
         Ok(())
     }
 }

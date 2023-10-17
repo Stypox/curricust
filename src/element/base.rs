@@ -4,14 +4,13 @@ use std::path::Path;
 use crate::printers::printer::Printer;
 use crate::printers::rmarkdown::RMarkdownPrinter;
 use crate::util::yaml::YamlConversions;
-use crate::{
-    element::text_with_attributes::TextWithAttributes,
-    util::file::include_file,
-};
+use crate::{element::text_with_attributes::TextWithAttributes, util::file::include_file};
 use multimap::MultiMap;
 use yaml_rust::Yaml;
 
 use super::header::{HeaderElement, HeaderElementBuilder};
+use super::item::education_item::EducationItem;
+use super::section::SectionElement;
 
 #[derive(Debug)]
 pub struct BaseElement {
@@ -66,7 +65,21 @@ impl BaseElement {
         }
 
         let header = header.build(&Self::get_attrs(&locale, &display))?;
-        Ok(BaseElement { dictionary, header, sections: vec![] })
+        Ok(BaseElement {
+            dictionary,
+            header,
+            sections: vec![Box::new(SectionElement::<EducationItem> {
+                title: "title".to_string(),
+                description: Some("desc".to_string()),
+                items: vec![EducationItem {
+                    degree: "deg".to_string(),
+                    institution: "inst".to_string(),
+                    dates: "dates".to_string(),
+                    grade: Some("grade".to_string()),
+                    details: Some("det".to_string()),
+                }],
+            })],
+        })
     }
 }
 

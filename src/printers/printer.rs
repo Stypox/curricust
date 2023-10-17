@@ -1,7 +1,4 @@
-
-pub struct Printer {
-
-}
+pub struct Printer {}
 
 impl std::io::Write for Printer {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {

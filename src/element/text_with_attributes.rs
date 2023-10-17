@@ -42,8 +42,7 @@ pub trait TextWithAttributesCollection {
 
 impl TextWithAttributesCollection for Vec<TextWithAttributes> {
     fn into_best_matching(self, attrs: &[String]) -> Option<String> {
-        self
-            .into_iter()
+        self.into_iter()
             // max_by prefers the last element in case there are equal matches
             .max_by(|a, b| {
                 let card_a = a.intersection_cardinality(attrs);

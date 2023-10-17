@@ -1,11 +1,10 @@
 use std::fs;
 use std::path::Path;
 
-use yaml_rust::{Yaml, YamlLoader};
 use yaml_rust::yaml::Hash;
+use yaml_rust::{Yaml, YamlLoader};
 
 use super::error::ErrorToString;
-
 
 pub trait YamlConversions {
     fn einto_string(self) -> Result<String, String>;
@@ -41,12 +40,14 @@ impl YamlConversions for Yaml {
         let hash = self.einto_hash()?;
         let mut hash_iter = hash.into_iter();
 
-        let (element_type, element_value) = hash_iter.next()
-            .ok_or("Unexpected empty map".to_string())?;
+        let (element_type, element_value) =
+            hash_iter.next().ok_or("Unexpected empty map".to_string())?;
         let element_type = element_type.einto_string()?;
 
         if let Some(v) = hash_iter.next() {
-            Err(format!("Unexpected sibiling of element type {element_type:?}: {v:?}"))
+            Err(format!(
+                "Unexpected sibiling of element type {element_type:?}: {v:?}"
+            ))
         } else {
             Ok((element_type, element_value))
         }

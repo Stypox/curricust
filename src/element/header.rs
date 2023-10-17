@@ -1,30 +1,67 @@
-use derive_builder::Builder;
+use std::io::Write;
+
 use yaml_rust::Yaml;
 
-use crate::util::yaml::YamlConversions;
+use crate::{util::yaml::YamlConversions, printers::rmarkdown::RMarkdownPrinter};
 
-use super::text_with_attributes::TextWithAttributes;
+use super::text_with_attributes::{TextWithAttributes, TextWithAttributesCollection};
 
-#[derive(Debug, Builder)]
-#[builder(pattern = "owned")]
+#[derive(Debug)]
 pub struct HeaderElement {
-    #[builder(setter(each(name = "add_name")))]
+    name: String,
+    phone: Option<String>,
+}
+
+#[derive(Default)]
+pub struct HeaderElementBuilder {
     name: Vec<TextWithAttributes>,
-    #[builder(default, setter(each(name = "add_phone")))]
     phone: Vec<TextWithAttributes>,
 }
 
+impl HeaderElementBuilder {
+    fn add_name(&mut self, e: TextWithAttributes) {
+        self.name.push(e);
+    }
+    fn add_phone(&mut self, e: TextWithAttributes) {
+        self.name.push(e);
+    }
+    pub fn build(self, active_attrs: &[String]) -> Result<HeaderElement, String> {
+        Ok(HeaderElement {
+            name: self
+                .name
+                .into_best_matching(&active_attrs)
+                .ok_or("Missing name in header".to_string())?,
+            phone: self.phone.into_best_matching(&active_attrs),
+        })
+    }
+}
+
 impl HeaderElement {
-    pub fn parse(mut header: HeaderElementBuilder, hash: Yaml) -> Result<HeaderElementBuilder, String> {
+    pub fn parse(
+        header: &mut HeaderElementBuilder,
+        hash: Yaml,
+    ) -> Result<(), String> {
         let hash = hash.einto_hash()?;
         for (element_type, element_value) in hash {
-            let (element_type, element_value) = TextWithAttributes::new(element_type, element_value)?;
-            header = match element_type.as_str() {
+            let (element_type, element_value) =
+                TextWithAttributes::new(element_type, element_value)?;
+            match element_type.as_str() {
                 "name" => header.add_name(element_value),
                 "phone" => header.add_phone(element_value),
-                _ => header,
+                _ => {},
             };
         }
-        Ok(header)
+        Ok(())
+    }
+}
+
+impl<T: Write> RMarkdownPrinter<T> for HeaderElement {
+    fn rmarkdown_print(&self, f: &mut T) -> std::io::Result<()> {
+        writeln!(f, "---")?;
+        writeln!(f, "name: {:?}", self.name)?;
+        if let Some(phone) = &self.phone {
+            writeln!(f, "phone: {phone:?}")?;
+        }
+        writeln!(f, "---")
     }
 }

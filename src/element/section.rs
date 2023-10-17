@@ -1,11 +1,12 @@
 use std::{fmt::Debug, io::Write};
+use resume_cv_proc_macro::CvElementBuilder;
 
 use crate::printers::{
     printer::Printer,
     rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem},
 };
 
-#[derive(Debug)]
+#[derive(Debug, CvElementBuilder)]
 pub struct SectionElement<T> {
     pub title: String,
     pub description: Option<String>,

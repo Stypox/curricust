@@ -11,8 +11,6 @@ struct SectionElement<T> {
 
 impl<T: RMarkdownPrinter + RMarkdownSectionItem + Debug> RMarkdownPrinter
     for SectionElement<T>
-where
-    [(); T::N]:,
 {
     fn rmarkdown_print(&self, f: &mut Printer) -> std::io::Result<()> {
         writeln!(f, "# {}\n", self.title)?;

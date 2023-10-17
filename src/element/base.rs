@@ -1,3 +1,4 @@
+use std::io::Write;
 use std::path::Path;
 
 use crate::printers::printer::Printer;
@@ -71,6 +72,13 @@ impl BaseElement {
 
 impl RMarkdownPrinter for BaseElement {
     fn rmarkdown_print(&self, f: &mut Printer) -> std::io::Result<()> {
-        self.header.rmarkdown_print(f)
+        writeln!(f, "---")?;
+        self.header.rmarkdown_print(f)?;
+        writeln!(f, "---\n")?;
+
+        for section in &self.sections {
+            section.rmarkdown_print(f)?;
+        }
+        Ok(())
     }
 }

@@ -54,11 +54,10 @@ impl HeaderElement {
 
 impl RMarkdownPrinter for HeaderElement {
     fn rmarkdown_print(&self, f: &mut Printer) -> std::io::Result<()> {
-        writeln!(f, "---")?;
         writeln!(f, "name: {:?}", self.name)?;
         if let Some(phone) = &self.phone {
             writeln!(f, "phone: {phone:?}")?;
         }
-        writeln!(f, "---")
+        Ok(())
     }
 }

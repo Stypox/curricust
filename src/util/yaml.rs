@@ -1,10 +1,5 @@
-use std::fs;
-use std::path::Path;
-
 use yaml_rust::yaml::Hash;
-use yaml_rust::{Yaml, YamlLoader};
-
-use super::error::ErrorToString;
+use yaml_rust::Yaml;
 
 pub trait YamlConversions {
     fn einto_string(self) -> Result<String, String>;

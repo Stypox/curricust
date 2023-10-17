@@ -71,13 +71,7 @@ impl BaseElement {
             sections: vec![Box::new(SectionElement::<EducationItem> {
                 title: "title".to_string(),
                 description: Some("desc".to_string()),
-                items: vec![EducationItem {
-                    degree: "deg".to_string(),
-                    institution: "inst".to_string(),
-                    dates: "dates".to_string(),
-                    grade: Some("grade".to_string()),
-                    details: Some("det".to_string()),
-                }],
+                items: vec![EducationItem { degree: "deg".to_string(), institution: "inst".to_string(), dates: "dates".to_string(), grade: Some("grade".to_string()), details: Some("det".to_string()) }],
             })],
         })
     }

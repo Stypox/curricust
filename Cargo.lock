@@ -119,8 +119,13 @@ version = "0.1.0"
 dependencies = [
  "derive_builder",
  "multimap",
+ "resume_cv_proc_macro",
  "yaml-rust",
 ]
+
+[[package]]
+name = "resume_cv_proc_macro"
+version = "0.1.0"
 
 [[package]]
 name = "serde"

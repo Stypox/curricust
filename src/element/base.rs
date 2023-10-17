@@ -16,7 +16,7 @@ use super::header::{HeaderElement, HeaderElementBuilder};
 pub struct BaseElement {
     dictionary: MultiMap<String, TextWithAttributes>,
     header: HeaderElement,
-    sections: Vec<i32>//Box<dyn RMarkdownPrinter>>,
+    sections: Vec<Box<dyn RMarkdownPrinter>>,
 }
 
 impl BaseElement {

@@ -1,0 +1,19 @@
+title-en: Education
+title-it: Educazione
+
+items:
+  - id: bachelor
+    title-en-long: The uni type
+    title-it-long: Il tipo di uni
+    title-en-short: Type
+    title-it-short: Tipo
+    where-en: University of Whatever
+    where-it: Università di Boh
+    when: 1530-{{present}}
+    average-grade: 29/31
+
+  - id: high-school
+    title: The high school type
+    where: The high school name
+    when: 1526-1530
+    final-grade: 84/100

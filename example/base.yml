@@ -1,0 +1,26 @@
+- locale: it
+
+- dictionary:
+    test_ciao-it: "ciao"
+    test_ciao-en-long: "ciaone"
+
+- include-dictionary:
+    file: util/dictionary.yml
+
+- include-header:
+    file: util/header.yml
+
+- include-section:
+    file: sections/education.yml
+    display:
+      all: long
+      high-school: none
+    order:
+      all: 9
+      bachelor: 1
+      high-school: 100
+
+- section:
+    title: sectiontitle
+    description: sectiondescription
+

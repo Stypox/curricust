@@ -9,6 +9,13 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
     let name = &input.ident;
     let builder_name = Ident::new((input.ident.to_string() + "Builder").as_str(), input.ident.span());
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
+    let name_generics = if input.generics.params.is_empty() {
+        quote! {}
+    } else {
+        quote! {
+            ::#ty_generics
+        }
+    };
 
     if let syn::Data::Struct(DataStruct { fields: Fields::Named(ref fields), .. }) = &input.data {
 
@@ -96,16 +103,16 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
             impl #impl_generics #builder_name #ty_generics #where_clause {
                 #(#recurse_functions)*
 
-                pub fn build(self, active_attrs: &[String]) -> std::result::Result<#name::#ty_generics, std::string::String> {
-                    std::result::Result::Ok(#name::#ty_generics {
+                pub fn build(self, active_attrs: &[String]) -> std::result::Result<#name #name_generics, std::string::String> {
+                    std::result::Result::Ok(#name #name_generics {
                         #(#recurse_build)*
                     })
                 }
             }
 
             impl #impl_generics #name #ty_generics #where_clause {
-                #visibility fn builder() -> #builder_name::#ty_generics {
-                    #builder_name::#ty_generics {
+                #visibility fn builder() -> #builder_name #name_generics {
+                    #builder_name #name_generics {
                         #(#recurse_constructor)*
                     }
                 }

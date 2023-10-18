@@ -1,4 +1,5 @@
 use std::io::Write;
+use resume_cv_proc_macro::CvElementBuilder;
 
 use yaml_rust::Yaml;
 
@@ -7,36 +8,14 @@ use crate::{
     util::yaml::YamlConversions,
 };
 
-use super::text_with_attributes::{TextWithAttributes, TextWithAttributesCollection};
+use super::text_with_attributes::TextWithAttributes;
 
-#[derive(Debug)]
+#[derive(Debug, CvElementBuilder)]
 pub struct HeaderElement {
+    #[cv_element_builder(text_with_attributes)]
     name: String,
+    #[cv_element_builder(text_with_attributes)]
     phone: Option<String>,
-}
-
-#[derive(Default)]
-pub struct HeaderElementBuilder {
-    name: Vec<TextWithAttributes>,
-    phone: Vec<TextWithAttributes>,
-}
-
-impl HeaderElementBuilder {
-    fn add_name(&mut self, e: TextWithAttributes) {
-        self.name.push(e);
-    }
-    fn add_phone(&mut self, e: TextWithAttributes) {
-        self.name.push(e);
-    }
-    pub fn build(self, active_attrs: &[String]) -> Result<HeaderElement, String> {
-        Ok(HeaderElement {
-            name: self
-                .name
-                .into_best_matching(active_attrs)
-                .ok_or("Missing name in header".to_string())?,
-            phone: self.phone.into_best_matching(active_attrs),
-        })
-    }
 }
 
 impl HeaderElement {
@@ -48,7 +27,7 @@ impl HeaderElement {
             match element_type.as_str() {
                 "name" => header.add_name(element_value),
                 "phone" => header.add_phone(element_value),
-                _ => {}
+                _ => header,
             };
         }
         Ok(())

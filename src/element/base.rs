@@ -44,7 +44,7 @@ impl BaseElement {
         let mut locale = None;
         let mut display = None;
         let mut dictionary = MultiMap::new();
-        let mut header = HeaderElementBuilder::default();
+        let mut header = HeaderElement::builder();
 
         for yaml in array {
             let (element_type, element_value) = yaml.einto_single_element_hash()?;

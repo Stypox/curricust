@@ -8,6 +8,7 @@ use crate::printers::{
 
 #[derive(Debug, CvElementBuilder)]
 pub struct SectionElement<T> {
+    #[cv_element_builder(text_with_attributes)]
     pub title: String,
     pub description: Option<String>,
     pub items: Vec<T>,

@@ -1,13 +1,22 @@
-use proc_macro2::Span;
-use syn::{parse_macro_input, DeriveInput, Fields, spanned::Spanned, AttrStyle, DataStruct, Ident, Type, punctuated::Punctuated, Field, token::Comma, ExprPath, TypePath, Path, PathSegment, PathArguments, AngleBracketedGenericArguments, GenericArgument};
-use quote::{quote, quote_spanned};
+use std::iter::once;
+
+use proc_macro2::{Span, TokenStream};
+use quote::{quote, quote_spanned, ToTokens};
+use syn::{
+    parse_macro_input, punctuated::Punctuated, spanned::Spanned, token::Comma,
+    AngleBracketedGenericArguments, AttrStyle, DataStruct, DeriveInput, ExprPath, Field, Fields,
+    GenericArgument, Ident, Path, PathArguments, PathSegment, Type, TypePath,
+};
 
 #[proc_macro_derive(CvElementBuilder, attributes(cv_element_builder))]
 pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let visibility = input.vis;
     let name = &input.ident;
-    let builder_name = Ident::new((input.ident.to_string() + "Builder").as_str(), input.ident.span());
+    let builder_name = Ident::new(
+        (input.ident.to_string() + "Builder").as_str(),
+        input.ident.span(),
+    );
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
     let name_generics = if input.generics.params.is_empty() {
         quote! {}
@@ -17,83 +26,93 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
         }
     };
 
-    if let syn::Data::Struct(DataStruct { fields: Fields::Named(ref fields), .. }) = &input.data {
-
-        let recurse_fields = parse_fields(&fields.named).into_iter().map(|f| {
-            let MyField { field_name, ty, is_optional: _, has_text_with_attributes_attr, span } = f;
-            if has_text_with_attributes_attr {
-                quote_spanned! {span=>
-                    #field_name: std::vec::Vec<crate::element::text_with_attributes::TextWithAttributes>,
-                }
-            } else {
-                quote_spanned! {span=>
-                    #field_name: std::option::Option<#ty>,
-                }
-            }
-        });
-
-        let recurse_functions = parse_fields(&fields.named).into_iter().map(|f| {
-            let MyField { field_name, ty, is_optional: _, has_text_with_attributes_attr, span } = f;
-
-            if has_text_with_attributes_attr {
-                let fun_name = Ident::new(("add_".to_string() + &field_name.to_string()).as_str(), field_name.span());
-                quote_spanned! {span=>
-                    pub fn #fun_name(&mut self, e: crate::element::text_with_attributes::TextWithAttributes) -> &mut Self {
-                        self.#field_name.push(e);
-                        self
-                    }
-                }
-            } else {
-                quote_spanned! {span=>
-                    pub fn #field_name(&mut self, e: #ty) -> &mut Self {
-                        self.#field_name = Some(e);
-                        self
-                    }
-                }
-            }
-        });
-
-        let recurse_build = parse_fields(&fields.named).into_iter().map(|f| {
-            let MyField { field_name, ty: _, is_optional, has_text_with_attributes_attr, span } = f;
-            let field_name_error = format!("Missing {field_name}");
-
-            match (has_text_with_attributes_attr, is_optional) {
-                (false, false) => {
+    if let syn::Data::Struct(DataStruct {
+        fields: Fields::Named(ref fields),
+        ..
+    }) = &input.data
+    {
+        let recurse_fields = parse_fields(&fields.named)
+            .chain(once(dummy_string_field("id")))
+            .map(|f| {
+                let MyField { field_name, ty, is_optional: _, has_text_with_attributes_attr, span } = f;
+                if has_text_with_attributes_attr {
                     quote_spanned! {span=>
-                        #field_name: self.#field_name.ok_or(#field_name_error)?,
+                        #field_name: std::vec::Vec<crate::attr::text_with_attributes::TextWithAttributes>,
                     }
-                },
-                (false, true) => {
+                } else {
                     quote_spanned! {span=>
-                        #field_name: self.#field_name,
+                        #field_name: std::option::Option<#ty>,
                     }
-                },
-                (true, false) => {
-                    quote_spanned! {span=>
-                        #field_name: crate::element::text_with_attributes::TextWithAttributesCollection::into_best_matching(self.#field_name, active_attrs)
-                            .ok_or(#field_name_error)?,
-                    }
-                },
-                (true, true) => {
-                    quote_spanned! {span=>
-                        #field_name: crate::element::text_with_attributes::TextWithAttributesCollection::into_best_matching(self.#field_name, active_attrs),
-                    }
-                },
-            }
-        });
+                }
+            });
 
-        let recurse_constructor = parse_fields(&fields.named).into_iter().map(|f| {
-            let field_name = f.field_name;
-            if f.has_text_with_attributes_attr {
-                quote_spanned! {f.span=>
-                    #field_name: std::vec::Vec::new(),
+        let recurse_functions = parse_fields(&fields.named)
+            .chain(once(dummy_string_field("id")))
+            .map(|f| {
+                let MyField { field_name, ty, is_optional: _, has_text_with_attributes_attr, span } = f;
+
+                if has_text_with_attributes_attr {
+                    let fun_name = Ident::new(("add_".to_string() + &field_name.to_string()).as_str(), field_name.span());
+                    quote_spanned! {span=>
+                        pub fn #fun_name(&mut self, e: crate::attr::text_with_attributes::TextWithAttributes) -> &mut Self {
+                            self.#field_name.push(e);
+                            self
+                        }
+                    }
+                } else {
+                    quote_spanned! {span=>
+                        pub fn #field_name(&mut self, e: #ty) -> &mut Self {
+                            self.#field_name = Some(e);
+                            self
+                        }
+                    }
                 }
-            } else {
-                quote_spanned! {f.span=>
-                    #field_name: std::option::Option::None,
+            });
+
+        let recurse_build = parse_fields(&fields.named)
+            .map(|f| {
+                let MyField { field_name, ty: _, is_optional, has_text_with_attributes_attr, span } = f;
+                let field_name_error = format!("Missing {field_name}");
+
+                match (has_text_with_attributes_attr, is_optional) {
+                    (false, false) => {
+                        quote_spanned! {span=>
+                            #field_name: self.#field_name.ok_or(#field_name_error)?,
+                        }
+                    },
+                    (false, true) => {
+                        quote_spanned! {span=>
+                            #field_name: self.#field_name,
+                        }
+                    },
+                    (true, false) => {
+                        quote_spanned! {span=>
+                            #field_name: crate::attr::text_with_attributes::TextWithAttributesCollection::into_best_matching(self.#field_name, &active_attrs)
+                                .ok_or(#field_name_error)?,
+                        }
+                    },
+                    (true, true) => {
+                        quote_spanned! {span=>
+                            #field_name: crate::attr::text_with_attributes::TextWithAttributesCollection::into_best_matching(self.#field_name, &active_attrs),
+                        }
+                    },
                 }
-            }
-        });
+            });
+
+        let recurse_constructor = parse_fields(&fields.named)
+            .chain(once(dummy_string_field("id")))
+            .map(|f| {
+                let field_name = f.field_name;
+                if f.has_text_with_attributes_attr {
+                    quote_spanned! {f.span=>
+                        #field_name: std::vec::Vec::new(),
+                    }
+                } else {
+                    quote_spanned! {f.span=>
+                        #field_name: std::option::Option::None,
+                    }
+                }
+            });
 
         quote! {
             #visibility struct #builder_name #ty_generics #where_clause {
@@ -103,7 +122,9 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
             impl #impl_generics #builder_name #ty_generics #where_clause {
                 #(#recurse_functions)*
 
-                pub fn build(self, active_attrs: &[std::string::String]) -> std::result::Result<#name #name_generics, std::string::String> {
+                pub fn build(self, ctx: &crate::attr::context::Context) -> std::result::Result<#name #name_generics, std::string::String> {
+                    let active_attrs = ctx.get_active_attrs(self.id);
+
                     std::result::Result::Ok(#name #name_generics {
                         #(#recurse_build)*
                     })
@@ -125,40 +146,71 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
 
 struct MyField {
     field_name: Ident,
-    ty: Type,
+    ty: TokenStream,
     is_optional: bool,
     has_text_with_attributes_attr: bool,
     span: Span,
 }
 
-fn parse_fields(fields: &Punctuated<Field, Comma>) -> Vec<MyField> {
+fn dummy_string_field(name: &str) -> MyField {
+    MyField {
+        field_name: Ident::new(&name, Span::call_site()),
+        ty: quote! { std::string::String },
+        is_optional: false,
+        has_text_with_attributes_attr: false,
+        span: Span::call_site(),
+    }
+}
+
+fn parse_fields(fields: &Punctuated<Field, Comma>) -> impl Iterator<Item = MyField> + '_ {
     fields.iter().map(|f| {
         let field_name = f.ident.as_ref().expect("Missing field name").clone();
         let (ty, is_optional) = parse_type(&f.ty);
-        let has_text_with_attributes_attr = f.attrs.iter()
+        let has_text_with_attributes_attr = f
+            .attrs
+            .iter()
             .filter(|attr| matches!(attr.style, AttrStyle::Outer))
             .filter_map(|attr| attr.meta.require_list().ok())
-            .any(|attr| attr.path.is_ident("cv_element_builder") && if let Ok(path) = &attr.parse_args::<ExprPath>() {
-                path.path.is_ident("text_with_attributes")
-            } else {
-                false
+            .any(|attr| {
+                attr.path.is_ident("cv_element_builder")
+                    && if let Ok(path) = &attr.parse_args::<ExprPath>() {
+                        path.path.is_ident("text_with_attributes")
+                    } else {
+                        false
+                    }
             });
 
-        MyField { field_name, ty, is_optional, has_text_with_attributes_attr, span: f.span() }
+        MyField {
+            field_name,
+            ty: ty.into_token_stream(),
+            is_optional,
+            has_text_with_attributes_attr,
+            span: f.span(),
+        }
     })
-    .collect()
 }
 
 fn parse_type(ty: &Type) -> (Type, bool) {
-    if let Type::Path(TypePath { qself: None, path: Path { segments, .. } }) = ty {
+    if let Type::Path(TypePath {
+        qself: None,
+        path: Path { segments, .. },
+    }) = ty
+    {
         let segment_path = segments.iter().fold(String::new(), |mut acc, v| {
             acc.push_str(&v.ident.to_string());
             acc.push(':');
             acc
         });
 
-        if vec!["Option:", "std:option:Option:", "core:option:Option:"].contains(&segment_path.as_str()) {
-            if let Some(PathSegment { arguments: PathArguments::AngleBracketed(AngleBracketedGenericArguments { args, .. }), .. }) = segments.last() {
+        if vec!["Option:", "std:option:Option:", "core:option:Option:"]
+            .contains(&segment_path.as_str())
+        {
+            if let Some(PathSegment {
+                arguments:
+                    PathArguments::AngleBracketed(AngleBracketedGenericArguments { args, .. }),
+                ..
+            }) = segments.last()
+            {
                 if let Some(GenericArgument::Type(res)) = args.first() {
                     if args.len() == 1 {
                         return (res.clone(), true);

@@ -5,9 +5,7 @@ use yaml_rust::Yaml;
 use crate::{printers::{
     printer::Printer,
     rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem},
-}, util::yaml::YamlConversions};
-
-use super::text_with_attributes::TextWithAttributes;
+}, util::yaml::YamlConversions, attr::{text_with_attributes::TextWithAttributes, context::Context}};
 
 #[derive(Debug, CvElementBuilder)]
 pub struct SectionElement<T> {
@@ -19,7 +17,7 @@ pub struct SectionElement<T> {
 }
 
 impl<T> SectionElement<T> {
-    pub fn parse(hash: Yaml, active_attrs: &[String]) -> Result<SectionElement<T>, String> {
+    pub fn parse(hash: Yaml, ctx: &Context) -> Result<SectionElement<T>, String> {
         let hash = hash.einto_hash()?;
         let mut section = SectionElement::<T>::builder();
 
@@ -33,7 +31,7 @@ impl<T> SectionElement<T> {
             };
         }
 
-        section.build(active_attrs)
+        section.build(ctx)
     }
 }
 

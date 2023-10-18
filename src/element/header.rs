@@ -5,10 +5,8 @@ use yaml_rust::Yaml;
 
 use crate::{
     printers::{printer::Printer, rmarkdown::RMarkdownPrinter},
-    util::yaml::YamlConversions,
+    util::yaml::YamlConversions, attr::text_with_attributes::TextWithAttributes,
 };
-
-use super::text_with_attributes::TextWithAttributes;
 
 #[derive(Debug, CvElementBuilder)]
 pub struct HeaderElement {

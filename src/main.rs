@@ -11,6 +11,7 @@ extern crate yaml_rust;
 mod element;
 pub mod printers;
 mod util;
+pub mod attr;
 
 fn main() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();

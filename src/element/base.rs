@@ -1,10 +1,12 @@
 use std::io::Write;
 use std::path::Path;
 
+use crate::attr::context::{Context, AttributeType};
+use crate::attr::text_with_attributes::TextWithAttributes;
 use crate::printers::printer::Printer;
 use crate::printers::rmarkdown::RMarkdownPrinter;
 use crate::util::yaml::YamlConversions;
-use crate::{element::text_with_attributes::TextWithAttributes, util::file::include_file};
+use crate::util::file::include_file;
 use multimap::MultiMap;
 use yaml_rust::Yaml;
 
@@ -14,7 +16,6 @@ use super::section::SectionElement;
 
 #[derive(Debug)]
 pub struct BaseElement {
-    dictionary: MultiMap<String, TextWithAttributes>,
     header: HeaderElement,
     sections: Vec<Box<dyn RMarkdownPrinter>>,
 }
@@ -41,9 +42,7 @@ impl BaseElement {
 
     pub fn new(root: &Path, array: Yaml) -> Result<BaseElement, String> {
         let array = array.einto_vec()?;
-        let mut locale = None;
-        let mut display = None;
-        let mut dictionary = MultiMap::new();
+        let mut ctx = Context::default();
         let mut header = HeaderElement::builder();
         let mut sections: Vec<Box<dyn RMarkdownPrinter>> = vec![];
 
@@ -51,26 +50,25 @@ impl BaseElement {
             let (element_type, element_value) = yaml.einto_single_element_hash()?;
 
             match element_type.as_str() {
-                "locale" => locale = Some(element_value.einto_string()?),
-                "display" => display = Some(element_value.einto_string()?),
-                "dictionary" => Self::parse_dictionary(&mut dictionary, element_value)?,
+                "locale" => ctx.set_attr(AttributeType::Locale, element_value.einto_string()?),
+                "display" => ctx.set_attr(AttributeType::Display, element_value.einto_string()?),
+                "dictionary" => Self::parse_dictionary(&mut ctx.dictionary, element_value)?,
                 "include-dictionary" => {
-                    Self::parse_dictionary(&mut dictionary, include_file(root, element_value)?)?
+                    Self::parse_dictionary(&mut ctx.dictionary, include_file(root, element_value)?)?
                 }
                 "header" => HeaderElement::parse(&mut header, element_value)?,
                 "include-header" => {
                     HeaderElement::parse(&mut header, include_file(root, element_value)?)?
                 }
                 "section" => {
-                    sections.push(Box::new(SectionElement::<EducationItem>::parse(element_value, &Self::get_attrs(&locale, &display))?));
+                    sections.push(Box::new(SectionElement::<EducationItem>::parse(element_value, &ctx)?));
                 }
                 _ => {} //return Err(format!("Base element can't have children of type {element_type:?}")),
             }
         }
 
-        let header = header.build(&Self::get_attrs(&locale, &display))?;
+        let header = header.build(&ctx)?;
         Ok(BaseElement {
-            dictionary,
             header,
             sections,
         })

@@ -1,17 +1,40 @@
 use std::{fmt::Debug, io::Write};
 use resume_cv_proc_macro::CvElementBuilder;
+use yaml_rust::Yaml;
 
-use crate::printers::{
+use crate::{printers::{
     printer::Printer,
     rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem},
-};
+}, util::yaml::YamlConversions};
+
+use super::text_with_attributes::TextWithAttributes;
 
 #[derive(Debug, CvElementBuilder)]
 pub struct SectionElement<T> {
     #[cv_element_builder(text_with_attributes)]
     pub title: String,
+    #[cv_element_builder(text_with_attributes)]
     pub description: Option<String>,
-    pub items: Vec<T>,
+    pub items: Option<Vec<T>>,
+}
+
+impl<T> SectionElement<T> {
+    pub fn parse(hash: Yaml, active_attrs: &[String]) -> Result<SectionElement<T>, String> {
+        let hash = hash.einto_hash()?;
+        let mut section = SectionElement::<T>::builder();
+
+        for (element_type, element_value) in hash {
+            let (element_type, element_value) =
+                TextWithAttributes::new(element_type, element_value)?;
+            match element_type.as_str() {
+                "title" => section.add_title(element_value),
+                "description" => section.add_description(element_value),
+                _ => return Err(format!("Unknown section attribute {element_type}")),
+            };
+        }
+
+        section.build(active_attrs)
+    }
 }
 
 impl<T: RMarkdownPrinter + RMarkdownSectionItem> RMarkdownPrinter for SectionElement<T> {
@@ -22,17 +45,19 @@ impl<T: RMarkdownPrinter + RMarkdownSectionItem> RMarkdownPrinter for SectionEle
             writeln!(f, "{description}\n")?;
         }
 
-        writeln!(f, "```{{r section}}\ntribble(")?;
+        if let Some(items) = &self.items {
+            writeln!(f, "```{{r section}}\ntribble(")?;
 
-        let fields = T::get_field_names();
-        write!(f, "  ~ {}", fields.join(", ~ "))?;
+            let fields = T::get_field_names();
+            write!(f, "  ~ {}", fields.join(", ~ "))?;
 
-        for item in &self.items {
-            write!(f, ",\n  ")?;
-            item.rmarkdown_print(f)?;
+            for item in items {
+                write!(f, ",\n  ")?;
+                item.rmarkdown_print(f)?;
+            }
+            writeln!(f, "\n)")?;
+            writeln!(f, "```")?;
         }
-        writeln!(f, "\n)")?;
-        writeln!(f, "```")?;
         Ok(())
     }
 }

@@ -103,7 +103,7 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
             impl #impl_generics #builder_name #ty_generics #where_clause {
                 #(#recurse_functions)*
 
-                pub fn build(self, active_attrs: &[String]) -> std::result::Result<#name #name_generics, std::string::String> {
+                pub fn build(self, active_attrs: &[std::string::String]) -> std::result::Result<#name #name_generics, std::string::String> {
                     std::result::Result::Ok(#name #name_generics {
                         #(#recurse_build)*
                     })

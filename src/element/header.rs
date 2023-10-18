@@ -27,7 +27,7 @@ impl HeaderElement {
             match element_type.as_str() {
                 "name" => header.add_name(element_value),
                 "phone" => header.add_phone(element_value),
-                _ => header,
+                _ => continue,
             };
         }
         Ok(())

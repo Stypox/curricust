@@ -8,7 +8,7 @@ use crate::{element::text_with_attributes::TextWithAttributes, util::file::inclu
 use multimap::MultiMap;
 use yaml_rust::Yaml;
 
-use super::header::{HeaderElement, HeaderElementBuilder};
+use super::header::HeaderElement;
 use super::item::education_item::EducationItem;
 use super::section::SectionElement;
 
@@ -45,6 +45,7 @@ impl BaseElement {
         let mut display = None;
         let mut dictionary = MultiMap::new();
         let mut header = HeaderElement::builder();
+        let mut sections: Vec<Box<dyn RMarkdownPrinter>> = vec![];
 
         for yaml in array {
             let (element_type, element_value) = yaml.einto_single_element_hash()?;
@@ -60,6 +61,9 @@ impl BaseElement {
                 "include-header" => {
                     HeaderElement::parse(&mut header, include_file(root, element_value)?)?
                 }
+                "section" => {
+                    sections.push(Box::new(SectionElement::<EducationItem>::parse(element_value, &Self::get_attrs(&locale, &display))?));
+                }
                 _ => {} //return Err(format!("Base element can't have children of type {element_type:?}")),
             }
         }
@@ -68,11 +72,7 @@ impl BaseElement {
         Ok(BaseElement {
             dictionary,
             header,
-            sections: vec![Box::new(SectionElement::<EducationItem> {
-                title: "title".to_string(),
-                description: Some("desc".to_string()),
-                items: vec![EducationItem { degree: "deg".to_string(), institution: "inst".to_string(), dates: "dates".to_string(), grade: Some("grade".to_string()), details: Some("det".to_string()) }],
-            })],
+            sections,
         })
     }
 }

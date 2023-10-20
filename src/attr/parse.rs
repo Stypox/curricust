@@ -2,7 +2,7 @@ use yaml_rust::Yaml;
 
 use crate::util::yaml::YamlConversions;
 
-use super::context::{Context, AttributeType};
+use super::context::{AttributeType, Context};
 
 /// returns the unused value
 pub fn try_parse_group(ctx: &mut Context, key: &str, value: Yaml) -> Result<Option<Yaml>, String> {
@@ -15,7 +15,11 @@ pub fn try_parse_group(ctx: &mut Context, key: &str, value: Yaml) -> Result<Opti
     Ok(None)
 }
 
-pub fn parse_attr_group(attr_type: AttributeType, ctx: &mut Context, hash_or_attr: Yaml) -> Result<(), String> {
+pub fn parse_attr_group(
+    attr_type: AttributeType,
+    ctx: &mut Context,
+    hash_or_attr: Yaml,
+) -> Result<(), String> {
     if let Yaml::Hash(hash) = hash_or_attr {
         for (id, value) in hash {
             let id = id.einto_string()?;

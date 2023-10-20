@@ -6,8 +6,8 @@ use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
 use crate::printers::printer::Printer;
 use crate::printers::rmarkdown::RMarkdownPrinter;
-use crate::util::yaml::YamlConversions;
 use crate::util::file::{include_file, include_file_with_context};
+use crate::util::yaml::YamlConversions;
 use multimap::MultiMap;
 use yaml_rust::Yaml;
 
@@ -34,15 +34,29 @@ impl BaseElement {
         Ok(())
     }
 
-    fn parse_section<T>(value: Yaml, sections: &mut Vec<Box<dyn RMarkdownPrinter>>, ctx: &Context) -> Result<(), String>
-    where T: RMarkdownPrinter + 'static, SectionElement<T>: RMarkdownPrinter {
+    fn parse_section<T>(
+        value: Yaml,
+        sections: &mut Vec<Box<dyn RMarkdownPrinter>>,
+        ctx: &Context,
+    ) -> Result<(), String>
+    where
+        T: RMarkdownPrinter + 'static,
+        SectionElement<T>: RMarkdownPrinter,
+    {
         sections.push(Box::new(SectionElement::<T>::parse(value, &ctx)?));
         Ok(())
     }
 
-    fn parse_include_section<T: RMarkdownPrinter>(value: Yaml, sections: &mut Vec<Box<dyn RMarkdownPrinter>>, ctx: &Context, root: &Path)
-    -> Result<(), String>
-    where T: RMarkdownPrinter + 'static, SectionElement<T>: RMarkdownPrinter {
+    fn parse_include_section<T: RMarkdownPrinter>(
+        value: Yaml,
+        sections: &mut Vec<Box<dyn RMarkdownPrinter>>,
+        ctx: &Context,
+        root: &Path,
+    ) -> Result<(), String>
+    where
+        T: RMarkdownPrinter + 'static,
+        SectionElement<T>: RMarkdownPrinter,
+    {
         let (override_ctx, value) = include_file_with_context(root, ctx.clone(), value)?;
         sections.push(Box::new(SectionElement::<T>::parse(value, &override_ctx)?));
         Ok(())
@@ -67,20 +81,17 @@ impl BaseElement {
                     Self::parse_dictionary(&mut ctx.dictionary, include_file(root, value)?)?
                 }
                 "header" => HeaderElement::parse(&mut header, value)?,
-                "include-header" => {
-                    HeaderElement::parse(&mut header, include_file(root, value)?)?
-                }
+                "include-header" => HeaderElement::parse(&mut header, include_file(root, value)?)?,
                 "section" => Self::parse_section::<EducationItem>(value, &mut sections, &ctx)?,
-                "include-section" => Self::parse_include_section::<EducationItem>(value, &mut sections, &ctx, &root)?,
+                "include-section" => {
+                    Self::parse_include_section::<EducationItem>(value, &mut sections, &ctx, &root)?
+                }
                 _ => {} //return Err(format!("Base element can't have children of type {element_type:?}")),
             }
         }
 
         let header = header.build(&ctx)?;
-        Ok(BaseElement {
-            header,
-            sections,
-        })
+        Ok(BaseElement { header, sections })
     }
 }
 

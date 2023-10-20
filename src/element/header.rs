@@ -1,11 +1,12 @@
-use std::io::Write;
 use resume_cv_proc_macro::CvElementBuilder;
+use std::io::Write;
 
 use yaml_rust::Yaml;
 
 use crate::{
+    attr::text_with_attributes::TextWithAttributes,
     printers::{printer::Printer, rmarkdown::RMarkdownPrinter},
-    util::yaml::YamlConversions, attr::text_with_attributes::TextWithAttributes,
+    util::yaml::YamlConversions,
 };
 
 #[derive(Debug, CvElementBuilder)]

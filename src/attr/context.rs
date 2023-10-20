@@ -11,7 +11,10 @@ pub enum AttributeType {
 }
 
 #[derive(Default, Clone)]
-struct AttributeData<T> where T: Clone {
+struct AttributeData<T>
+where
+    T: Clone,
+{
     value: Option<T>,
     overrides: HashMap<String, Option<T>>,
 }
@@ -25,7 +28,9 @@ pub struct Context {
 
 impl Context {
     pub fn get_active_attrs(&self, id: Option<String>) -> Vec<String> {
-        self.attrs.clone().into_iter()
+        self.attrs
+            .clone()
+            .into_iter()
             .filter_map(|e| {
                 if let Some(id) = &id {
                     if let Some(res) = e.overrides.get(id) {

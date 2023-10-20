@@ -1,11 +1,15 @@
-use std::{fmt::Debug, io::Write};
 use resume_cv_proc_macro::CvElementBuilder;
+use std::{fmt::Debug, io::Write};
 use yaml_rust::Yaml;
 
-use crate::{printers::{
-    printer::Printer,
-    rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem},
-}, util::yaml::YamlConversions, attr::{text_with_attributes::TextWithAttributes, context::Context}};
+use crate::{
+    attr::{context::Context, text_with_attributes::TextWithAttributes},
+    printers::{
+        printer::Printer,
+        rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem},
+    },
+    util::yaml::YamlConversions,
+};
 
 #[derive(Debug, CvElementBuilder)]
 pub struct SectionElement<T> {

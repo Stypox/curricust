@@ -3,6 +3,7 @@ use yaml_rust::Yaml;
 
 pub trait YamlConversions {
     fn einto_string(self) -> Result<String, String>;
+    fn einto_nullable_string(self) -> Result<Option<String>, String>;
     fn einto_hash(self) -> Result<Hash, String>;
     fn einto_vec(self) -> Result<Vec<Yaml>, String>;
     fn einto_single_element_hash(self) -> Result<(String, Yaml), String>;
@@ -20,6 +21,14 @@ impl YamlConversions for Yaml {
             Yaml::Alias(a) => Err(format!("Unexpected alias: {a:?}")),
             Yaml::Null => Err("Unexpected null".to_string()),
             Yaml::BadValue => Err("Unexpected bad value".to_string()),
+        }
+    }
+
+    fn einto_nullable_string(self) -> Result<Option<String>, String> {
+        if let Yaml::Null = self {
+            Ok(None)
+        } else {
+            Ok(Some(self.einto_string()?))
         }
     }
 

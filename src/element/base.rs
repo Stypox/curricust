@@ -2,6 +2,7 @@ use std::io::Write;
 use std::path::Path;
 
 use crate::attr::context::{Context, AttributeType};
+use crate::attr::parse::parse_attrs;
 use crate::attr::text_with_attributes::TextWithAttributes;
 use crate::printers::printer::Printer;
 use crate::printers::rmarkdown::RMarkdownPrinter;
@@ -33,13 +34,6 @@ impl BaseElement {
         Ok(())
     }
 
-    fn get_attrs(locale: &Option<String>, display: &Option<String>) -> Vec<String> {
-        [locale.clone(), display.clone()]
-            .into_iter()
-            .flatten()
-            .collect()
-    }
-
     pub fn new(root: &Path, array: Yaml) -> Result<BaseElement, String> {
         let array = array.einto_vec()?;
         let mut ctx = Context::default();
@@ -50,8 +44,8 @@ impl BaseElement {
             let (element_type, element_value) = yaml.einto_single_element_hash()?;
 
             match element_type.as_str() {
-                "locale" => ctx.set_attr(AttributeType::Locale, element_value.einto_string()?),
-                "display" => ctx.set_attr(AttributeType::Display, element_value.einto_string()?),
+                "locale" => ctx = parse_attrs(AttributeType::Locale, ctx, element_value)?,
+                "display" => ctx = parse_attrs(AttributeType::Display, ctx, element_value)?,
                 "dictionary" => Self::parse_dictionary(&mut ctx.dictionary, element_value)?,
                 "include-dictionary" => {
                     Self::parse_dictionary(&mut ctx.dictionary, include_file(root, element_value)?)?

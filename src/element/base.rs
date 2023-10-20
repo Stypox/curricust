@@ -2,7 +2,7 @@ use std::io::Write;
 use std::path::Path;
 
 use crate::attr::context::{Context, AttributeType};
-use crate::attr::parse::parse_attrs;
+use crate::attr::parse::{parse_attrs, parse_order};
 use crate::attr::text_with_attributes::TextWithAttributes;
 use crate::printers::printer::Printer;
 use crate::printers::rmarkdown::RMarkdownPrinter;
@@ -46,6 +46,7 @@ impl BaseElement {
             match element_type.as_str() {
                 "locale" => ctx = parse_attrs(AttributeType::Locale, ctx, element_value)?,
                 "display" => ctx = parse_attrs(AttributeType::Display, ctx, element_value)?,
+                "order" => ctx = parse_order(ctx, element_value)?,
                 "dictionary" => Self::parse_dictionary(&mut ctx.dictionary, element_value)?,
                 "include-dictionary" => {
                     Self::parse_dictionary(&mut ctx.dictionary, include_file(root, element_value)?)?
@@ -56,6 +57,9 @@ impl BaseElement {
                 }
                 "section" => {
                     sections.push(Box::new(SectionElement::<EducationItem>::parse(element_value, &ctx)?));
+                }
+                "include-section" => {
+                    
                 }
                 _ => {} //return Err(format!("Base element can't have children of type {element_type:?}")),
             }

@@ -7,6 +7,7 @@ pub trait YamlConversions {
     fn einto_hash(self) -> Result<Hash, String>;
     fn einto_vec(self) -> Result<Vec<Yaml>, String>;
     fn einto_single_element_hash(self) -> Result<(String, Yaml), String>;
+    fn einto_nullable_int(self) -> Result<Option<i64>, String>;
 }
 
 impl YamlConversions for Yaml {
@@ -54,6 +55,16 @@ impl YamlConversions for Yaml {
             ))
         } else {
             Ok((element_type, element_value))
+        }
+    }
+
+    fn einto_nullable_int(self) -> Result<Option<i64>, String> {
+        if let Yaml::Null = self {
+            Ok(None)
+        } else if let Yaml::Integer(v) = self {
+            Ok(Some(v))
+        } else {
+            Err("Missing".to_string())
         }
     }
 }

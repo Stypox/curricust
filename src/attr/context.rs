@@ -11,14 +11,15 @@ pub enum AttributeType {
 }
 
 #[derive(Default, Clone)]
-struct AttributeData {
-    value: Option<String>,
-    overrides: HashMap<String, Option<String>>,
+struct AttributeData<T> where T: Clone {
+    value: Option<T>,
+    overrides: HashMap<String, Option<T>>,
 }
 
 #[derive(Default)]
 pub struct Context {
-    attrs: [AttributeData; std::mem::variant_count::<AttributeType>()],
+    attrs: [AttributeData<String>; std::mem::variant_count::<AttributeType>()],
+    order: AttributeData<i64>,
     pub dictionary: MultiMap<String, TextWithAttributes>,
 }
 
@@ -42,7 +43,15 @@ impl Context {
         data.overrides.clear();
     }
 
-    pub fn append_override(&mut self, id: String, attr_type: AttributeType, value: Option<String>) {
+    pub fn override_attr(&mut self, id: String, attr_type: AttributeType, value: Option<String>) {
         self.attrs[attr_type as usize].overrides.insert(id, value);
+    }
+
+    pub fn set_order(&mut self, pos: Option<i64>) {
+        self.order.value = pos;
+    }
+
+    pub fn override_order(&mut self, id: String, pos: Option<i64>) {
+        self.order.overrides.insert(id, pos);
     }
 }

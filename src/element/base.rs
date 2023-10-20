@@ -7,7 +7,7 @@ use crate::attr::text_with_attributes::TextWithAttributes;
 use crate::printers::printer::Printer;
 use crate::printers::rmarkdown::RMarkdownPrinter;
 use crate::util::yaml::YamlConversions;
-use crate::util::file::include_file;
+use crate::util::file::{include_file, include_file_with_context};
 use multimap::MultiMap;
 use yaml_rust::Yaml;
 
@@ -34,6 +34,20 @@ impl BaseElement {
         Ok(())
     }
 
+    fn parse_section<T>(value: Yaml, sections: &mut Vec<Box<dyn RMarkdownPrinter>>, ctx: &Context) -> Result<(), String>
+    where T: RMarkdownPrinter + 'static, SectionElement<T>: RMarkdownPrinter {
+        sections.push(Box::new(SectionElement::<T>::parse(value, &ctx)?));
+        Ok(())
+    }
+
+    fn parse_include_section<T: RMarkdownPrinter>(value: Yaml, sections: &mut Vec<Box<dyn RMarkdownPrinter>>, ctx: &Context, root: &Path)
+    -> Result<(), String>
+    where T: RMarkdownPrinter + 'static, SectionElement<T>: RMarkdownPrinter {
+        let (override_ctx, value) = include_file_with_context(root, ctx.clone(), value)?;
+        sections.push(Box::new(SectionElement::<T>::parse(value, &override_ctx)?));
+        Ok(())
+    }
+
     pub fn new(root: &Path, array: Yaml) -> Result<BaseElement, String> {
         let array = array.einto_vec()?;
         let mut ctx = Context::default();
@@ -56,12 +70,8 @@ impl BaseElement {
                 "include-header" => {
                     HeaderElement::parse(&mut header, include_file(root, value)?)?
                 }
-                "section" => {
-                    sections.push(Box::new(SectionElement::<EducationItem>::parse(value, &ctx)?));
-                }
-                "include-section" => {
-
-                }
+                "section" => Self::parse_section::<EducationItem>(value, &mut sections, &ctx)?,
+                "include-section" => Self::parse_include_section::<EducationItem>(value, &mut sections, &ctx, &root)?,
                 _ => {} //return Err(format!("Base element can't have children of type {element_type:?}")),
             }
         }

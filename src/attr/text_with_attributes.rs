@@ -1,7 +1,7 @@
 use crate::util::yaml::YamlConversions;
 use yaml_rust::Yaml;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TextWithAttributes {
     text: String,
     attrs: Vec<String>,

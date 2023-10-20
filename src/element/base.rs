@@ -1,8 +1,8 @@
 use std::io::Write;
 use std::path::Path;
 
-use crate::attr::context::{Context, AttributeType};
-use crate::attr::parse::{parse_attrs, parse_order};
+use crate::attr::context::Context;
+use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
 use crate::printers::printer::Printer;
 use crate::printers::rmarkdown::RMarkdownPrinter;
@@ -41,25 +41,26 @@ impl BaseElement {
         let mut sections: Vec<Box<dyn RMarkdownPrinter>> = vec![];
 
         for yaml in array {
-            let (element_type, element_value) = yaml.einto_single_element_hash()?;
+            let (key, value) = yaml.einto_single_element_hash()?;
 
-            match element_type.as_str() {
-                "locale" => ctx = parse_attrs(AttributeType::Locale, ctx, element_value)?,
-                "display" => ctx = parse_attrs(AttributeType::Display, ctx, element_value)?,
-                "order" => ctx = parse_order(ctx, element_value)?,
-                "dictionary" => Self::parse_dictionary(&mut ctx.dictionary, element_value)?,
+            let Some(value) = try_parse_group(&mut ctx, &key, value)? else {
+                continue;
+            };
+
+            match key.as_str() {
+                "dictionary" => Self::parse_dictionary(&mut ctx.dictionary, value)?,
                 "include-dictionary" => {
-                    Self::parse_dictionary(&mut ctx.dictionary, include_file(root, element_value)?)?
+                    Self::parse_dictionary(&mut ctx.dictionary, include_file(root, value)?)?
                 }
-                "header" => HeaderElement::parse(&mut header, element_value)?,
+                "header" => HeaderElement::parse(&mut header, value)?,
                 "include-header" => {
-                    HeaderElement::parse(&mut header, include_file(root, element_value)?)?
+                    HeaderElement::parse(&mut header, include_file(root, value)?)?
                 }
                 "section" => {
-                    sections.push(Box::new(SectionElement::<EducationItem>::parse(element_value, &ctx)?));
+                    sections.push(Box::new(SectionElement::<EducationItem>::parse(value, &ctx)?));
                 }
                 "include-section" => {
-                    
+
                 }
                 _ => {} //return Err(format!("Base element can't have children of type {element_type:?}")),
             }

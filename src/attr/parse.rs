@@ -4,7 +4,18 @@ use crate::util::yaml::YamlConversions;
 
 use super::context::{Context, AttributeType};
 
-pub fn parse_attrs(attr_type: AttributeType, mut ctx: Context, hash_or_attr: Yaml) -> Result<Context, String> {
+/// returns the unused value
+pub fn try_parse_group(ctx: &mut Context, key: &str, value: Yaml) -> Result<Option<Yaml>, String> {
+    match key {
+        "locale" => parse_attr_group(AttributeType::Locale, ctx, value)?,
+        "display" => parse_attr_group(AttributeType::Display, ctx, value)?,
+        "order" => parse_order_group(ctx, value)?,
+        _ => return Ok(Some(value)),
+    };
+    Ok(None)
+}
+
+pub fn parse_attr_group(attr_type: AttributeType, ctx: &mut Context, hash_or_attr: Yaml) -> Result<(), String> {
     if let Yaml::Hash(hash) = hash_or_attr {
         for (id, value) in hash {
             let id = id.einto_string()?;
@@ -20,10 +31,10 @@ pub fn parse_attrs(attr_type: AttributeType, mut ctx: Context, hash_or_attr: Yam
         let value = hash_or_attr.einto_nullable_string()?;
         ctx.set_attr(attr_type, value);
     }
-    Ok(ctx)
+    Ok(())
 }
 
-pub fn parse_order(mut ctx: Context, hash_or_attr: Yaml) -> Result<Context, String> {
+pub fn parse_order_group(ctx: &mut Context, hash_or_attr: Yaml) -> Result<(), String> {
     if let Yaml::Hash(hash) = hash_or_attr {
         for (id, value) in hash {
             let id = id.einto_string()?;
@@ -39,5 +50,5 @@ pub fn parse_order(mut ctx: Context, hash_or_attr: Yaml) -> Result<Context, Stri
         let value = hash_or_attr.einto_nullable_int()?;
         ctx.set_order(value);
     }
-    Ok(ctx)
+    Ok(())
 }

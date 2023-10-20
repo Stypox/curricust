@@ -2,6 +2,8 @@ use std::{fs, path::Path};
 
 use yaml_rust::{Yaml, YamlLoader};
 
+use crate::attr::{context::Context, parse::try_parse_group};
+
 use super::{error::ErrorToString, yaml::YamlConversions};
 
 pub fn yaml_from_file(filename: &Path) -> Result<Yaml, String> {
@@ -29,4 +31,31 @@ pub fn include_file(root: &Path, hash: Yaml) -> Result<Yaml, String> {
     }
 
     yaml_from_file(&root.join(path))
+}
+
+pub fn include_file_with_context(root: &Path, ctx: Context, hash_or_string: Yaml) -> Result<(Context, Yaml), String> {
+    let mut path = None;
+    let mut ctx = ctx.clone();
+    
+    if let Yaml::Hash(hash) = hash_or_string {
+        for (key, value) in hash {
+            let key = key.einto_string()?;
+
+            let Some(value) = try_parse_group(&mut ctx, &key, value)? else {
+                // as attribute group was found, so we did not get back the value
+                continue;
+            };
+
+            if path.is_none() && key == "file" {
+                path = Some(value.einto_string()?);
+            } else {
+                return Err(format!("Invalid key in file inclusion {}", key));
+            }
+        }
+    } else {
+        path = Some(hash_or_string.einto_string()?)
+    };
+
+    let path = path.ok_or("Missing file: in file inclusion".to_string())?;
+    Ok((ctx, yaml_from_file(&root.join(path))?))
 }

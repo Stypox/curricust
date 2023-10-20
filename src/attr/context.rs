@@ -16,7 +16,7 @@ struct AttributeData<T> where T: Clone {
     overrides: HashMap<String, Option<T>>,
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct Context {
     attrs: [AttributeData<String>; std::mem::variant_count::<AttributeType>()],
     order: AttributeData<i64>,

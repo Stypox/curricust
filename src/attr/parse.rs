@@ -11,9 +11,9 @@ pub fn parse_attrs(attr_type: AttributeType, mut ctx: Context, hash_or_attr: Yam
             let value = value.einto_nullable_string()?;
 
             if id == "_" {
-                ctx.set_attr(attr_type.clone(), value)
+                ctx.set_attr(attr_type, value)
             } else {
-                ctx.append_override(id, attr_type.clone(), value)
+                ctx.append_override(id, attr_type, value)
             }
         }
     } else {

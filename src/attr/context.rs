@@ -4,7 +4,7 @@ use multimap::MultiMap;
 
 use crate::attr::text_with_attributes::TextWithAttributes;
 
-#[derive(PartialEq, Eq, Hash, Clone)]
+#[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum AttributeType {
     Locale,
     Display,

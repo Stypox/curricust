@@ -11,6 +11,8 @@ use crate::{
     util::yaml::YamlConversions,
 };
 
+use super::item::SectionItem;
+
 #[derive(Debug, CvElementBuilder)]
 pub struct SectionElement<T> {
     #[cv_element_builder(text_with_attributes)]
@@ -20,18 +22,28 @@ pub struct SectionElement<T> {
     pub items: Option<Vec<T>>,
 }
 
-impl<T> SectionElement<T> {
+impl<T: SectionItem> SectionElement<T> {
     pub fn parse(hash: Yaml, ctx: &Context) -> Result<SectionElement<T>, String> {
         let hash = hash.einto_hash()?;
         let mut section = SectionElement::<T>::builder();
 
-        for (element_type, element_value) in hash {
-            let (element_type, element_value) =
-                TextWithAttributes::new(element_type, element_value)?;
-            match element_type.as_str() {
-                "title" => section.add_title(element_value),
-                "description" => section.add_description(element_value),
-                _ => return Err(format!("Unknown section attribute {element_type}")),
+        for (key, value) in hash {
+            let key = key.einto_string()?;
+            if key == "items" {
+                let value = value.einto_vec()?;
+                let mut items = vec![];
+                for item in value {
+                    items.push(T::parse(item.einto_hash()?, ctx)?);
+                }
+                section.items(items);
+                continue;
+            }
+
+            let (key, value) = TextWithAttributes::new_string(key, value)?;
+            match key.as_str() {
+                "title" => section.add_title(value),
+                "description" => section.add_description(value),
+                _ => return Err(format!("Unknown section attribute {key}")),
             };
         }
 

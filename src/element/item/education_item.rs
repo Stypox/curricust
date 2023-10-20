@@ -1,11 +1,22 @@
-use crate::printers::rmarkdown::RMarkdownSectionItem;
+use resume_cv_proc_macro::CvElementBuilder;
 
-#[derive(Debug)]
+use yaml_rust::yaml::Hash;
+
+use crate::{printers::rmarkdown::RMarkdownSectionItem, attr::{context::Context, text_with_attributes::TextWithAttributes}};
+
+use super::SectionItem;
+
+#[derive(Debug, CvElementBuilder)]
 pub struct EducationItem {
+    #[cv_element_builder(text_with_attributes)]
     pub degree: String,
+    #[cv_element_builder(text_with_attributes)]
     pub institution: String,
+    #[cv_element_builder(text_with_attributes)]
     pub dates: String,
+    #[cv_element_builder(text_with_attributes)]
     pub grade: Option<String>,
+    #[cv_element_builder(text_with_attributes)]
     pub details: Option<String>,
 }
 
@@ -22,5 +33,26 @@ impl RMarkdownSectionItem for EducationItem {
             self.grade.clone().unwrap_or(String::new()),
             self.details.clone().unwrap_or(String::new()),
         ]
+    }
+}
+
+impl SectionItem for EducationItem {
+    fn parse(hash: Hash, ctx: &Context) -> Result<Self, String> {
+        let mut builder = EducationItem::builder();
+        
+        for (key, value) in hash {
+            let (key, value) = TextWithAttributes::new_yaml(key, value)?;
+
+            match key.as_str() {
+                "degree" => builder.add_degree(value),
+                "institution" => builder.add_institution(value),
+                "dates" => builder.add_dates(value),
+                "grade" => builder.add_grade(value),
+                "details" => builder.add_details(value),
+                _ => &mut builder//return Err(format!("Unknown key in section item {key}")),
+            };
+        }
+
+        builder.build(ctx)
     }
 }

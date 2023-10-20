@@ -8,8 +8,11 @@ pub struct TextWithAttributes {
 }
 
 impl TextWithAttributes {
-    pub fn new(key: Yaml, value: Yaml) -> Result<(String, TextWithAttributes), String> {
-        let key = key.einto_string()?;
+    pub fn new_yaml(key: Yaml, value: Yaml) -> Result<(String, TextWithAttributes), String> {
+        Self::new_string(key.einto_string()?, value)
+    }
+
+    pub fn new_string(key: String, value: Yaml) -> Result<(String, TextWithAttributes), String> {
         let value = value.einto_string()?;
         let mut key = key.split('-');
 

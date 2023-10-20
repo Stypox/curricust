@@ -20,12 +20,11 @@ pub struct HeaderElement {
 impl HeaderElement {
     pub fn parse(header: &mut HeaderElementBuilder, hash: Yaml) -> Result<(), String> {
         let hash = hash.einto_hash()?;
-        for (element_type, element_value) in hash {
-            let (element_type, element_value) =
-                TextWithAttributes::new(element_type, element_value)?;
-            match element_type.as_str() {
-                "name" => header.add_name(element_value),
-                "phone" => header.add_phone(element_value),
+        for (key, value) in hash {
+            let (key, value) = TextWithAttributes::new_yaml(key, value)?;
+            match key.as_str() {
+                "name" => header.add_name(value),
+                "phone" => header.add_phone(value),
                 _ => continue,
             };
         }

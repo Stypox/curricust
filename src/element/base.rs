@@ -12,6 +12,7 @@ use multimap::MultiMap;
 use yaml_rust::Yaml;
 
 use super::header::HeaderElement;
+use super::item::SectionItem;
 use super::item::education_item::EducationItem;
 use super::section::SectionElement;
 
@@ -28,7 +29,7 @@ impl BaseElement {
     ) -> Result<(), String> {
         let hash = hash.einto_hash()?;
         for (key, value) in hash.into_iter() {
-            let (key, value) = TextWithAttributes::new(key, value)?;
+            let (key, value) = TextWithAttributes::new_yaml(key, value)?;
             dictionary.insert(key, value);
         }
         Ok(())
@@ -40,7 +41,7 @@ impl BaseElement {
         ctx: &Context,
     ) -> Result<(), String>
     where
-        T: RMarkdownPrinter + 'static,
+        T: RMarkdownPrinter + SectionItem + 'static,
         SectionElement<T>: RMarkdownPrinter,
     {
         sections.push(Box::new(SectionElement::<T>::parse(value, &ctx)?));
@@ -54,7 +55,7 @@ impl BaseElement {
         root: &Path,
     ) -> Result<(), String>
     where
-        T: RMarkdownPrinter + 'static,
+        T: RMarkdownPrinter + SectionItem + 'static,
         SectionElement<T>: RMarkdownPrinter,
     {
         let (override_ctx, value) = include_file_with_context(root, ctx.clone(), value)?;

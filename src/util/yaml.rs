@@ -17,11 +17,11 @@ impl YamlConversions for Yaml {
             Yaml::Integer(a) => Ok(a.to_string()),
             Yaml::String(a) => Ok(a),
             Yaml::Boolean(a) => Ok(a.to_string()),
-            Yaml::Array(a) => Err(format!("Unexpected array: {a:?}")),
-            Yaml::Hash(a) => Err(format!("Unexpected map: {a:?}")),
-            Yaml::Alias(a) => Err(format!("Unexpected alias: {a:?}")),
-            Yaml::Null => Err("Unexpected null".to_string()),
-            Yaml::BadValue => Err("Unexpected bad value".to_string()),
+            Yaml::Array(a) => Err(format!("Expected string, got array: {a:?}")),
+            Yaml::Hash(a) => Err(format!("Expected string, got map: {a:?}")),
+            Yaml::Alias(a) => Err(format!("Expected string, got alias: {a:?}")),
+            Yaml::Null => Err("Expected string, got null".to_string()),
+            Yaml::BadValue => Err("Expected string, got bad value".to_string()),
         }
     }
 
@@ -38,7 +38,7 @@ impl YamlConversions for Yaml {
     }
 
     fn einto_vec(self) -> Result<Vec<Yaml>, String> {
-        self.into_vec().ok_or("Expected arrat".to_string())
+        self.into_vec().ok_or("Expected array".to_string())
     }
 
     fn einto_single_element_hash(self) -> Result<(String, Yaml), String> {

@@ -14,7 +14,7 @@
     file: sections/education.yml
     display:
       all: long
-      high-school: none
+      bachelor: short
     order:
       all: 9
       bachelor: 1

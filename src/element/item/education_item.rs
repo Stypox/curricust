@@ -2,7 +2,7 @@ use resume_cv_proc_macro::CvElementBuilder;
 
 use yaml_rust::yaml::Hash;
 
-use crate::{printers::rmarkdown::RMarkdownSectionItem, attr::{context::Context, text_with_attributes::TextWithAttributes}};
+use crate::{printers::rmarkdown::RMarkdownSectionItem, attr::{context::Context, text_with_attributes::TextWithAttributes}, util::yaml::YamlConversions};
 
 use super::SectionItem;
 
@@ -41,7 +41,12 @@ impl SectionItem for EducationItem {
         let mut builder = EducationItem::builder();
         
         for (key, value) in hash {
-            let (key, value) = TextWithAttributes::new_yaml(key, value)?;
+            let key = key.einto_string()?;
+            if key == "id" {
+                builder.id(value.einto_string()?);
+                continue;
+            }
+            let (key, value) = TextWithAttributes::new_string(key, value)?;
 
             match key.as_str() {
                 "degree" => builder.add_degree(value),
@@ -49,7 +54,7 @@ impl SectionItem for EducationItem {
                 "dates" => builder.add_dates(value),
                 "grade" => builder.add_grade(value),
                 "details" => builder.add_details(value),
-                _ => &mut builder//return Err(format!("Unknown key in section item {key}")),
+                _ => return Err(format!("Unknown key in section item {key}")),
             };
         }
 

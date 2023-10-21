@@ -88,13 +88,13 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
                 },
                 (true, false) => {
                     quote_spanned! {span=>
-                        #field_name: crate::attr::text_with_attributes::TextWithAttributesCollection::into_best_matching(self.#field_name, &active_attrs)
+                        #field_name: crate::attr::text_with_attributes::TextWithAttributesCollection::into_best_matching_dictionary(self.#field_name, &active_attrs, &ctx.dictionary)?
                             .ok_or(#field_name_error)?,
                     }
                 },
                 (true, true) => {
                     quote_spanned! {span=>
-                        #field_name: crate::attr::text_with_attributes::TextWithAttributesCollection::into_best_matching(self.#field_name, &active_attrs),
+                        #field_name: crate::attr::text_with_attributes::TextWithAttributesCollection::into_best_matching_dictionary(self.#field_name, &active_attrs, &ctx.dictionary)?,
                     }
                 },
             }

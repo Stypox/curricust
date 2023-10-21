@@ -192,3 +192,52 @@ pub fn derive_cv_rmarkdown_item(input: proc_macro::TokenStream) -> proc_macro::T
         }
     }.into()
 }
+
+#[proc_macro_derive(CvSectionItem)]
+pub fn derive_cv_section_item(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let name = &input.ident;
+    let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
+
+    let syn::Data::Struct(DataStruct {
+        fields: Fields::Named(ref fields),
+        ..
+    }) = &input.data else {
+        unimplemented!();
+    };
+
+    let recurse_fields = parse_fields(&fields.named)
+        .map(|f| {
+            let MyField { field_name, span, .. } = f;
+            let fun_name = Ident::new(("add_".to_string() + &field_name.to_string()).as_str(), field_name.span());
+            let field_name = field_name.to_string();
+
+            quote_spanned! {span=>
+                #field_name => builder.#fun_name(value),
+            }
+        });
+
+    quote! {
+        impl #impl_generics crate::element::item::SectionItem for #name #ty_generics #where_clause {
+            fn parse(hash: yaml_rust::yaml::Hash, ctx: &crate::attr::context::Context) -> std::result::Result<Self, std::string::String> {
+                let mut builder = #name::builder();
+                
+                for (key, value) in hash {
+                    let key = crate::util::yaml::YamlConversions::einto_string(key)?;
+                    if key == "id" {
+                        builder.id(crate::util::yaml::YamlConversions::einto_string(value)?);
+                        continue;
+                    }
+                    let (key, value) = crate::attr::text_with_attributes::TextWithAttributes::new_string(key, value)?;
+        
+                    match key.as_str() {
+                        #(#recurse_fields)*
+                        _ => return std::result::Result::Err(std::format!("Unknown key in section item {key}")),
+                    };
+                }
+        
+                builder.build(ctx)
+            }
+        }
+    }.into()
+}

@@ -13,7 +13,10 @@ use yaml_rust::Yaml;
 
 use super::header::HeaderElement;
 use super::item::SectionItem;
+use super::item::award_item::AwardItem;
 use super::item::education_item::EducationItem;
+use super::item::job_item::JobItem;
+use super::item::project_item::ProjectItem;
 use super::section::SectionElement;
 
 #[derive(Debug)]
@@ -83,9 +86,21 @@ impl BaseElement {
                 }
                 "header" => HeaderElement::parse(&mut header, value)?,
                 "include-header" => HeaderElement::parse(&mut header, include_file(root, value)?)?,
-                "section" => Self::parse_section::<EducationItem>(value, &mut sections, &ctx)?,
-                "include-section" => {
+                "section-education" => Self::parse_section::<EducationItem>(value, &mut sections, &ctx)?,
+                "include-section-education" => {
                     Self::parse_include_section::<EducationItem>(value, &mut sections, &ctx, &root)?
+                }
+                "section-award" => Self::parse_section::<AwardItem>(value, &mut sections, &ctx)?,
+                "include-section-award" => {
+                    Self::parse_include_section::<AwardItem>(value, &mut sections, &ctx, &root)?
+                }
+                "section-job" => Self::parse_section::<JobItem>(value, &mut sections, &ctx)?,
+                "include-section-job" => {
+                    Self::parse_include_section::<JobItem>(value, &mut sections, &ctx, &root)?
+                }
+                "section-project" => Self::parse_section::<ProjectItem>(value, &mut sections, &ctx)?,
+                "include-section-project" => {
+                    Self::parse_include_section::<ProjectItem>(value, &mut sections, &ctx, &root)?
                 }
                 _ => {} //return Err(format!("Base element can't have children of type {element_type:?}")),
             }

@@ -10,7 +10,7 @@
 - include-header:
     file: util/header.yml
 
-- include-section:
+- include-section-education:
     file: sections/education.yml
     display:
       all: long
@@ -20,7 +20,5 @@
       bachelor: 1
       high-school: 100
 
-- section:
-    title: sectiontitle
-    description: sectiondescription
-
+- include-section-award:
+    file: sections/award.yml

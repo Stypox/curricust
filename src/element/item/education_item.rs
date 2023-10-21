@@ -1,12 +1,12 @@
-use resume_cv_proc_macro::CvElementBuilder;
+use resume_cv_proc_macro::{CvElementBuilder, CvRMarkdownItem};
 
 use yaml_rust::yaml::Hash;
 
-use crate::{printers::rmarkdown::RMarkdownSectionItem, attr::{context::Context, text_with_attributes::TextWithAttributes}, util::yaml::YamlConversions};
+use crate::{attr::{context::Context, text_with_attributes::TextWithAttributes}, util::yaml::YamlConversions};
 
 use super::SectionItem;
 
-#[derive(Debug, CvElementBuilder)]
+#[derive(Debug, CvElementBuilder, CvRMarkdownItem)]
 pub struct EducationItem {
     #[cv_element_builder(text_with_attributes)]
     pub degree: String,
@@ -18,22 +18,6 @@ pub struct EducationItem {
     pub grade: Option<String>,
     #[cv_element_builder(text_with_attributes)]
     pub details: Option<String>,
-}
-
-impl RMarkdownSectionItem for EducationItem {
-    fn get_field_names() -> &'static [&'static str] {
-        &["degree", "institution", "dates", "grade", "details"]
-    }
-
-    fn get_fields(&self) -> Vec<String> {
-        vec![
-            self.degree.clone(),
-            self.institution.clone(),
-            self.dates.clone(),
-            self.grade.clone().unwrap_or(String::new()),
-            self.details.clone().unwrap_or(String::new()),
-        ]
-    }
 }
 
 impl SectionItem for EducationItem {

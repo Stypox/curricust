@@ -141,3 +141,54 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
         }
     }.into()
 }
+
+#[proc_macro_derive(CvRMarkdownItem)]
+pub fn derive_cv_rmarkdown_item(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let name = &input.ident;
+    let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
+
+    let syn::Data::Struct(DataStruct {
+        fields: Fields::Named(ref fields),
+        ..
+    }) = &input.data else {
+        unimplemented!();
+    };
+
+    let recurse_field_names = parse_fields(&fields.named)
+        .map(|f| {
+            let MyField { field_name, span, .. } = f;
+            let field_name = field_name.to_string();
+
+            quote_spanned! {span=>
+                #field_name,
+            }
+        });
+
+    let recurse_fields = parse_fields(&fields.named)
+        .map(|f| {
+            let MyField { field_name, is_optional, span, .. } = f;
+
+            if is_optional {
+                quote_spanned! {span=>
+                    self.#field_name.clone().unwrap_or(std::string::String::new()),
+                }
+            } else {
+                quote_spanned! {span=>
+                    self.#field_name.clone(),
+                }
+            }
+        });
+    
+    quote! {
+        impl #impl_generics crate::printers::rmarkdown::RMarkdownSectionItem for #name #ty_generics #where_clause {
+            fn get_field_names() -> &'static [&'static str] {
+                &[#(#recurse_field_names)*]
+            }
+
+            fn get_fields(&self) -> std::vec::Vec<std::string::String> {
+                std::vec![#(#recurse_fields)*]
+            }
+        }
+    }.into()
+}

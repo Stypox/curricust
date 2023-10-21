@@ -1,12 +1,11 @@
+mod field;
+
 use std::iter::once;
 
-use proc_macro2::{Span, TokenStream};
-use quote::{quote, quote_spanned, ToTokens};
-use syn::{
-    parse_macro_input, punctuated::Punctuated, spanned::Spanned, token::Comma,
-    AngleBracketedGenericArguments, AttrStyle, DataStruct, DeriveInput, ExprPath, Field, Fields,
-    GenericArgument, Ident, Path, PathArguments, PathSegment, Type, TypePath,
-};
+use field::{parse_fields, dummy_string_field, MyField};
+
+use quote::{quote, quote_spanned};
+use syn::{DataStruct, Fields, Ident, parse_macro_input, DeriveInput};
 
 #[proc_macro_derive(CvElementBuilder, attributes(cv_element_builder))]
 pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -142,83 +141,4 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
     } else {
         unimplemented!()
     }
-}
-
-struct MyField {
-    field_name: Ident,
-    ty: TokenStream,
-    is_optional: bool,
-    has_text_with_attributes_attr: bool,
-    span: Span,
-}
-
-fn dummy_string_field(name: &str) -> MyField {
-    MyField {
-        field_name: Ident::new(&name, Span::call_site()),
-        ty: quote! { std::string::String },
-        is_optional: false,
-        has_text_with_attributes_attr: false,
-        span: Span::call_site(),
-    }
-}
-
-fn parse_fields(fields: &Punctuated<Field, Comma>) -> impl Iterator<Item = MyField> + '_ {
-    fields.iter().map(|f| {
-        let field_name = f.ident.as_ref().expect("Missing field name").clone();
-        let (ty, is_optional) = parse_type(&f.ty);
-        let has_text_with_attributes_attr = f
-            .attrs
-            .iter()
-            .filter(|attr| matches!(attr.style, AttrStyle::Outer))
-            .filter_map(|attr| attr.meta.require_list().ok())
-            .any(|attr| {
-                attr.path.is_ident("cv_element_builder")
-                    && if let Ok(path) = &attr.parse_args::<ExprPath>() {
-                        path.path.is_ident("text_with_attributes")
-                    } else {
-                        false
-                    }
-            });
-
-        MyField {
-            field_name,
-            ty: ty.into_token_stream(),
-            is_optional,
-            has_text_with_attributes_attr,
-            span: f.span(),
-        }
-    })
-}
-
-fn parse_type(ty: &Type) -> (Type, bool) {
-    if let Type::Path(TypePath {
-        qself: None,
-        path: Path { segments, .. },
-    }) = ty
-    {
-        let segment_path = segments.iter().fold(String::new(), |mut acc, v| {
-            acc.push_str(&v.ident.to_string());
-            acc.push(':');
-            acc
-        });
-
-        if vec!["Option:", "std:option:Option:", "core:option:Option:"]
-            .contains(&segment_path.as_str())
-        {
-            if let Some(PathSegment {
-                arguments:
-                    PathArguments::AngleBracketed(AngleBracketedGenericArguments { args, .. }),
-                ..
-            }) = segments.last()
-            {
-                if let Some(GenericArgument::Type(res)) = args.first() {
-                    if args.len() == 1 {
-                        return (res.clone(), true);
-                    }
-                }
-            }
-        }
-    };
-
-    (ty.clone(), false)
 }

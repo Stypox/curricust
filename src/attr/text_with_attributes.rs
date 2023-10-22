@@ -71,7 +71,7 @@ impl TextWithAttributesCollection for Vec<TextWithAttributes> {
         };
     
         lazy_static! {
-            static ref DICTIONARY_REGEX: Regex = Regex::new("\\{\\{([^\\{\\}]+)\\}\\}").unwrap();
+            static ref DICTIONARY_REGEX: Regex = Regex::new(r#"\{\{([^\{\}]+)\}\}"#).unwrap();
         }
 
         let mut error = None;

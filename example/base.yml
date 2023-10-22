@@ -1,4 +1,5 @@
 - locale: it
+- display: short
 
 - dictionary:
     test_ciao-it: "ciao"
@@ -13,12 +14,10 @@
 - include-section-education:
     file: sections/education.yml
     display:
-      all: long
-      bachelor: short
+      bachelor: long
     order:
-      all: 9
-      bachelor: 1
-      high-school: 100
+      _: 2
+      high-school: 1
 
 - include-section-award:
     file: sections/award.yml

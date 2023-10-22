@@ -35,7 +35,8 @@ impl<T: SectionItem> SectionElement<T> {
                 for item in value {
                     items.push(T::parse(item.einto_hash()?, ctx)?);
                 }
-                section.items(items);
+                items.sort_by(|a,b| { a.0.cmp(&b.0) });
+                section.items(items.into_iter().map(|item| item.1).collect());
                 continue;
             }
 

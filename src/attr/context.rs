@@ -27,7 +27,7 @@ pub struct Context {
 }
 
 impl Context {
-    pub fn get_active_attrs(&self, id: Option<String>) -> Vec<String> {
+    pub fn get_active_attrs(&self, id: &Option<String>) -> Vec<String> {
         self.attrs
             .clone()
             .into_iter()
@@ -40,6 +40,15 @@ impl Context {
                 return e.value;
             })
             .collect()
+    }
+
+    pub fn get_order(&self, id: &Option<String>) -> i64 {
+        if let Some(id) = id {
+            if let Some(order) = self.order.overrides.get(id) {
+                return order.unwrap_or(i64::MAX);
+            }
+        }
+        return self.order.value.unwrap_or(i64::MAX)
     }
 
     pub fn set_attr(&mut self, attr_type: AttributeType, value: Option<String>) {

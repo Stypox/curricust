@@ -124,7 +124,7 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
             #(#recurse_functions)*
 
             pub fn build(self, ctx: &crate::attr::context::Context) -> std::result::Result<#name #name_generics, std::string::String> {
-                let active_attrs = ctx.get_active_attrs(self.id);
+                let active_attrs = ctx.get_active_attrs(&self.id);
 
                 std::result::Result::Ok(#name #name_generics {
                     #(#recurse_build)*
@@ -219,7 +219,7 @@ pub fn derive_cv_section_item(input: proc_macro::TokenStream) -> proc_macro::Tok
 
     quote! {
         impl #impl_generics crate::item::SectionItem for #name #ty_generics #where_clause {
-            fn parse(hash: yaml_rust::yaml::Hash, ctx: &crate::attr::context::Context) -> std::result::Result<Self, std::string::String> {
+            fn parse(hash: yaml_rust::yaml::Hash, ctx: &crate::attr::context::Context) -> std::result::Result<(i64, Self), std::string::String> {
                 let mut builder = #name::builder();
                 
                 for (key, value) in hash {
@@ -236,7 +236,7 @@ pub fn derive_cv_section_item(input: proc_macro::TokenStream) -> proc_macro::Tok
                     };
                 }
         
-                builder.build(ctx)
+                std::result::Result::Ok((ctx.get_order(&builder.id), builder.build(ctx)?))
             }
         }
     }.into()

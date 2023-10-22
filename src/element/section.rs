@@ -71,6 +71,9 @@ impl<T: RMarkdownPrinter + RMarkdownSectionItem> RMarkdownPrinter for SectionEle
                 item.rmarkdown_print(f)?;
             }
             writeln!(f, "\n)")?;
+            write!(f, "detailed_entries(")?;
+            write!(f, "{}", fields.join(", "))?;
+            writeln!(f, ")")?;
             writeln!(f, "```\n")?;
         }
         Ok(())

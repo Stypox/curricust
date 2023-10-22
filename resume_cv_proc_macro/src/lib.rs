@@ -218,7 +218,7 @@ pub fn derive_cv_section_item(input: proc_macro::TokenStream) -> proc_macro::Tok
         });
 
     quote! {
-        impl #impl_generics crate::element::item::SectionItem for #name #ty_generics #where_clause {
+        impl #impl_generics crate::item::SectionItem for #name #ty_generics #where_clause {
             fn parse(hash: yaml_rust::yaml::Hash, ctx: &crate::attr::context::Context) -> std::result::Result<Self, std::string::String> {
                 let mut builder = #name::builder();
                 

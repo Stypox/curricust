@@ -11,7 +11,7 @@ use crate::{
     util::yaml::YamlConversions,
 };
 
-use super::item::SectionItem;
+use crate::item::SectionItem;
 
 #[derive(Debug, CvElementBuilder)]
 pub struct SectionElement<T> {

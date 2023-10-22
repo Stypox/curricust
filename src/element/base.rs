@@ -12,11 +12,11 @@ use multimap::MultiMap;
 use yaml_rust::Yaml;
 
 use super::header::HeaderElement;
-use super::item::SectionItem;
-use super::item::award_item::AwardItem;
-use super::item::education_item::EducationItem;
-use super::item::job_item::JobItem;
-use super::item::project_item::ProjectItem;
+use crate::item::SectionItem;
+use crate::item::award_item::AwardItem;
+use crate::item::education_item::EducationItem;
+use crate::item::job_item::JobItem;
+use crate::item::project_item::ProjectItem;
 use super::section::SectionElement;
 
 #[derive(Debug)]

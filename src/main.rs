@@ -10,10 +10,11 @@ use crate::{
 
 extern crate yaml_rust;
 
-pub mod attr;
+mod attr;
 mod element;
-pub mod printers;
+mod printers;
 mod util;
+mod item;
 
 fn main() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();

@@ -4,16 +4,22 @@ title-it: Educazione
 items:
   - id: bachelor
     degree-en-long: The uni type
-    degree-it-long: Il tipo di uni
+    degree-it-long: |
+      Il tipo
+      di uni
     degree-en-short: Type
     degree-it-short: Tipo
     institution-en: University of Whatever
     institution-it: Università di Boh
     dates: 1530-{{present}}
     grade: 29/31
+    details: been there done that
 
   - id: high-school
     degree: The high school type
     institution: The high school name
     dates: 1526-1530
     grade: 84/100
+    details: |
+      - been there
+      - done that

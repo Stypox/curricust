@@ -7,7 +7,7 @@ use crate::{
     printers::{
         cv_developer_latex_printer::CvDeveloperLatexPrinter,
         rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem},
-        Printer,
+        Printer, markdown_to_latex::write_markdown,
     },
     util::yaml::YamlConversions,
 };
@@ -84,7 +84,9 @@ impl<T: RMarkdownPrinter + RMarkdownSectionItem> RMarkdownPrinter for SectionEle
 #[allow(clippy::write_literal)]
 impl<T: CvDeveloperLatexPrinter> CvDeveloperLatexPrinter for SectionElement<T> {
     fn cvdl_print(&self, f: &mut Printer) -> std::io::Result<()> {
-        writeln!(f, "{}{}{}", r#"\cvsect{"#, self.title, r#"}"#)?;
+        write!(f, r#"\cvsect{{"#)?;
+        write_markdown(f, &self.title)?;
+        writeln!(f, "}}")?;
         // TODO self.description
         if let Some(items) = &self.items {
             writeln!(f, "{}", r#"\begin{entrylist}"#)?;

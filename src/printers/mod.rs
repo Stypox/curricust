@@ -1,4 +1,5 @@
 pub mod cv_developer_latex_printer;
+pub mod markdown_to_latex;
 pub mod rmarkdown;
 
 use std::fs::File;

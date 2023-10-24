@@ -1,7 +1,6 @@
 use resume_cv_proc_macro::{CvElementBuilder, CvRMarkdownItem, CvSectionItem};
-use std::io::Write;
 
-use crate::printers::{cv_developer_latex_printer::CvDeveloperLatexSectionItem, Printer};
+use crate::printers::{cv_developer_latex_printer::CvDeveloperLatexSectionItem, Printer, markdown_to_latex::write_markdown};
 
 #[derive(Debug, CvElementBuilder, CvRMarkdownItem, CvSectionItem)]
 pub struct JobItem {
@@ -13,7 +12,7 @@ pub struct JobItem {
 
 impl CvDeveloperLatexSectionItem for JobItem {
     fn cvdl_print_left(&self, f: &mut Printer) -> std::io::Result<()> {
-        write!(f, "{}", self.dates)
+        write_markdown(f, &self.dates)
     }
 
     fn cvdl_print_heading(&self, _f: &mut Printer) -> std::io::Result<()> {
@@ -21,7 +20,7 @@ impl CvDeveloperLatexSectionItem for JobItem {
     }
 
     fn cvdl_print_qualifier(&self, f: &mut Printer) -> std::io::Result<()> {
-        write!(f, "{}", self.institution)
+        write_markdown(f, &self.institution)
     }
 
     fn cvdl_print_description(&self, _f: &mut Printer) -> std::io::Result<()> {

@@ -1,3 +1,11 @@
 /target
 /cv
+/test
+*.aux
+*.log
+*.out
+*.pdf
+*.tex
+*.cls
+*.sty
 *.code-workspace

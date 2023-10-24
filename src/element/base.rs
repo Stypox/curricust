@@ -125,19 +125,15 @@ impl RMarkdownPrinter for BaseElement {
     }
 }
 
-const BEGIN: &str = r#"
-\documentclass[9pt]{developercv}
-\usepackage{multicol}
-\setlength{\columnsep}{0mm}
-\begin{document}
-"#;
-
-const END: &str = r#"\end{document}"#;
-
+#[allow(clippy::write_literal)]
 impl CvDeveloperLatexPrinter for BaseElement {
     fn cv_developer_latex_print(&self, f: &mut Printer) -> std::io::Result<()> {
-        writeln!(f, "{}", BEGIN)?;
-        writeln!(f, "{}", END)?;
+        writeln!(f, "{}", r#"\documentclass[9pt]{developercv}"#)?;
+        writeln!(f, "{}", r#"\usepackage{multicol}"#)?;
+        writeln!(f, "{}", r#"\setlength{\columnsep}{0mm}"#)?;
+        writeln!(f, "{}", r#"\begin{document}"#)?;
+        self.header.cv_developer_latex_print(f)?;
+        writeln!(f, "{}", r#"\end{document}"#)?;
         Ok(())
     }
 }

@@ -6,6 +6,8 @@ use crate::printers::{cv_developer_latex_printer::CvDeveloperLatexSectionItem, P
 #[derive(Debug, CvElementBuilder, CvRMarkdownItem, CvSectionItem)]
 pub struct ProjectItem {
     #[cv_element_builder(text_with_attributes)]
+    pub dates: Option<String>,
+    #[cv_element_builder(text_with_attributes)]
     pub name: String,
     #[cv_element_builder(text_with_attributes)]
     pub description: String,
@@ -15,6 +17,9 @@ pub struct ProjectItem {
 
 impl CvDeveloperLatexSectionItem for ProjectItem {
     fn cvdl_print_left(&self, f: &mut Printer) -> std::io::Result<()> {
+        if let Some(dates) = &self.dates {
+            write!(f, "{}", dates)?;
+        }
         Ok(())
     }
 

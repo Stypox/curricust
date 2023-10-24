@@ -35,8 +35,7 @@ impl CvDeveloperLatexSectionItem for AwardItem {
         Ok(())
     }
 
-    fn cvdl_print_description(&self, f: &mut Printer) -> std::io::Result<()> {
+    fn cvdl_print_description(&self, _f: &mut Printer) -> std::io::Result<()> {
         Ok(())
     }
 }
-

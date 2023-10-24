@@ -4,21 +4,21 @@ use std::path::Path;
 use crate::attr::context::Context;
 use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
-use crate::printers::{AllPrinters, Printer};
 use crate::printers::cv_developer_latex_printer::CvDeveloperLatexPrinter;
 use crate::printers::rmarkdown::RMarkdownPrinter;
+use crate::printers::{AllPrinters, Printer};
 use crate::util::file::{include_file, include_file_with_context};
 use crate::util::yaml::YamlConversions;
 use multimap::MultiMap;
 use yaml_rust::Yaml;
 
 use super::header::HeaderElement;
-use crate::item::SectionItem;
+use super::section::SectionElement;
 use crate::item::award_item::AwardItem;
 use crate::item::education_item::EducationItem;
 use crate::item::job_item::JobItem;
 use crate::item::project_item::ProjectItem;
-use super::section::SectionElement;
+use crate::item::SectionItem;
 
 #[derive(Debug)]
 pub struct BaseElement {
@@ -48,7 +48,7 @@ impl BaseElement {
         T: AllPrinters + SectionItem + 'static,
         SectionElement<T>: AllPrinters,
     {
-        sections.push(Box::new(SectionElement::<T>::parse(value, &ctx)?));
+        sections.push(Box::new(SectionElement::<T>::parse(value, ctx)?));
         Ok(())
     }
 
@@ -87,21 +87,25 @@ impl BaseElement {
                 }
                 "header" => HeaderElement::parse(&mut header, value)?,
                 "include-header" => HeaderElement::parse(&mut header, include_file(root, value)?)?,
-                "section-education" => Self::parse_section::<EducationItem>(value, &mut sections, &ctx)?,
+                "section-education" => {
+                    Self::parse_section::<EducationItem>(value, &mut sections, &ctx)?
+                }
                 "include-section-education" => {
-                    Self::parse_include_section::<EducationItem>(value, &mut sections, &ctx, &root)?
+                    Self::parse_include_section::<EducationItem>(value, &mut sections, &ctx, root)?
                 }
                 "section-award" => Self::parse_section::<AwardItem>(value, &mut sections, &ctx)?,
                 "include-section-award" => {
-                    Self::parse_include_section::<AwardItem>(value, &mut sections, &ctx, &root)?
+                    Self::parse_include_section::<AwardItem>(value, &mut sections, &ctx, root)?
                 }
                 "section-job" => Self::parse_section::<JobItem>(value, &mut sections, &ctx)?,
                 "include-section-job" => {
-                    Self::parse_include_section::<JobItem>(value, &mut sections, &ctx, &root)?
+                    Self::parse_include_section::<JobItem>(value, &mut sections, &ctx, root)?
                 }
-                "section-project" => Self::parse_section::<ProjectItem>(value, &mut sections, &ctx)?,
+                "section-project" => {
+                    Self::parse_section::<ProjectItem>(value, &mut sections, &ctx)?
+                }
                 "include-section-project" => {
-                    Self::parse_include_section::<ProjectItem>(value, &mut sections, &ctx, &root)?
+                    Self::parse_include_section::<ProjectItem>(value, &mut sections, &ctx, root)?
                 }
                 _ => {} //return Err(format!("Base element can't have children of type {element_type:?}")),
             }

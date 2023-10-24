@@ -171,7 +171,7 @@ pub fn derive_cv_rmarkdown_item(input: proc_macro::TokenStream) -> proc_macro::T
 
             if is_optional {
                 quote_spanned! {span=>
-                    self.#field_name.clone().unwrap_or(std::string::String::new()),
+                    self.#field_name.clone().unwrap_or_default(),
                 }
             } else {
                 quote_spanned! {span=>
@@ -179,7 +179,7 @@ pub fn derive_cv_rmarkdown_item(input: proc_macro::TokenStream) -> proc_macro::T
                 }
             }
         });
-    
+
     quote! {
         impl #impl_generics crate::printers::rmarkdown::RMarkdownSectionItem for #name #ty_generics #where_clause {
             fn get_field_names() -> &'static [&'static str] {
@@ -221,7 +221,7 @@ pub fn derive_cv_section_item(input: proc_macro::TokenStream) -> proc_macro::Tok
         impl #impl_generics crate::item::SectionItem for #name #ty_generics #where_clause {
             fn parse(hash: yaml_rust::yaml::Hash, ctx: &crate::attr::context::Context) -> std::result::Result<(i64, Self), std::string::String> {
                 let mut builder = #name::builder();
-                
+
                 for (key, value) in hash {
                     let key = crate::util::yaml::YamlConversions::einto_string(key)?;
                     if key == "id" {
@@ -229,13 +229,13 @@ pub fn derive_cv_section_item(input: proc_macro::TokenStream) -> proc_macro::Tok
                         continue;
                     }
                     let (key, value) = crate::attr::text_with_attributes::TextWithAttributes::new_string(key, value)?;
-        
+
                     match key.as_str() {
                         #(#recurse_fields)*
                         _ => return std::result::Result::Err(std::format!("Unknown key in section item {key}")),
                     };
                 }
-        
+
                 std::result::Result::Ok((ctx.get_order(&builder.id), builder.build(ctx)?))
             }
         }

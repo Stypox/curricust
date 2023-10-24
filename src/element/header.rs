@@ -5,7 +5,9 @@ use yaml_rust::Yaml;
 
 use crate::{
     attr::text_with_attributes::TextWithAttributes,
-    printers::{Printer, rmarkdown::RMarkdownPrinter, cv_developer_latex_printer::CvDeveloperLatexPrinter},
+    printers::{
+        cv_developer_latex_printer::CvDeveloperLatexPrinter, rmarkdown::RMarkdownPrinter, Printer,
+    },
     util::yaml::YamlConversions,
 };
 
@@ -67,14 +69,25 @@ impl CvDeveloperLatexPrinter for HeaderElement {
     fn cvdl_print(&self, f: &mut Printer) -> std::io::Result<()> {
         writeln!(f, "{}", r#"\begin{minipage}[t]{0.5\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
-        writeln!(f, "{}{}{}", r#"    { \fontsize{16}{20} \textcolor{black}{\textbf{\MakeUppercase{"#, self.name, r#"}}}}"#)?;
+        writeln!(
+            f,
+            "{}{}{}",
+            r#"    { \fontsize{16}{20} \textcolor{black}{\textbf{\MakeUppercase{"#,
+            self.name,
+            r#"}}}}"#
+        )?;
         if let Some(career) = &self.career {
             writeln!(f, "{}", r#"    \vspace{6pt}"#)?;
             writeln!(f, "{}{career}{}", r#"    {\Large "#, r#"}"#)?;
         };
         writeln!(f, "{}", r#"\end{minipage}"#)?;
 
-        fn icon(f: &mut Printer, icon_name: &str, content: &str, href: &Option<String>) -> std::io::Result<()> {
+        fn icon(
+            f: &mut Printer,
+            icon_name: &str,
+            content: &str,
+            href: &Option<String>,
+        ) -> std::io::Result<()> {
             write!(f, "{}{icon_name}{}", r#"    \icon{"#, r#"}{11}{"#)?;
             if let Some(href) = href {
                 write!(f, "{}{href}{}{content}{}", r#"\href{"#, r#"}{"#, r#"}"#)?;
@@ -85,7 +98,12 @@ impl CvDeveloperLatexPrinter for HeaderElement {
             Ok(())
         }
 
-        fn maybe_icon(f: &mut Printer, icon_name: &str, content: &Option<String>, href: &Option<String>) -> std::io::Result<()> {
+        fn maybe_icon(
+            f: &mut Printer,
+            icon_name: &str,
+            content: &Option<String>,
+            href: &Option<String>,
+        ) -> std::io::Result<()> {
             if let Some(content) = content {
                 icon(f, icon_name, content, href)
             } else {

@@ -16,7 +16,7 @@ impl CvDeveloperLatexSectionItem for JobItem {
         write!(f, "{}", self.dates)
     }
 
-    fn cvdl_print_heading(&self, f: &mut Printer) -> std::io::Result<()> {
+    fn cvdl_print_heading(&self, _f: &mut Printer) -> std::io::Result<()> {
         Ok(())
     }
 
@@ -24,7 +24,7 @@ impl CvDeveloperLatexSectionItem for JobItem {
         write!(f, "{}", self.institution)
     }
 
-    fn cvdl_print_description(&self, f: &mut Printer) -> std::io::Result<()> {
+    fn cvdl_print_description(&self, _f: &mut Printer) -> std::io::Result<()> {
         Ok(())
     }
 }

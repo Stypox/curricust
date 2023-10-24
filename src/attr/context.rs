@@ -37,7 +37,7 @@ impl Context {
                         return res.clone();
                     }
                 }
-                return e.value;
+                e.value
             })
             .collect()
     }
@@ -48,7 +48,7 @@ impl Context {
                 return order.unwrap_or(i64::MAX);
             }
         }
-        return self.order.value.unwrap_or(i64::MAX)
+        self.order.value.unwrap_or(i64::MAX)
     }
 
     pub fn set_attr(&mut self, attr_type: AttributeType, value: Option<String>) {

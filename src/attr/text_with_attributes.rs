@@ -1,8 +1,8 @@
 use crate::util::yaml::YamlConversions;
-use multimap::MultiMap;
-use yaml_rust::Yaml;
-use regex::{Regex, Captures};
 use lazy_static::lazy_static;
+use multimap::MultiMap;
+use regex::{Captures, Regex};
+use yaml_rust::Yaml;
 
 #[derive(Debug, Clone)]
 pub struct TextWithAttributes {
@@ -44,7 +44,11 @@ impl TextWithAttributes {
 
 pub trait TextWithAttributesCollection {
     fn into_best_matching(self, attrs: &[String]) -> Option<String>;
-    fn into_best_matching_dictionary(self, attrs: &[String], dictionary: &MultiMap<String, TextWithAttributes>) -> Result<Option<String>, String>;
+    fn into_best_matching_dictionary(
+        self,
+        attrs: &[String],
+        dictionary: &MultiMap<String, TextWithAttributes>,
+    ) -> Result<Option<String>, String>;
 }
 
 impl TextWithAttributesCollection for Vec<TextWithAttributes> {
@@ -65,11 +69,15 @@ impl TextWithAttributesCollection for Vec<TextWithAttributes> {
             .map(|e| e.text)
     }
 
-    fn into_best_matching_dictionary(self, attrs: &[String], dictionary: &MultiMap<String, TextWithAttributes>) -> Result<Option<String>, String> {
+    fn into_best_matching_dictionary(
+        self,
+        attrs: &[String],
+        dictionary: &MultiMap<String, TextWithAttributes>,
+    ) -> Result<Option<String>, String> {
         let Some(text) = Self::into_best_matching(self, attrs) else {
             return Ok(None);
         };
-    
+
         lazy_static! {
             static ref DICTIONARY_REGEX: Regex = Regex::new(r#"\{\{([^\{\}]+)\}\}"#).unwrap();
         }
@@ -86,12 +94,12 @@ impl TextWithAttributesCollection for Vec<TextWithAttributes> {
                 error = Some(key.to_string());
                 return String::new();
             };
-            
+
             if let Some(value) = values.clone().into_best_matching(attrs) {
                 value
             } else {
                 error = Some(key.to_string());
-                return String::new();
+                String::new()
             }
         });
 

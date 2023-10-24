@@ -5,8 +5,9 @@ use yaml_rust::Yaml;
 use crate::{
     attr::{context::Context, text_with_attributes::TextWithAttributes},
     printers::{
+        cv_developer_latex_printer::CvDeveloperLatexPrinter,
+        rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem},
         Printer,
-        rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem}, cv_developer_latex_printer::CvDeveloperLatexPrinter,
     },
     util::yaml::YamlConversions,
 };
@@ -35,7 +36,7 @@ impl<T: SectionItem> SectionElement<T> {
                 for item in value {
                     items.push(T::parse(item.einto_hash()?, ctx)?);
                 }
-                items.sort_by(|a,b| { a.0.cmp(&b.0) });
+                items.sort_by(|a, b| a.0.cmp(&b.0));
                 section.items(items.into_iter().map(|item| item.1).collect());
                 continue;
             }

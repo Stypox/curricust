@@ -1,10 +1,10 @@
 #![feature(variant_count)]
 
-use std::{env, path::PathBuf, fs::File};
+use std::{env, fs::File, path::PathBuf};
 
 use crate::{
     element::base::BaseElement,
-    printers::{Printer, cv_developer_latex_printer::CvDeveloperLatexPrinter},
+    printers::{cv_developer_latex_printer::CvDeveloperLatexPrinter, Printer},
     util::{error::ErrorToString, file::yaml_from_file},
 };
 
@@ -12,9 +12,9 @@ extern crate yaml_rust;
 
 mod attr;
 mod element;
+mod item;
 mod printers;
 mod util;
-mod item;
 
 fn main() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();
@@ -30,7 +30,9 @@ fn main() -> Result<(), String> {
 
     let inputfile = args.get(1).ok_or_else(usage)?;
     let inputfile = PathBuf::from(inputfile);
-    let root = inputfile.parent().ok_or("Input file does not have a parent")?;
+    let root = inputfile
+        .parent()
+        .ok_or("Input file does not have a parent")?;
 
     let yaml = yaml_from_file(&inputfile)?;
     println!("{yaml:?}\n");
@@ -39,6 +41,8 @@ fn main() -> Result<(), String> {
 
     let outputfile = args.get(2).ok_or_else(usage)?;
     let outputfile = File::create(outputfile).err_str()?;
-    base_element.cvdl_print(&mut Printer::File(outputfile)).err_str()?;
+    base_element
+        .cvdl_print(&mut Printer::File(outputfile))
+        .err_str()?;
     Ok(())
 }

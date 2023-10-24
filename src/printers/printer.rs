@@ -1,11 +1,20 @@
-pub struct Printer {}
+pub enum Printer {
+    Stdout,
+    Stderr,
+}
 
 impl std::io::Write for Printer {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        std::io::stdout().write(buf)
+        match self {
+            Printer::Stdout => std::io::stdout().write(buf),
+            Printer::Stderr => std::io::stderr().write(buf),
+        }
     }
 
     fn flush(&mut self) -> std::io::Result<()> {
-        std::io::stdout().flush()
+        match self {
+            Printer::Stdout => std::io::stdout().flush(),
+            Printer::Stderr => std::io::stderr().flush(),
+        }
     }
 }

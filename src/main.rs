@@ -36,6 +36,6 @@ fn main() -> Result<(), String> {
     let base_element = BaseElement::new(root, yaml)?;
     println!("Base element: {base_element:?}\n");
 
-    base_element.cv_developer_latex_print(&mut Printer {}).err_str()?;
+    base_element.cv_developer_latex_print(&mut Printer::Stdout).err_str()?;
     Ok(())
 }

@@ -1,6 +1,9 @@
+use std::fs::File;
+
 pub enum Printer {
     Stdout,
     Stderr,
+    File(File),
 }
 
 impl std::io::Write for Printer {
@@ -8,6 +11,7 @@ impl std::io::Write for Printer {
         match self {
             Printer::Stdout => std::io::stdout().write(buf),
             Printer::Stderr => std::io::stderr().write(buf),
+            Printer::File(f) => f.write(buf),
         }
     }
 
@@ -15,6 +19,7 @@ impl std::io::Write for Printer {
         match self {
             Printer::Stdout => std::io::stdout().flush(),
             Printer::Stderr => std::io::stderr().flush(),
+            Printer::File(f) => f.flush(),
         }
     }
 }

@@ -1,6 +1,6 @@
 #![feature(variant_count)]
 
-use std::{env, path::PathBuf};
+use std::{env, path::PathBuf, fs::File};
 
 use crate::{
     element::base::BaseElement,
@@ -36,6 +36,7 @@ fn main() -> Result<(), String> {
     let base_element = BaseElement::new(root, yaml)?;
     println!("Base element: {base_element:?}\n");
 
-    base_element.cv_developer_latex_print(&mut Printer::Stdout).err_str()?;
+    let file = File::create("./test/b.tex").err_str()?;
+    base_element.cv_developer_latex_print(&mut Printer::File(file)).err_str()?;
     Ok(())
 }

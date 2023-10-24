@@ -4,6 +4,7 @@ use std::path::Path;
 use crate::attr::context::Context;
 use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
+use crate::printers::cv_developer_latex_printer::CvDeveloperLatexPrinter;
 use crate::printers::printer::Printer;
 use crate::printers::rmarkdown::RMarkdownPrinter;
 use crate::util::file::{include_file, include_file_with_context};
@@ -120,6 +121,23 @@ impl RMarkdownPrinter for BaseElement {
         for section in &self.sections {
             section.rmarkdown_print(f)?;
         }
+        Ok(())
+    }
+}
+
+const BEGIN: &str = r#"
+\documentclass[9pt]{developercv}
+\usepackage{multicol}
+\setlength{\columnsep}{0mm}
+\begin{document}
+"#;
+
+const END: &str = r#"\end{document}"#;
+
+impl CvDeveloperLatexPrinter for BaseElement {
+    fn cv_developer_latex_print(&self, f: &mut Printer) -> std::io::Result<()> {
+        writeln!(f, "{}", BEGIN)?;
+        writeln!(f, "{}", END)?;
         Ok(())
     }
 }

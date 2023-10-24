@@ -1,5 +1,7 @@
 use std::fs::File;
 
+// keep Stdout and Stderr for easy testing
+#[allow(dead_code)]
 pub enum Printer {
     Stdout,
     Stderr,

@@ -4,8 +4,8 @@ use std::path::Path;
 use crate::attr::context::Context;
 use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
+use crate::printers::{AllPrinters, Printer};
 use crate::printers::cv_developer_latex_printer::CvDeveloperLatexPrinter;
-use crate::printers::printer::Printer;
 use crate::printers::rmarkdown::RMarkdownPrinter;
 use crate::util::file::{include_file, include_file_with_context};
 use crate::util::yaml::YamlConversions;
@@ -23,7 +23,7 @@ use super::section::SectionElement;
 #[derive(Debug)]
 pub struct BaseElement {
     header: HeaderElement,
-    sections: Vec<Box<dyn RMarkdownPrinter>>,
+    sections: Vec<Box<dyn AllPrinters>>,
 }
 
 impl BaseElement {
@@ -41,26 +41,26 @@ impl BaseElement {
 
     fn parse_section<T>(
         value: Yaml,
-        sections: &mut Vec<Box<dyn RMarkdownPrinter>>,
+        sections: &mut Vec<Box<dyn AllPrinters>>,
         ctx: &Context,
     ) -> Result<(), String>
     where
-        T: RMarkdownPrinter + SectionItem + 'static,
-        SectionElement<T>: RMarkdownPrinter,
+        T: AllPrinters + SectionItem + 'static,
+        SectionElement<T>: AllPrinters,
     {
         sections.push(Box::new(SectionElement::<T>::parse(value, &ctx)?));
         Ok(())
     }
 
-    fn parse_include_section<T: RMarkdownPrinter>(
+    fn parse_include_section<T: AllPrinters>(
         value: Yaml,
-        sections: &mut Vec<Box<dyn RMarkdownPrinter>>,
+        sections: &mut Vec<Box<dyn AllPrinters>>,
         ctx: &Context,
         root: &Path,
     ) -> Result<(), String>
     where
-        T: RMarkdownPrinter + SectionItem + 'static,
-        SectionElement<T>: RMarkdownPrinter,
+        T: AllPrinters + SectionItem + 'static,
+        SectionElement<T>: AllPrinters,
     {
         let (override_ctx, value) = include_file_with_context(root, ctx.clone(), value)?;
         sections.push(Box::new(SectionElement::<T>::parse(value, &override_ctx)?));
@@ -71,7 +71,7 @@ impl BaseElement {
         let array = array.einto_vec()?;
         let mut ctx = Context::default();
         let mut header = HeaderElement::builder();
-        let mut sections: Vec<Box<dyn RMarkdownPrinter>> = vec![];
+        let mut sections: Vec<Box<dyn AllPrinters>> = vec![];
 
         for yaml in array {
             let (key, value) = yaml.einto_single_element_hash()?;
@@ -127,12 +127,17 @@ impl RMarkdownPrinter for BaseElement {
 
 #[allow(clippy::write_literal)]
 impl CvDeveloperLatexPrinter for BaseElement {
-    fn cv_developer_latex_print(&self, f: &mut Printer) -> std::io::Result<()> {
+    fn cvdl_print(&self, f: &mut Printer) -> std::io::Result<()> {
         writeln!(f, "{}", r#"\documentclass[9pt]{developercv}"#)?;
         writeln!(f, "{}", r#"\usepackage{multicol}"#)?;
         writeln!(f, "{}", r#"\setlength{\columnsep}{0mm}"#)?;
-        writeln!(f, "{}", r#"\begin{document}"#)?;
-        self.header.cv_developer_latex_print(f)?;
+        writeln!(f, "{}\n", r#"\begin{document}"#)?;
+        self.header.cvdl_print(f)?;
+        writeln!(f)?;
+        for section in &self.sections {
+            section.cvdl_print(f)?;
+            writeln!(f)?;
+        }
         writeln!(f, "{}", r#"\end{document}"#)?;
         Ok(())
     }

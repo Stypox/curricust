@@ -1,4 +1,4 @@
-use super::printer::Printer;
+use super::Printer;
 use std::{fmt::Debug, io::Write};
 
 pub trait RMarkdownPrinter: Debug {

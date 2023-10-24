@@ -5,8 +5,8 @@ use yaml_rust::Yaml;
 use crate::{
     attr::{context::Context, text_with_attributes::TextWithAttributes},
     printers::{
-        printer::Printer,
-        rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem},
+        Printer,
+        rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem}, cv_developer_latex_printer::CvDeveloperLatexPrinter,
     },
     util::yaml::YamlConversions,
 };
@@ -75,6 +75,22 @@ impl<T: RMarkdownPrinter + RMarkdownSectionItem> RMarkdownPrinter for SectionEle
             write!(f, "{}", fields.join(", "))?;
             writeln!(f, ")")?;
             writeln!(f, "```\n")?;
+        }
+        Ok(())
+    }
+}
+
+#[allow(clippy::write_literal)]
+impl<T: CvDeveloperLatexPrinter> CvDeveloperLatexPrinter for SectionElement<T> {
+    fn cvdl_print(&self, f: &mut Printer) -> std::io::Result<()> {
+        writeln!(f, "{}{}{}", r#"\cvsect{"#, self.title, r#"}"#)?;
+        // TODO self.description
+        if let Some(items) = &self.items {
+            writeln!(f, "{}", r#"\begin{entrylist}"#)?;
+            for item in items {
+                item.cvdl_print(f)?;
+            }
+            writeln!(f, "{}", r#"\end{entrylist}"#)?;
         }
         Ok(())
     }

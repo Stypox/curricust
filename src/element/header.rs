@@ -5,7 +5,7 @@ use yaml_rust::Yaml;
 
 use crate::{
     attr::text_with_attributes::TextWithAttributes,
-    printers::{printer::Printer, rmarkdown::RMarkdownPrinter, cv_developer_latex_printer::CvDeveloperLatexPrinter},
+    printers::{Printer, rmarkdown::RMarkdownPrinter, cv_developer_latex_printer::CvDeveloperLatexPrinter},
     util::yaml::YamlConversions,
 };
 
@@ -64,7 +64,7 @@ impl RMarkdownPrinter for HeaderElement {
 
 #[allow(clippy::write_literal)]
 impl CvDeveloperLatexPrinter for HeaderElement {
-    fn cv_developer_latex_print(&self, f: &mut Printer) -> std::io::Result<()> {
+    fn cvdl_print(&self, f: &mut Printer) -> std::io::Result<()> {
         writeln!(f, "{}", r#"\begin{minipage}[t]{0.5\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
         writeln!(f, "{}{}{}", r#"    { \fontsize{16}{20} \textcolor{black}{\textbf{\MakeUppercase{"#, self.name, r#"}}}}"#)?;

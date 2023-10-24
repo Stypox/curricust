@@ -4,7 +4,7 @@ use std::{env, fs::File, path::PathBuf};
 
 use crate::{
     element::base::BaseElement,
-    printers::{cv_developer_latex_printer::CvDeveloperLatexPrinter, Printer},
+    printers::{cv_developer_latex_printer::CvDeveloperLatexPrinter, Writer},
     util::{error::ErrorToString, file::yaml_from_file},
 };
 
@@ -42,7 +42,7 @@ fn main() -> Result<(), String> {
     let outputfile = args.get(2).ok_or_else(usage)?;
     let outputfile = File::create(outputfile).err_str()?;
     base_element
-        .cvdl_print(&mut Printer::File(outputfile))
+        .cvdl_print(&mut Writer::File(outputfile))
         .err_str()?;
     Ok(())
 }

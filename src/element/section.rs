@@ -7,7 +7,7 @@ use crate::{
     printers::{
         cv_developer_latex_printer::CvDeveloperLatexPrinter,
         rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem},
-        Printer, markdown_to_latex::write_markdown,
+        Writer, markdown_to_latex::write_markdown,
     },
     util::yaml::YamlConversions,
 };
@@ -54,7 +54,7 @@ impl<T: SectionItem> SectionElement<T> {
 }
 
 impl<T: RMarkdownPrinter + RMarkdownSectionItem> RMarkdownPrinter for SectionElement<T> {
-    fn rmarkdown_print(&self, f: &mut Printer) -> std::io::Result<()> {
+    fn rmarkdown_print(&self, f: &mut Writer) -> std::io::Result<()> {
         writeln!(f, "# {}\n", self.title)?;
 
         if let Some(description) = &self.description {
@@ -83,7 +83,7 @@ impl<T: RMarkdownPrinter + RMarkdownSectionItem> RMarkdownPrinter for SectionEle
 
 #[allow(clippy::write_literal)]
 impl<T: CvDeveloperLatexPrinter> CvDeveloperLatexPrinter for SectionElement<T> {
-    fn cvdl_print(&self, f: &mut Printer) -> std::io::Result<()> {
+    fn cvdl_print(&self, f: &mut Writer) -> std::io::Result<()> {
         write!(f, r#"\cvsect{{"#)?;
         write_markdown(f, &self.title)?;
         writeln!(f, "}}")?;

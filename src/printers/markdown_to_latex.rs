@@ -1,10 +1,10 @@
 use markdown::mdast::{Heading, List, Node};
 use std::io::Write;
 
-use super::Printer;
+use super::Writer;
 
 fn write_markdown_children(
-    f: &mut Printer,
+    f: &mut Writer,
     children: Vec<Node>,
     before: &str,
     after: &str,
@@ -18,7 +18,7 @@ fn write_markdown_children(
 }
 
 fn write_markdown_value(
-    f: &mut Printer,
+    f: &mut Writer,
     value: &str,
     before: &str,
     after: &str,
@@ -26,7 +26,7 @@ fn write_markdown_value(
     write!(f, "{before}{value}{after}")
 }
 
-fn write_markdown_node(f: &mut Printer, node: Node) -> std::io::Result<()> {
+fn write_markdown_node(f: &mut Writer, node: Node) -> std::io::Result<()> {
     match node {
         Node::Root(a) => write_markdown_children(f, a.children, "", ""),
         Node::List(List {
@@ -88,7 +88,7 @@ fn write_markdown_node(f: &mut Printer, node: Node) -> std::io::Result<()> {
     Ok(())
 }
 
-pub fn write_markdown(f: &mut Printer, md: &str) -> std::io::Result<()> {
+pub fn write_markdown(f: &mut Writer, md: &str) -> std::io::Result<()> {
     // calling unwrap since it can't return an error with the default settings
     let root = markdown::to_mdast(md, &markdown::ParseOptions::default()).unwrap();
     write_markdown_node(f, root)

@@ -6,7 +6,7 @@ use yaml_rust::Yaml;
 use crate::{
     attr::text_with_attributes::TextWithAttributes,
     printers::{
-        cv_developer_latex_printer::CvDeveloperLatexPrinter, rmarkdown::RMarkdownPrinter, Printer,
+        cv_developer_latex_printer::CvDeveloperLatexPrinter, rmarkdown::RMarkdownPrinter, Writer,
     },
     util::yaml::YamlConversions,
 };
@@ -55,7 +55,7 @@ impl HeaderElement {
 }
 
 impl RMarkdownPrinter for HeaderElement {
-    fn rmarkdown_print(&self, f: &mut Printer) -> std::io::Result<()> {
+    fn rmarkdown_print(&self, f: &mut Writer) -> std::io::Result<()> {
         writeln!(f, "name: {:?}", self.name)?;
         if let Some(phone) = &self.phone {
             writeln!(f, "phone: {phone:?}")?;
@@ -66,7 +66,7 @@ impl RMarkdownPrinter for HeaderElement {
 
 #[allow(clippy::write_literal)]
 impl CvDeveloperLatexPrinter for HeaderElement {
-    fn cvdl_print(&self, f: &mut Printer) -> std::io::Result<()> {
+    fn cvdl_print(&self, f: &mut Writer) -> std::io::Result<()> {
         writeln!(f, "{}", r#"\begin{minipage}[t]{0.5\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
         writeln!(
@@ -83,7 +83,7 @@ impl CvDeveloperLatexPrinter for HeaderElement {
         writeln!(f, "{}", r#"\end{minipage}"#)?;
 
         fn icon(
-            f: &mut Printer,
+            f: &mut Writer,
             icon_name: &str,
             content: &str,
             href: &Option<String>,
@@ -99,7 +99,7 @@ impl CvDeveloperLatexPrinter for HeaderElement {
         }
 
         fn maybe_icon(
-            f: &mut Printer,
+            f: &mut Writer,
             icon_name: &str,
             content: &Option<String>,
             href: &Option<String>,

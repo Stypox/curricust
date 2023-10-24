@@ -6,7 +6,7 @@ use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
 use crate::printers::cv_developer_latex_printer::CvDeveloperLatexPrinter;
 use crate::printers::rmarkdown::RMarkdownPrinter;
-use crate::printers::{AllPrinters, Printer};
+use crate::printers::{AllPrinters, Writer};
 use crate::util::file::{include_file, include_file_with_context};
 use crate::util::yaml::YamlConversions;
 use multimap::MultiMap;
@@ -117,7 +117,7 @@ impl BaseElement {
 }
 
 impl RMarkdownPrinter for BaseElement {
-    fn rmarkdown_print(&self, f: &mut Printer) -> std::io::Result<()> {
+    fn rmarkdown_print(&self, f: &mut Writer) -> std::io::Result<()> {
         writeln!(f, "---")?;
         self.header.rmarkdown_print(f)?;
         writeln!(f, "---\n")?;
@@ -131,7 +131,7 @@ impl RMarkdownPrinter for BaseElement {
 
 #[allow(clippy::write_literal)]
 impl CvDeveloperLatexPrinter for BaseElement {
-    fn cvdl_print(&self, f: &mut Printer) -> std::io::Result<()> {
+    fn cvdl_print(&self, f: &mut Writer) -> std::io::Result<()> {
         writeln!(f, "{}", r#"\documentclass[9pt]{developercv}"#)?;
         writeln!(f, "{}", r#"\usepackage{multicol}"#)?;
         writeln!(f, "{}", r#"\setlength{\columnsep}{0mm}"#)?;

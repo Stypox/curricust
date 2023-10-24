@@ -8,26 +8,26 @@ use self::{cv_developer_latex_printer::CvDeveloperLatexPrinter, rmarkdown::RMark
 
 // keep Stdout and Stderr for easy testing
 #[allow(dead_code)]
-pub enum Printer {
+pub enum Writer {
     Stdout,
     Stderr,
     File(File),
 }
 
-impl std::io::Write for Printer {
+impl std::io::Write for Writer {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         match self {
-            Printer::Stdout => std::io::stdout().write(buf),
-            Printer::Stderr => std::io::stderr().write(buf),
-            Printer::File(f) => f.write(buf),
+            Writer::Stdout => std::io::stdout().write(buf),
+            Writer::Stderr => std::io::stderr().write(buf),
+            Writer::File(f) => f.write(buf),
         }
     }
 
     fn flush(&mut self) -> std::io::Result<()> {
         match self {
-            Printer::Stdout => std::io::stdout().flush(),
-            Printer::Stderr => std::io::stderr().flush(),
-            Printer::File(f) => f.flush(),
+            Writer::Stdout => std::io::stdout().flush(),
+            Writer::Stderr => std::io::stderr().flush(),
+            Writer::File(f) => f.flush(),
         }
     }
 }

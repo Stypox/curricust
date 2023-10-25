@@ -1,7 +1,15 @@
 #!/bin/sh
 
+if [ "$1" = "--dark" ]; then
+    DARK="true";
+    shift;
+fi
+
 function buildPdf() {
     cargo run -- "$@"
+    if [ "$DARK" = "true" ]; then
+        sed -i -e "s/{developercv}/{developercv}\\\\pagecolor[rgb]{0.4,0.4,0.4}/" "$2"
+    fi
 
     pushd "$(dirname "$2")" >/dev/null
     pdflatex --interaction=nonstopmode "$(basename "$2")" \

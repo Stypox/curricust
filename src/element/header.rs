@@ -40,8 +40,14 @@ impl HeaderElement {
             let (key, value) = TextWithAttributes::new_yaml(key, value)?;
             match key.as_str() {
                 "name" => header.add_name(value),
+                "career" => header.add_career(value),
+                "email" => header.add_email(value),
                 "phone" => header.add_phone(value),
-                _ => continue,
+                "location" => header.add_location(value),
+                "website" => header.add_website(value),
+                "github" => header.add_github(value),
+                "linkedin" => header.add_linkedin(value),
+                _ => return Err(format!("Unknown key in header: {key}")),
             };
         }
         Ok(())

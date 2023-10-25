@@ -6,7 +6,7 @@ use yaml_rust::Yaml;
 use crate::{
     attr::text_with_attributes::TextWithAttributes,
     printers::{
-        cv_developer_latex_printer::CvDeveloperLatexPrinter, rmarkdown::RMarkdownPrinter, Writer,
+        cv_developer_latex_printer::CvDeveloperLatexPrinter, rmarkdown::RMarkdownPrinter, Writer, markdown_to_latex::write_markdown,
     },
     util::yaml::YamlConversions,
 };
@@ -74,36 +74,40 @@ impl CvDeveloperLatexPrinter for HeaderElement {
         ) -> std::io::Result<()> {
             if let Some(content) = content {
                 if !content.is_empty() {
-                    return write!(f, "{}{icon_name}{}{content}{}", r#"    \icon{"#, r#"}{11}{"#, r#"}\\"#)
+                    write!(f, "{}{icon_name}{}", r#"    \icon{"#, r#"}{11}{"#)?;
+                    write_markdown(f, content)?;
+                    writeln!(f, "{}", r#"}\\"#)?;
                 }
             }
             Ok(())
         }
 
-        writeln!(f, "{}", r#"\begin{minipage}[t]{0.5\textwidth}"#)?;
+        writeln!(f, "{}", r#"\begin{minipage}[t]{0.4\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
-        writeln!(
+        write!(
             f,
-            "{}{}{}",
-            r#"    { \fontsize{16}{20} \textcolor{black}{\textbf{\MakeUppercase{"#,
-            self.name,
-            r#"}}}}"#
+            "{}",
+            r#"    { \fontsize{16}{20} \textcolor{black}{\textbf{\MakeUppercase{"#
         )?;
+        write_markdown(f, &self.name)?;
+        writeln!(f, "{}", r#"}}}}"#)?;
+
         if let Some(career) = &self.career {
-            writeln!(f, "{}", r#"    \vspace{6pt}"#)?;
-            writeln!(f, "{}{career}{}", r#"    {\Large "#, r#"}"#)?;
+            write!(f, "{}\n{}", r#"    \vspace{6pt}\\"#, r#"    {\Large "#)?;
+            write_markdown(f, career)?;
+            writeln!(f, "{}", r#"}"#)?;
         };
         writeln!(f, "{}", r#"\end{minipage}"#)?;
 
         writeln!(f, "{}", r#"\hfill"#)?;
-        writeln!(f, "{}", r#"\begin{minipage}[t]{0.2\textwidth}"#)?;
+        writeln!(f, "{}", r#"\begin{minipage}[t]{0.3\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
         maybe_icon(f, "Envelope", &self.email)?;
         maybe_icon(f, "Phone", &self.phone)?;
         maybe_icon(f, "MapMarker", &self.location)?;
         writeln!(f, "{}", r#"\end{minipage}"#)?;
 
-        writeln!(f, "{}", r#"\begin{minipage}[t]{0.27\textwidth}"#)?;
+        writeln!(f, "{}", r#"\begin{minipage}[t]{0.2\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
         maybe_icon(f, "Globe", &self.website)?;
         maybe_icon(f, "Github", &self.github)?;

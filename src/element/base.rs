@@ -107,7 +107,7 @@ impl BaseElement {
                 "include-section-project" => {
                     Self::parse_include_section::<ProjectItem>(value, &mut sections, &ctx, root)?
                 }
-                _ => {} //return Err(format!("Base element can't have children of type {element_type:?}")),
+                _ => return Err(format!("Base element can't have children of type {key:?}")),
             }
         }
 

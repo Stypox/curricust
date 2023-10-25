@@ -13,7 +13,8 @@ function buildPdf() {
 buildPdf "$@"
 
 inotifywait --recursive --monitor \
---event modify,move,create,delete "$(dirname "$1")" \
-| while read; do
-    buildPdf "$@"
-done
+    --event modify,move,create,delete \
+    "$(dirname "$1")" "./src/" "./resume_cv_proc_macro" \
+    | while read whatchanged; do
+        buildPdf "$@"
+    done

@@ -232,7 +232,7 @@ pub fn derive_cv_section_item(input: proc_macro::TokenStream) -> proc_macro::Tok
 
                     match key.as_str() {
                         #(#recurse_fields)*
-                        _ => return std::result::Result::Err(std::format!("Unknown key in section item {key}")),
+                        _ => return std::result::Result::Err(std::format!("Unknown key in section item: {key}")),
                     };
                 }
 

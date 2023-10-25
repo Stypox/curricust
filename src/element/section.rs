@@ -48,7 +48,7 @@ impl<T: SectionItem> SectionElement<T> {
             match key.as_str() {
                 "title" => section.add_title(value),
                 "description" => section.add_description(value),
-                _ => return Err(format!("Unknown section attribute {key}")),
+                _ => return Err(format!("Unknown section attribute: {key}")),
             };
         }
 

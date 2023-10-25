@@ -28,15 +28,9 @@ pub struct HeaderElement {
     #[cv_element_builder(text_with_attributes)]
     website: Option<String>,
     #[cv_element_builder(text_with_attributes)]
-    website_href: Option<String>,
-    #[cv_element_builder(text_with_attributes)]
     github: Option<String>,
     #[cv_element_builder(text_with_attributes)]
-    github_href: Option<String>,
-    #[cv_element_builder(text_with_attributes)]
     linkedin: Option<String>,
-    #[cv_element_builder(text_with_attributes)]
-    linkedin_href: Option<String>,
 }
 
 impl HeaderElement {
@@ -67,6 +61,18 @@ impl RMarkdownPrinter for HeaderElement {
 #[allow(clippy::write_literal)]
 impl CvDeveloperLatexPrinter for HeaderElement {
     fn cvdl_print(&self, f: &mut Writer) -> std::io::Result<()> {
+        fn maybe_icon(
+            f: &mut Writer,
+            icon_name: &str,
+            content: &Option<String>,
+        ) -> std::io::Result<()> {
+            if let Some(content) = content {
+                write!(f, "{}{icon_name}{}{content}{}", r#"    \icon{"#, r#"}{11}{"#, r#"}\\"#)
+            } else {
+                Ok(())
+            }
+        }
+
         writeln!(f, "{}", r#"\begin{minipage}[t]{0.5\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
         writeln!(
@@ -82,50 +88,19 @@ impl CvDeveloperLatexPrinter for HeaderElement {
         };
         writeln!(f, "{}", r#"\end{minipage}"#)?;
 
-        fn icon(
-            f: &mut Writer,
-            icon_name: &str,
-            content: &str,
-            href: &Option<String>,
-        ) -> std::io::Result<()> {
-            write!(f, "{}{icon_name}{}", r#"    \icon{"#, r#"}{11}{"#)?;
-            if let Some(href) = href {
-                write!(f, "{}{href}{}{content}{}", r#"\href{"#, r#"}{"#, r#"}"#)?;
-            } else {
-                write!(f, "{content}")?;
-            }
-            writeln!(f, "{}", r#"}\\"#)?;
-            Ok(())
-        }
-
-        fn maybe_icon(
-            f: &mut Writer,
-            icon_name: &str,
-            content: &Option<String>,
-            href: &Option<String>,
-        ) -> std::io::Result<()> {
-            if let Some(content) = content {
-                icon(f, icon_name, content, href)
-            } else {
-                Ok(())
-            }
-        }
-
         writeln!(f, "{}", r#"\hfill"#)?;
         writeln!(f, "{}", r#"\begin{minipage}[t]{0.2\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
-        if let Some(email) = &self.email {
-            icon(f, "Envelope", email, &Some("mailto:".to_string() + email))?;
-        }
-        maybe_icon(f, "Phone", &self.phone, &None)?;
-        maybe_icon(f, "MapMarker", &self.location, &None)?;
+        maybe_icon(f, "Envelope", &self.email)?;
+        maybe_icon(f, "Phone", &self.phone)?;
+        maybe_icon(f, "MapMarker", &self.location)?;
         writeln!(f, "{}", r#"\end{minipage}"#)?;
 
         writeln!(f, "{}", r#"\begin{minipage}[t]{0.27\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
-        maybe_icon(f, "Globe", &self.website, &self.website_href)?;
-        maybe_icon(f, "Github", &self.github, &self.github_href)?;
-        maybe_icon(f, "LinkedinSquare", &self.linkedin, &self.linkedin_href)?;
+        maybe_icon(f, "Globe", &self.website)?;
+        maybe_icon(f, "Github", &self.github)?;
+        maybe_icon(f, "LinkedinSquare", &self.linkedin)?;
         writeln!(f, "{}", r#"\end{minipage}"#)?;
         Ok(())
     }

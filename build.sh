@@ -6,7 +6,7 @@ if [ "$1" = "--dark" ]; then
 fi
 
 function buildPdf() {
-    cargo run -- "$@"
+    cargo run -- "$@" || return
     if [ "$DARK" = "true" ]; then
         sed -i -e "s/{developercv}/{developercv}\\\\pagecolor[rgb]{0.4,0.4,0.4}/" "$2"
     fi

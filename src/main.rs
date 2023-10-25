@@ -35,9 +35,9 @@ fn main() -> Result<(), String> {
         .ok_or("Input file does not have a parent")?;
 
     let yaml = yaml_from_file(&inputfile)?;
-    println!("{yaml:?}\n");
+    // println!("Yaml: {yaml:?}\n");
     let base_element = BaseElement::new(root, yaml)?;
-    println!("Base element: {base_element:?}\n");
+    // println!("Base element: {base_element:?}\n");
 
     let outputfile = args.get(2).ok_or_else(usage)?;
     let outputfile = File::create(outputfile).err_str()?;

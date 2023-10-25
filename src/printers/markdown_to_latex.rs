@@ -1,7 +1,20 @@
 use markdown::mdast::{Heading, List, Node};
+use regex::{Regex, Captures};
 use std::io::Write;
+use lazy_static::lazy_static;
 
 use super::Writer;
+
+fn escape_latex(value: &str) -> std::borrow::Cow<'_, str> {
+    lazy_static! {
+        static ref RESERVED_CHARS_REGEX: Regex = Regex::new(r"[\\\{\}\_\^\#\&\$\%\~]").unwrap();
+    }
+
+    RESERVED_CHARS_REGEX
+        .replace_all(value, |caps: &Captures| {
+            format!("\\{}", caps.get(0).unwrap().as_str())
+        })
+}
 
 fn write_markdown_children(
     f: &mut Writer,
@@ -23,6 +36,7 @@ fn write_markdown_value(
     before: &str,
     after: &str,
 ) -> std::io::Result<()> {
+    let value = escape_latex(value);
     write!(f, "{before}{value}{after}")
 }
 
@@ -41,7 +55,7 @@ fn write_markdown_node(f: &mut Writer, node: Node) -> std::io::Result<()> {
         }) => write_markdown_children(f, children, "{\\vspace{-10pt}\\begin{enumerate}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=-1pt]\n", "\\end{enumerate}}\n"),
         Node::ListItem(a) => write_markdown_children(f, a.children, "\\item ", "\n"),
 
-        Node::Text(a) => write!(f, "{}", a.value),
+        Node::Text(a) => write_markdown_value(f, &a.value, "", ""),
         Node::Break(_) => writeln!(f, "\\\\"),
         Node::ThematicBreak(_) => writeln!(f, "\\hrule"),
         Node::InlineCode(a) => write_markdown_value(f, &a.value, "\\texttt{", "}"),
@@ -50,7 +64,7 @@ fn write_markdown_node(f: &mut Writer, node: Node) -> std::io::Result<()> {
         Node::Emphasis(a) => write_markdown_children(f, a.children, "\\emph{", "}"),
         Node::Strong(a) => write_markdown_children(f, a.children, "\\textbf{", "}"),
         Node::Link(a) => {
-            write_markdown_children(f, a.children, &format!("\\href{{{}}}{{", a.url), "}")
+            write_markdown_children(f, a.children, &format!("\\href{{{}}}{{", escape_latex(&a.url)), "}")
         }
 
         Node::Heading(Heading {

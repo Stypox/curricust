@@ -1,4 +1,5 @@
 use resume_cv_proc_macro::{CvElementBuilder, CvRMarkdownItem, CvSectionItem};
+use std::io::Write;
 
 use crate::printers::{cv_developer_latex_printer::CvDeveloperLatexSectionItem, Writer, markdown_to_latex::write_markdown};
 
@@ -7,7 +8,13 @@ pub struct JobItem {
     #[cv_element_builder(text_with_attributes)]
     pub dates: String,
     #[cv_element_builder(text_with_attributes)]
-    pub institution: String,
+    pub title: String,
+    #[cv_element_builder(text_with_attributes)]
+    pub company: String,
+    #[cv_element_builder(text_with_attributes)]
+    pub where_: String,
+    #[cv_element_builder(text_with_attributes)]
+    pub details: Option<String>,
 }
 
 impl CvDeveloperLatexSectionItem for JobItem {
@@ -15,15 +22,22 @@ impl CvDeveloperLatexSectionItem for JobItem {
         write_markdown(f, &self.dates)
     }
 
-    fn cvdl_print_heading(&self, _f: &mut Writer) -> std::io::Result<()> {
-        Ok(())
+    fn cvdl_print_heading(&self, f: &mut Writer) -> std::io::Result<()> {
+        write_markdown(f, &self.title)
     }
 
     fn cvdl_print_qualifier(&self, f: &mut Writer) -> std::io::Result<()> {
-        write_markdown(f, &self.institution)
+        write_markdown(f, &self.company)?;
+        write!(f, "\\textnormal{{ • ")?;
+        write_markdown(f, &self.where_)?;
+        write!(f, "}}")?;
+        Ok(())
     }
 
-    fn cvdl_print_description(&self, _f: &mut Writer) -> std::io::Result<()> {
+    fn cvdl_print_description(&self, f: &mut Writer) -> std::io::Result<()> {
+        if let Some(details) = &self.details {
+            write_markdown(f, details)?;
+        }
         Ok(())
     }
 }

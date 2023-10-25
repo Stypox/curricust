@@ -67,10 +67,11 @@ impl CvDeveloperLatexPrinter for HeaderElement {
             content: &Option<String>,
         ) -> std::io::Result<()> {
             if let Some(content) = content {
-                write!(f, "{}{icon_name}{}{content}{}", r#"    \icon{"#, r#"}{11}{"#, r#"}\\"#)
-            } else {
-                Ok(())
+                if !content.is_empty() {
+                    return write!(f, "{}{icon_name}{}{content}{}", r#"    \icon{"#, r#"}{11}{"#, r#"}\\"#)
+                }
             }
+            Ok(())
         }
 
         writeln!(f, "{}", r#"\begin{minipage}[t]{0.5\textwidth}"#)?;

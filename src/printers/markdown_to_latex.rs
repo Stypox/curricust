@@ -60,6 +60,14 @@ fn write_markdown_node(f: &mut Writer, node: Node) -> std::io::Result<()> {
         Node::ThematicBreak(_) => writeln!(f, "\\hrule"),
         Node::InlineCode(a) => write_markdown_value(f, &a.value, "\\texttt{", "}"),
         Node::Paragraph(a) => write_markdown_children(f, a.children, "", ""),
+        Node::Html(a) => if a.value == "<br>" || a.value == "<br/>" || a.value == "<br />" {
+            writeln!(f, "\\\\")
+        } else {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!("Unimplemented html element in markdown: {:?}", a),
+            ))
+        }
 
         Node::Emphasis(a) => write_markdown_children(f, a.children, "\\emph{", "}"),
         Node::Strong(a) => write_markdown_children(f, a.children, "\\textbf{", "}"),

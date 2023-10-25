@@ -14,12 +14,21 @@ pub struct JobItem {
     #[cv_element_builder(text_with_attributes)]
     pub where_: String,
     #[cv_element_builder(text_with_attributes)]
+    pub topics: Option<String>,
+    #[cv_element_builder(text_with_attributes)]
     pub details: Option<String>,
 }
 
+#[allow(clippy::write_literal)]
 impl CvDeveloperLatexSectionItem for JobItem {
     fn cvdl_print_left(&self, f: &mut Writer) -> std::io::Result<()> {
-        write_markdown(f, &self.dates)
+        write_markdown(f, &self.dates)?;
+        if let Some(topics) = &self.topics {
+            write!(f, "{}", r#" \vspace{3pt} \\\footnotesize{"#)?;
+            write_markdown(f, topics)?;
+            write!(f, "{}", r"}")?;
+        }
+        Ok(())
     }
 
     fn cvdl_print_heading(&self, f: &mut Writer) -> std::io::Result<()> {

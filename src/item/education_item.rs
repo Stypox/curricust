@@ -1,4 +1,5 @@
 use resume_cv_proc_macro::{CvElementBuilder, CvRMarkdownItem, CvSectionItem};
+use std::io::Write;
 
 use crate::printers::{cv_developer_latex_printer::CvDeveloperLatexSectionItem, Writer, markdown_to_latex::write_markdown};
 
@@ -16,9 +17,16 @@ pub struct EducationItem {
     pub details: Option<String>,
 }
 
+#[allow(clippy::write_literal)]
 impl CvDeveloperLatexSectionItem for EducationItem {
     fn cvdl_print_left(&self, f: &mut Writer) -> std::io::Result<()> {
-        write_markdown(f, &self.dates)
+        write_markdown(f, &self.dates)?;
+        if let Some(grade) = &self.grade {
+            write!(f, "{}", r#" \vspace{3pt} \\\footnotesize{"#)?;
+            write_markdown(f, grade)?;
+            write!(f, "{}", r"}")?;
+        }
+        Ok(())
     }
 
     fn cvdl_print_heading(&self, f: &mut Writer) -> std::io::Result<()> {

@@ -73,7 +73,7 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
     let recurse_build = parse_fields(&fields.named)
         .map(|f| {
             let MyField { field_name, ty: _, is_optional, has_text_with_attributes_attr, span } = f;
-            let field_name_error = format!("Missing {field_name}");
+            let field_name_error = format!("Missing {}", field_name.to_string().trim_end_matches("_"));
 
             match (has_text_with_attributes_attr, is_optional) {
                 (false, false) => {
@@ -211,6 +211,9 @@ pub fn derive_cv_section_item(input: proc_macro::TokenStream) -> proc_macro::Tok
             let MyField { field_name, span, .. } = f;
             let fun_name = Ident::new(("add_".to_string() + &field_name.to_string()).as_str(), field_name.span());
             let field_name = field_name.to_string();
+
+            // trailing _ are only used for reserved Rust keywords
+            let field_name = field_name.trim_end_matches("_");
 
             quote_spanned! {span=>
                 #field_name => builder.#fun_name(value),

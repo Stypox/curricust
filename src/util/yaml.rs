@@ -8,6 +8,7 @@ pub trait YamlConversions {
     fn einto_vec(self) -> Result<Vec<Yaml>, String>;
     fn einto_single_element_hash(self) -> Result<(String, Yaml), String>;
     fn einto_nullable_int(self) -> Result<Option<i64>, String>;
+    fn einto_bool(self) -> Result<bool, String>;
 }
 
 impl YamlConversions for Yaml {
@@ -66,5 +67,9 @@ impl YamlConversions for Yaml {
         } else {
             Err("Missing".to_string())
         }
+    }
+
+    fn einto_bool(self) -> Result<bool, String> {
+        self.into_bool().ok_or("Expected bool".to_string())
     }
 }

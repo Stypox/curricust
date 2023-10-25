@@ -23,3 +23,8 @@ items:
     details: |
       - been there
       - done that
+
+  - id: this-is-invisible
+    dates: 1234-5678
+    degree: refgs
+    institution: abcd

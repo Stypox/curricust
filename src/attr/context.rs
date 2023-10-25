@@ -15,15 +15,22 @@ struct AttributeData<T>
 where
     T: Clone,
 {
-    value: Option<T>,
-    overrides: HashMap<String, Option<T>>,
+    value: T,
+    overrides: HashMap<String, T>,
 }
 
-#[derive(Default, Clone)]
+#[derive(Clone)]
 pub struct Context {
-    attrs: [AttributeData<String>; std::mem::variant_count::<AttributeType>()],
-    order: AttributeData<i64>,
+    attrs: [AttributeData<Option<String>>; std::mem::variant_count::<AttributeType>()],
+    order: AttributeData<Option<i64>>,
+    visibility: AttributeData<bool>,
     pub dictionary: MultiMap<String, TextWithAttributes>,
+}
+
+impl Default for Context {
+    fn default() -> Self {
+        Self { attrs: Default::default(), order: Default::default(), visibility: AttributeData { value: true, overrides: Default::default() }, dictionary: Default::default() }
+    }
 }
 
 impl Context {
@@ -51,6 +58,15 @@ impl Context {
         self.order.value.unwrap_or(i64::MAX)
     }
 
+    pub fn get_visibility(&self, id: &Option<String>) -> bool {
+        if let Some(id) = id {
+            if let Some(visibility) = self.visibility.overrides.get(id) {
+                return *visibility;
+            }
+        }
+        self.visibility.value
+    }
+
     pub fn set_attr(&mut self, attr_type: AttributeType, value: Option<String>) {
         let data = &mut self.attrs[attr_type as usize];
         data.value = value;
@@ -67,5 +83,13 @@ impl Context {
 
     pub fn override_order(&mut self, id: String, pos: Option<i64>) {
         self.order.overrides.insert(id, pos);
+    }
+
+    pub fn set_visibility(&mut self, visible: bool) {
+        self.visibility.value = visible;
+    }
+
+    pub fn override_visibility(&mut self, id: String, visible: bool) {
+        self.visibility.overrides.insert(id, visible);
     }
 }

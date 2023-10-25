@@ -34,7 +34,10 @@ impl<T: SectionItem> SectionElement<T> {
                 let value = value.einto_vec()?;
                 let mut items = vec![];
                 for item in value {
-                    items.push(T::parse(item.einto_hash()?, ctx)?);
+                    if let Some(item) = T::parse(item.einto_hash()?, ctx)? {
+                        // None is returned if the item is hidden
+                        items.push(item);
+                    }
                 }
                 items.sort_by(|a, b| a.0.cmp(&b.0));
                 section.items(items.into_iter().map(|item| item.1).collect());

@@ -18,6 +18,8 @@
     order:
       _: 2
       high-school: 1
+    visibility:
+      this-is-invisible: false
 
 - include-section-award:
     file: sections/award.yml

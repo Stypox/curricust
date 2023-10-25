@@ -219,7 +219,7 @@ pub fn derive_cv_section_item(input: proc_macro::TokenStream) -> proc_macro::Tok
 
     quote! {
         impl #impl_generics crate::item::SectionItem for #name #ty_generics #where_clause {
-            fn parse(hash: yaml_rust::yaml::Hash, ctx: &crate::attr::context::Context) -> std::result::Result<(i64, Self), std::string::String> {
+            fn parse(hash: yaml_rust::yaml::Hash, ctx: &crate::attr::context::Context) -> std::result::Result<std::option::Option<(i64, Self)>, std::string::String> {
                 let mut builder = #name::builder();
 
                 for (key, value) in hash {
@@ -236,7 +236,11 @@ pub fn derive_cv_section_item(input: proc_macro::TokenStream) -> proc_macro::Tok
                     };
                 }
 
-                std::result::Result::Ok((ctx.get_order(&builder.id), builder.build(ctx)?))
+                if !ctx.get_visibility(&builder.id) {
+                    std::result::Result::Ok(None)
+                } else {
+                    std::result::Result::Ok(std::option::Option::Some((ctx.get_order(&builder.id), builder.build(ctx)?)))
+                }
             }
         }
     }.into()

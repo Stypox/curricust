@@ -22,7 +22,7 @@ buildPdf "$@"
 
 inotifywait --recursive --monitor \
     --event modify,move,create,delete \
-    "$(dirname "$1")" "./src/" "./resume_cv_proc_macro" \
+    "$(dirname "$1")" "./src/" "./resume_cv_proc_macro" "$(dirname "$2")/developercv.cls" \
     | while read whatchanged; do
         buildPdf "$@"
     done

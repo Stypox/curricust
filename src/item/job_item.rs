@@ -19,25 +19,27 @@ pub struct JobItem {
     pub details: Option<String>,
 }
 
-#[allow(clippy::write_literal)]
 impl CvDeveloperLatexSectionItem for JobItem {
     fn cvdl_print_left(&self, f: &mut Writer) -> std::io::Result<()> {
         write_markdown(f, &self.dates)?;
         if let Some(topics) = &self.topics {
-            write!(f, "{}", " \\hfill\\vspace{3pt}\\linebreak \\footnotesize{")?;
+            write!(f, r" \vspace{{3pt}}\linebreak \footnotesize{{")?;
             write_markdown(f, topics)?;
-            write!(f, "{}", r"}")?;
+            write!(f, r"}}")?;
         }
         Ok(())
     }
 
     fn cvdl_print_heading(&self, f: &mut Writer) -> std::io::Result<()> {
-        write_markdown(f, &self.title)
+        write_markdown(f, &self.title)?;
+        write!(f, r"\textnormal{{ • ")?;
+        write_markdown(f, &self.company)?;
+        write!(f, "}}")?;
+        Ok(())
     }
 
     fn cvdl_print_qualifier(&self, f: &mut Writer) -> std::io::Result<()> {
-        write_markdown(f, &self.company)?;
-        write!(f, "\\textnormal{{ • ")?;
+        write!(f, r"\textnormal{{")?;
         write_markdown(f, &self.where_)?;
         write!(f, "}}")?;
         Ok(())

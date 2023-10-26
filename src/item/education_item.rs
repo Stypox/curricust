@@ -17,14 +17,13 @@ pub struct EducationItem {
     pub details: Option<String>,
 }
 
-#[allow(clippy::write_literal)]
 impl CvDeveloperLatexSectionItem for EducationItem {
     fn cvdl_print_left(&self, f: &mut Writer) -> std::io::Result<()> {
         write_markdown(f, &self.dates)?;
         if let Some(grade) = &self.grade {
-            write!(f, "{}", " \\hfill\\vspace{3pt}\\linebreak \\footnotesize{")?;
+            write!(f, r" \vspace{{3pt}}\linebreak \footnotesize{{")?;
             write_markdown(f, grade)?;
-            write!(f, "{}", r"}")?;
+            write!(f, r"}}")?;
         }
         Ok(())
     }

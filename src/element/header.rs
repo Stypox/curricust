@@ -87,10 +87,10 @@ impl CvDeveloperLatexPrinter for HeaderElement {
         write!(
             f,
             "{}",
-            r#"    { \fontsize{16}{20} \textcolor{black}{\textbf{\MakeUppercase{"#
+            r#"    {\fontsize{16}{20}\textbf{\MakeUppercase{"#
         )?;
         write_markdown(f, &self.name)?;
-        writeln!(f, "{}", r#"}}}}"#)?;
+        writeln!(f, "{}", r#"}}}"#)?;
 
         if let Some(career) = &self.career {
             write!(f, "{}\n{}", r#"    \vspace{6pt}\\"#, r#"    {\Large "#)?;

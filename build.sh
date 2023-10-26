@@ -8,7 +8,7 @@ fi
 function buildPdf() {
     cargo run -- "$@" || return
     if [ "$DARK" = "true" ]; then
-        sed -i -e "s/{developercv}/{developercv}\\\\pagecolor[rgb]{0.4,0.4,0.4}/" "$2"
+        sed -i -e "s/{developercv}/{developercv}\\\\pagecolor[rgb]{0,0,0}\\\\color[rgb]{1,1,1}/" "$2"
     fi
 
     pushd "$(dirname "$2")" >/dev/null

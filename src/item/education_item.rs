@@ -22,7 +22,7 @@ impl CvDeveloperLatexSectionItem for EducationItem {
     fn cvdl_print_left(&self, f: &mut Writer) -> std::io::Result<()> {
         write_markdown(f, &self.dates)?;
         if let Some(grade) = &self.grade {
-            write!(f, "{}", r#" \vspace{3pt} \\\footnotesize{"#)?;
+            write!(f, "{}", " \\hfill\\vspace{3pt}\\linebreak \\footnotesize{")?;
             write_markdown(f, grade)?;
             write!(f, "{}", r"}")?;
         }

@@ -24,7 +24,7 @@ impl CvDeveloperLatexSectionItem for JobItem {
     fn cvdl_print_left(&self, f: &mut Writer) -> std::io::Result<()> {
         write_markdown(f, &self.dates)?;
         if let Some(topics) = &self.topics {
-            write!(f, "{}", r#" \vspace{3pt} \\\footnotesize{"#)?;
+            write!(f, "{}", " \\hfill\\vspace{3pt}\\linebreak \\footnotesize{")?;
             write_markdown(f, topics)?;
             write!(f, "{}", r"}")?;
         }

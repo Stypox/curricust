@@ -47,12 +47,12 @@ fn write_markdown_node(f: &mut Writer, node: Node) -> std::io::Result<()> {
             children,
             ordered: false,
             ..
-        }) => write_markdown_children(f, children, "{\\vspace{-10pt}\\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=0pt]\n", "\\end{itemize}}\n"),
+        }) => write_markdown_children(f, children, "{\\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=0pt]\n", "\\end{itemize}}\n"),
         Node::List(List {
             children,
             ordered: true,
             ..
-        }) => write_markdown_children(f, children, "{\\vspace{-10pt}\\begin{enumerate}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=0pt]\n", "\\end{enumerate}}\n"),
+        }) => write_markdown_children(f, children, "{\\begin{enumerate}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=0pt]\n", "\\end{enumerate}}\n"),
         Node::ListItem(a) => write_markdown_children(f, a.children, "\\item ", "\n"),
 
         Node::Text(a) => write_markdown_value(f, &a.value, "", ""),

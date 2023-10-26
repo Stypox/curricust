@@ -82,7 +82,7 @@ impl CvDeveloperLatexPrinter for HeaderElement {
             Ok(())
         }
 
-        writeln!(f, "{}", r#"\begin{minipage}[t]{0.4\textwidth}"#)?;
+        writeln!(f, "{}", r#"\begin{minipage}[t]{0.3\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
         write!(
             f,
@@ -100,14 +100,14 @@ impl CvDeveloperLatexPrinter for HeaderElement {
         writeln!(f, "{}", r#"\end{minipage}"#)?;
 
         writeln!(f, "{}", r#"\hfill"#)?;
-        writeln!(f, "{}", r#"\begin{minipage}[t]{0.3\textwidth}"#)?;
+        writeln!(f, "{}", r#"\begin{minipage}[t]{0.35\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
         maybe_icon(f, "Envelope", &self.email)?;
         maybe_icon(f, "Phone", &self.phone)?;
         maybe_icon(f, "MapMarker", &self.location)?;
         writeln!(f, "{}", r#"\end{minipage}"#)?;
 
-        writeln!(f, "{}", r#"\begin{minipage}[t]{0.2\textwidth}"#)?;
+        writeln!(f, "{}", r#"\begin{minipage}[t]{0.25\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
         maybe_icon(f, "Globe", &self.website)?;
         maybe_icon(f, "Github", &self.github)?;

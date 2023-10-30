@@ -1,9 +1,9 @@
-pub mod cv_developer_latex_printer;
+pub mod latex_printer;
 pub mod markdown_to_latex;
 
 use std::{fs::File, fmt::Debug};
 
-use self::cv_developer_latex_printer::CvDeveloperLatexPrinter;
+use self::latex_printer::LatexPrinter;
 
 // keep Stdout and Stderr for easy testing
 #[allow(dead_code)]
@@ -31,6 +31,6 @@ impl std::io::Write for Writer {
     }
 }
 
-pub trait AllPrinters: CvDeveloperLatexPrinter + Debug {}
+pub trait AllPrinters: LatexPrinter + Debug {}
 
-impl<T: CvDeveloperLatexPrinter + Debug> AllPrinters for T {}
+impl<T: LatexPrinter + Debug> AllPrinters for T {}

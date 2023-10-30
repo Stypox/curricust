@@ -4,7 +4,7 @@ use std::{env, fs::File, path::PathBuf};
 
 use crate::{
     element::base::BaseElement,
-    printers::{cv_developer_latex_printer::CvDeveloperLatexPrinter, Writer},
+    printers::{latex_printer::LatexPrinter, Writer},
     util::{error::ErrorToString, file::yaml_from_file},
 };
 

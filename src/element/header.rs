@@ -6,7 +6,7 @@ use yaml_rust::Yaml;
 use crate::{
     attr::text_with_attributes::TextWithAttributes,
     printers::{
-        cv_developer_latex_printer::CvDeveloperLatexPrinter, Writer, markdown_to_latex::write_markdown,
+        latex_printer::LatexPrinter, Writer, markdown_to_latex::write_markdown,
     },
     util::yaml::YamlConversions,
 };
@@ -55,7 +55,7 @@ impl HeaderElement {
 }
 
 #[allow(clippy::write_literal)]
-impl CvDeveloperLatexPrinter for HeaderElement {
+impl LatexPrinter for HeaderElement {
     fn cvdl_print(&self, f: &mut Writer) -> std::io::Result<()> {
         fn maybe_icon(
             f: &mut Writer,

@@ -1,7 +1,7 @@
 use resume_cv_proc_macro::{CvElementBuilder, CvSectionItem};
 use std::io::Write;
 
-use crate::printers::{cv_developer_latex_printer::CvDeveloperLatexSectionItem, Writer, markdown_to_latex::write_markdown};
+use crate::printers::{latex_printer::LatexSectionItem, Writer, markdown_to_latex::write_markdown};
 
 #[derive(Debug, CvElementBuilder, CvSectionItem)]
 pub struct ProjectItem {
@@ -17,7 +17,7 @@ pub struct ProjectItem {
     pub details: Option<String>,
 }
 
-impl CvDeveloperLatexSectionItem for ProjectItem {
+impl LatexSectionItem for ProjectItem {
     fn cvdl_print_left(&self, f: &mut Writer) -> std::io::Result<()> {
         if let Some(dates) = &self.dates {
             write_markdown(f, dates)?;

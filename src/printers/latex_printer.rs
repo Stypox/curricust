@@ -3,18 +3,18 @@
 use super::Writer;
 use std::io::Write;
 
-pub trait CvDeveloperLatexPrinter {
+pub trait LatexPrinter {
     fn cvdl_print(&self, f: &mut Writer) -> std::io::Result<()>;
 }
 
-pub trait CvDeveloperLatexSectionItem {
+pub trait LatexSectionItem {
     fn cvdl_print_left(&self, f: &mut Writer) -> std::io::Result<()>;
     fn cvdl_print_heading(&self, f: &mut Writer) -> std::io::Result<()>;
     fn cvdl_print_qualifier(&self, f: &mut Writer) -> std::io::Result<()>;
     fn cvdl_print_description(&self, f: &mut Writer) -> std::io::Result<()>;
 }
 
-impl<T: CvDeveloperLatexSectionItem> CvDeveloperLatexPrinter for T {
+impl<T: LatexSectionItem> LatexPrinter for T {
     fn cvdl_print(&self, f: &mut Writer) -> std::io::Result<()> {
         write!(f, "\\entry\n    {{")?;
         self.cvdl_print_left(f)?;

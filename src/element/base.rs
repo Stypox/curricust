@@ -4,7 +4,7 @@ use std::path::Path;
 use crate::attr::context::Context;
 use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
-use crate::printers::cv_developer_latex_printer::CvDeveloperLatexPrinter;
+use crate::printers::latex_printer::LatexPrinter;
 use crate::printers::{AllPrinters, Writer};
 use crate::util::file::{include_file, include_file_with_context};
 use crate::util::yaml::YamlConversions;
@@ -116,7 +116,7 @@ impl BaseElement {
 }
 
 #[allow(clippy::write_literal)]
-impl CvDeveloperLatexPrinter for BaseElement {
+impl LatexPrinter for BaseElement {
     fn cvdl_print(&self, f: &mut Writer) -> std::io::Result<()> {
         writeln!(f, "{}", r#"\documentclass[11pt]{developercv}"#)?;
         writeln!(f, "{}", r#"\usepackage{multicol}"#)?;

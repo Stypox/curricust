@@ -5,7 +5,7 @@ use yaml_rust::Yaml;
 use crate::{
     attr::{context::Context, text_with_attributes::TextWithAttributes},
     printers::{
-        cv_developer_latex_printer::CvDeveloperLatexPrinter,
+        latex_printer::LatexPrinter,
         Writer, markdown_to_latex::write_markdown,
     },
     util::yaml::YamlConversions,
@@ -56,7 +56,7 @@ impl<T: SectionItem> SectionElement<T> {
 }
 
 #[allow(clippy::write_literal)]
-impl<T: CvDeveloperLatexPrinter> CvDeveloperLatexPrinter for SectionElement<T> {
+impl<T: LatexPrinter> LatexPrinter for SectionElement<T> {
     fn cvdl_print(&self, f: &mut Writer) -> std::io::Result<()> {
         write!(f, r#"\cvsect{{"#)?;
         write_markdown(f, &self.title)?;

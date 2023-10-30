@@ -30,7 +30,15 @@ pub struct Context {
 
 impl Default for Context {
     fn default() -> Self {
-        Self { attrs: Default::default(), order: Default::default(), visibility: AttributeData { value: true, overrides: Default::default() }, dictionary: Default::default() }
+        Self {
+            attrs: Default::default(),
+            order: Default::default(),
+            visibility: AttributeData {
+                value: true,
+                overrides: Default::default(),
+            },
+            dictionary: Default::default(),
+        }
     }
 }
 

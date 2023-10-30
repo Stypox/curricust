@@ -1,7 +1,7 @@
 use resume_cv_proc_macro::{CvElementBuilder, CvSectionItem};
 use std::io::Write;
 
-use crate::printers::{latex_printer::LatexSectionItem, Writer, markdown_to_latex::write_markdown};
+use crate::printers::{latex_printer::LatexSectionItem, markdown_to_latex::write_markdown, Writer};
 
 #[derive(Debug, CvElementBuilder, CvSectionItem)]
 pub struct JobItem {

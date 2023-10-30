@@ -4,10 +4,7 @@ use yaml_rust::Yaml;
 
 use crate::{
     attr::{context::Context, text_with_attributes::TextWithAttributes},
-    printers::{
-        latex_printer::LatexPrinter,
-        Writer, markdown_to_latex::write_markdown,
-    },
+    printers::{latex_printer::LatexPrinter, markdown_to_latex::write_markdown, Writer},
     util::yaml::YamlConversions,
 };
 

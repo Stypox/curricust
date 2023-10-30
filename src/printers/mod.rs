@@ -1,7 +1,7 @@
 pub mod latex_printer;
 pub mod markdown_to_latex;
 
-use std::{fs::File, fmt::Debug};
+use std::{fmt::Debug, fs::File};
 
 use self::latex_printer::LatexPrinter;
 

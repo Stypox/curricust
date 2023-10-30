@@ -5,9 +5,7 @@ use yaml_rust::Yaml;
 
 use crate::{
     attr::text_with_attributes::TextWithAttributes,
-    printers::{
-        latex_printer::LatexPrinter, Writer, markdown_to_latex::write_markdown,
-    },
+    printers::{latex_printer::LatexPrinter, markdown_to_latex::write_markdown, Writer},
     util::yaml::YamlConversions,
 };
 
@@ -74,11 +72,7 @@ impl LatexPrinter for HeaderElement {
 
         writeln!(f, "{}", r#"\begin{minipage}[t]{0.3\textwidth}"#)?;
         writeln!(f, "{}", r#"    \vspace{-\baselineskip}"#)?;
-        write!(
-            f,
-            "{}",
-            r#"    {\fontsize{16}{20}\textbf{\MakeUppercase{"#
-        )?;
+        write!(f, "{}", r#"    {\fontsize{16}{20}\textbf{\MakeUppercase{"#)?;
         write_markdown(f, &self.name)?;
         writeln!(f, "{}", r#"}}}"#)?;
 

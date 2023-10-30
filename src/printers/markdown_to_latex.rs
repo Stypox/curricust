@@ -1,7 +1,7 @@
-use markdown::mdast::{Heading, List, Node};
-use regex::{Regex, Captures};
-use std::io::Write;
 use lazy_static::lazy_static;
+use markdown::mdast::{Heading, List, Node};
+use regex::{Captures, Regex};
+use std::io::Write;
 
 use super::Writer;
 
@@ -10,10 +10,9 @@ fn escape_latex(value: &str) -> std::borrow::Cow<'_, str> {
         static ref RESERVED_CHARS_REGEX: Regex = Regex::new(r"[\\\{\}\_\^\#\&\$\%\~]").unwrap();
     }
 
-    RESERVED_CHARS_REGEX
-        .replace_all(value, |caps: &Captures| {
-            format!("\\{}", caps.get(0).unwrap().as_str())
-        })
+    RESERVED_CHARS_REGEX.replace_all(value, |caps: &Captures| {
+        format!("\\{}", caps.get(0).unwrap().as_str())
+    })
 }
 
 fn write_markdown_children(
@@ -47,12 +46,22 @@ fn write_markdown_node(f: &mut Writer, node: Node) -> std::io::Result<()> {
             children,
             ordered: false,
             ..
-        }) => write_markdown_children(f, children, "{\\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=0pt]\n", "\\end{itemize}}\n"),
+        }) => write_markdown_children(
+            f,
+            children,
+            "{\\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=0pt]\n",
+            "\\end{itemize}}\n",
+        ),
         Node::List(List {
             children,
             ordered: true,
             ..
-        }) => write_markdown_children(f, children, "{\\begin{enumerate}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=0pt]\n", "\\end{enumerate}}\n"),
+        }) => write_markdown_children(
+            f,
+            children,
+            "{\\begin{enumerate}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=0pt]\n",
+            "\\end{enumerate}}\n",
+        ),
         Node::ListItem(a) => write_markdown_children(f, a.children, "\\item ", "\n"),
 
         Node::Text(a) => write_markdown_value(f, &a.value, "", ""),
@@ -60,20 +69,25 @@ fn write_markdown_node(f: &mut Writer, node: Node) -> std::io::Result<()> {
         Node::ThematicBreak(_) => writeln!(f, "\\hrule"),
         Node::InlineCode(a) => write_markdown_value(f, &a.value, "\\texttt{", "}"),
         Node::Paragraph(a) => write_markdown_children(f, a.children, "", ""),
-        Node::Html(a) => if a.value == "<br>" || a.value == "<br/>" || a.value == "<br />" {
-            writeln!(f, "\\\\")
-        } else {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
-                format!("Unimplemented html element in markdown: {a:?}"),
-            ))
+        Node::Html(a) => {
+            if a.value == "<br>" || a.value == "<br/>" || a.value == "<br />" {
+                writeln!(f, "\\\\")
+            } else {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    format!("Unimplemented html element in markdown: {a:?}"),
+                ));
+            }
         }
 
         Node::Emphasis(a) => write_markdown_children(f, a.children, "\\emph{", "}"),
         Node::Strong(a) => write_markdown_children(f, a.children, "\\textbf{", "}"),
-        Node::Link(a) => {
-            write_markdown_children(f, a.children, &format!("\\href{{{}}}{{", escape_latex(&a.url)), "}")
-        }
+        Node::Link(a) => write_markdown_children(
+            f,
+            a.children,
+            &format!("\\href{{{}}}{{", escape_latex(&a.url)),
+            "}",
+        ),
 
         Node::Heading(Heading {
             children, depth: 1, ..

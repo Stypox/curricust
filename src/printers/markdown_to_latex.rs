@@ -65,7 +65,7 @@ fn write_markdown_node(f: &mut Writer, node: Node) -> std::io::Result<()> {
         } else {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::Other,
-                format!("Unimplemented html element in markdown: {:?}", a),
+                format!("Unimplemented html element in markdown: {a:?}"),
             ))
         }
 
@@ -103,7 +103,7 @@ fn write_markdown_node(f: &mut Writer, node: Node) -> std::io::Result<()> {
         _ => {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::Other,
-                format!("Unimplemented element in markdown: {:?}", node),
+                format!("Unimplemented element in markdown: {node:?}"),
             ))
         }
     }?;

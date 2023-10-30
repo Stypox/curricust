@@ -35,11 +35,10 @@ pub fn include_file(root: &Path, hash: Yaml) -> Result<Yaml, String> {
 
 pub fn include_file_with_context(
     root: &Path,
-    ctx: Context,
+    mut ctx: Context,
     hash_or_string: Yaml,
 ) -> Result<(Context, Yaml), String> {
     let mut path = None;
-    let mut ctx = ctx.clone();
 
     if let Yaml::Hash(hash) = hash_or_string {
         for (key, value) in hash {
@@ -53,7 +52,7 @@ pub fn include_file_with_context(
             if path.is_none() && key == "file" {
                 path = Some(value.einto_string()?);
             } else {
-                return Err(format!("Invalid key in file inclusion {}", key));
+                return Err(format!("Invalid key in file inclusion {key}"));
             }
         }
     } else {

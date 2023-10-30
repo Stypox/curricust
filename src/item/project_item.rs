@@ -1,9 +1,9 @@
-use resume_cv_proc_macro::{CvElementBuilder, CvRMarkdownItem, CvSectionItem};
+use resume_cv_proc_macro::{CvElementBuilder, CvSectionItem};
 use std::io::Write;
 
 use crate::printers::{cv_developer_latex_printer::CvDeveloperLatexSectionItem, Writer, markdown_to_latex::write_markdown};
 
-#[derive(Debug, CvElementBuilder, CvRMarkdownItem, CvSectionItem)]
+#[derive(Debug, CvElementBuilder, CvSectionItem)]
 pub struct ProjectItem {
     #[cv_element_builder(text_with_attributes)]
     pub dates: Option<String>,

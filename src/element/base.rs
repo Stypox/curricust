@@ -5,7 +5,6 @@ use crate::attr::context::Context;
 use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
 use crate::printers::cv_developer_latex_printer::CvDeveloperLatexPrinter;
-use crate::printers::rmarkdown::RMarkdownPrinter;
 use crate::printers::{AllPrinters, Writer};
 use crate::util::file::{include_file, include_file_with_context};
 use crate::util::yaml::YamlConversions;
@@ -113,19 +112,6 @@ impl BaseElement {
 
         let header = header.build(&ctx)?;
         Ok(BaseElement { header, sections })
-    }
-}
-
-impl RMarkdownPrinter for BaseElement {
-    fn rmarkdown_print(&self, f: &mut Writer) -> std::io::Result<()> {
-        writeln!(f, "---")?;
-        self.header.rmarkdown_print(f)?;
-        writeln!(f, "---\n")?;
-
-        for section in &self.sections {
-            section.rmarkdown_print(f)?;
-        }
-        Ok(())
     }
 }
 

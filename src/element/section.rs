@@ -6,7 +6,6 @@ use crate::{
     attr::{context::Context, text_with_attributes::TextWithAttributes},
     printers::{
         cv_developer_latex_printer::CvDeveloperLatexPrinter,
-        rmarkdown::{RMarkdownPrinter, RMarkdownSectionItem},
         Writer, markdown_to_latex::write_markdown,
     },
     util::yaml::YamlConversions,
@@ -53,34 +52,6 @@ impl<T: SectionItem> SectionElement<T> {
         }
 
         section.build(ctx)
-    }
-}
-
-impl<T: RMarkdownPrinter + RMarkdownSectionItem> RMarkdownPrinter for SectionElement<T> {
-    fn rmarkdown_print(&self, f: &mut Writer) -> std::io::Result<()> {
-        writeln!(f, "# {}\n", self.title)?;
-
-        if let Some(description) = &self.description {
-            writeln!(f, "{description}\n")?;
-        }
-
-        if let Some(items) = &self.items {
-            writeln!(f, "```{{r section}}\ntribble(")?;
-
-            let fields = T::get_field_names();
-            write!(f, "  ~ {}", fields.join(", ~ "))?;
-
-            for item in items {
-                write!(f, ",\n  ")?;
-                item.rmarkdown_print(f)?;
-            }
-            writeln!(f, "\n)")?;
-            write!(f, "detailed_entries(")?;
-            write!(f, "{}", fields.join(", "))?;
-            writeln!(f, ")")?;
-            writeln!(f, "```\n")?;
-        }
-        Ok(())
     }
 }
 

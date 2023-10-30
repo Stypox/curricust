@@ -6,7 +6,7 @@ use yaml_rust::Yaml;
 use crate::{
     attr::text_with_attributes::TextWithAttributes,
     printers::{
-        cv_developer_latex_printer::CvDeveloperLatexPrinter, rmarkdown::RMarkdownPrinter, Writer, markdown_to_latex::write_markdown,
+        cv_developer_latex_printer::CvDeveloperLatexPrinter, Writer, markdown_to_latex::write_markdown,
     },
     util::yaml::YamlConversions,
 };
@@ -49,16 +49,6 @@ impl HeaderElement {
                 "linkedin" => header.add_linkedin(value),
                 _ => return Err(format!("Unknown key in header: {key}")),
             };
-        }
-        Ok(())
-    }
-}
-
-impl RMarkdownPrinter for HeaderElement {
-    fn rmarkdown_print(&self, f: &mut Writer) -> std::io::Result<()> {
-        writeln!(f, "name: {:?}", self.name)?;
-        if let Some(phone) = &self.phone {
-            writeln!(f, "phone: {phone:?}")?;
         }
         Ok(())
     }

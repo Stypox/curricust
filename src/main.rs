@@ -1,5 +1,3 @@
-#![feature(variant_count)]
-
 use std::{env, fs::File, path::PathBuf};
 
 use crate::{

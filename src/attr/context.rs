@@ -1,10 +1,11 @@
 use std::collections::HashMap;
 
 use multimap::MultiMap;
+use variant_count::VariantCount;
 
 use crate::attr::text_with_attributes::TextWithAttributes;
 
-#[derive(PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(PartialEq, Eq, Hash, Clone, Copy, VariantCount)]
 pub enum AttributeType {
     Locale,
     Display,
@@ -21,7 +22,7 @@ where
 
 #[derive(Clone)]
 pub struct Context {
-    attrs: [AttributeData<Option<String>>; std::mem::variant_count::<AttributeType>()],
+    attrs: [AttributeData<Option<String>>; AttributeType::VARIANT_COUNT],
     order: AttributeData<Option<i64>>,
     visibility: AttributeData<bool>,
     pub dictionary: MultiMap<String, TextWithAttributes>,

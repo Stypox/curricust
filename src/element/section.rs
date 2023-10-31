@@ -20,7 +20,7 @@ pub struct SectionElement<T> {
 }
 
 impl<T: SectionItem> SectionElement<T> {
-    pub fn parse(hash: Yaml, ctx: &Context) -> Result<SectionElement<T>, String> {
+    pub fn parse(ctx: &Context, hash: Yaml) -> Result<Self, String> {
         let hash = hash.einto_hash()?;
         let mut section = SectionElement::<T>::builder();
 
@@ -30,7 +30,7 @@ impl<T: SectionItem> SectionElement<T> {
                 let value = value.einto_vec()?;
                 let mut items = vec![];
                 for item in value {
-                    if let Some(item) = T::parse(item.einto_hash()?, ctx)? {
+                    if let Some(item) = T::parse(ctx, item.einto_hash()?)? {
                         // None is returned if the item is hidden
                         items.push(item);
                     }

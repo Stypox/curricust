@@ -12,8 +12,8 @@ use crate::util::yaml::YamlConversions;
 use multimap::MultiMap;
 use yaml_rust::Yaml;
 
-use super::header::HeaderElement;
-use super::section::SectionElement;
+use crate::header::HeaderElement;
+use crate::element::section::SectionElement;
 use crate::item::award_item::AwardItem;
 use crate::item::education_item::EducationItem;
 use crate::item::job_item::JobItem;
@@ -40,30 +40,30 @@ impl BaseElement {
     }
 
     fn parse_section<T>(
-        value: Yaml,
         sections: &mut Vec<Box<dyn AllPrinters>>,
         ctx: &Context,
+        value: Yaml,
     ) -> Result<(), String>
     where
         T: AllPrinters + SectionItem + 'static,
         SectionElement<T>: AllPrinters,
     {
-        sections.push(Box::new(SectionElement::<T>::parse(value, ctx)?));
+        sections.push(Box::new(SectionElement::<T>::parse(ctx, value)?));
         Ok(())
     }
 
     fn parse_include_section<T: AllPrinters>(
-        value: Yaml,
         sections: &mut Vec<Box<dyn AllPrinters>>,
         ctx: &Context,
         root: &Path,
+        value: Yaml,
     ) -> Result<(), String>
     where
         T: AllPrinters + SectionItem + 'static,
         SectionElement<T>: AllPrinters,
     {
         let (override_ctx, value) = include_file_with_context(root, ctx.clone(), value)?;
-        sections.push(Box::new(SectionElement::<T>::parse(value, &override_ctx)?));
+        sections.push(Box::new(SectionElement::<T>::parse(&override_ctx, value)?));
         Ok(())
     }
 
@@ -85,33 +85,33 @@ impl BaseElement {
                 "include-dictionary" => {
                     Self::parse_dictionary(&mut ctx.dictionary, include_file(root, value)?)?
                 }
-                "header" => HeaderElement::parse(&mut header, value)?,
-                "include-header" => HeaderElement::parse(&mut header, include_file(root, value)?)?,
+                "header" => HeaderElement::parse(&mut header, &ctx, root, value)?,
+                "include-header" => HeaderElement::parse(&mut header, &ctx, root, include_file(root, value)?)?,
                 "section-education" => {
-                    Self::parse_section::<EducationItem>(value, &mut sections, &ctx)?
+                    Self::parse_section::<EducationItem>(&mut sections, &ctx, value)?
                 }
                 "include-section-education" => {
-                    Self::parse_include_section::<EducationItem>(value, &mut sections, &ctx, root)?
+                    Self::parse_include_section::<EducationItem>(&mut sections, &ctx, root, value)?
                 }
-                "section-award" => Self::parse_section::<AwardItem>(value, &mut sections, &ctx)?,
+                "section-award" => Self::parse_section::<AwardItem>(&mut sections, &ctx, value)?,
                 "include-section-award" => {
-                    Self::parse_include_section::<AwardItem>(value, &mut sections, &ctx, root)?
+                    Self::parse_include_section::<AwardItem>(&mut sections, &ctx, root, value)?
                 }
-                "section-job" => Self::parse_section::<JobItem>(value, &mut sections, &ctx)?,
+                "section-job" => Self::parse_section::<JobItem>(&mut sections, &ctx, value)?,
                 "include-section-job" => {
-                    Self::parse_include_section::<JobItem>(value, &mut sections, &ctx, root)?
+                    Self::parse_include_section::<JobItem>(&mut sections, &ctx, root, value)?
                 }
                 "section-project" => {
-                    Self::parse_section::<ProjectItem>(value, &mut sections, &ctx)?
+                    Self::parse_section::<ProjectItem>(&mut sections, &ctx, value)?
                 }
                 "include-section-project" => {
-                    Self::parse_include_section::<ProjectItem>(value, &mut sections, &ctx, root)?
+                    Self::parse_include_section::<ProjectItem>(&mut sections, &ctx, root, value)?
                 }
                 "section-talk" => {
-                    Self::parse_section::<TalkItem>(value, &mut sections, &ctx)?
+                    Self::parse_section::<TalkItem>(&mut sections, &ctx, value)?
                 }
                 "include-section-talk" => {
-                    Self::parse_include_section::<TalkItem>(value, &mut sections, &ctx, root)?
+                    Self::parse_include_section::<TalkItem>(&mut sections, &ctx, root, value)?
                 }
                 _ => return Err(format!("Base element can't have children of type {key}")),
             }

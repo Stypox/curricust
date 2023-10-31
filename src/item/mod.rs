@@ -12,5 +12,5 @@ pub trait SectionItem
 where
     Self: Sized,
 {
-    fn parse(hash: Hash, ctx: &Context) -> Result<Option<(i64, Self)>, String>;
+    fn parse(ctx: &Context, hash: Hash) -> Result<Option<(i64, Self)>, String>;
 }

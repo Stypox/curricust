@@ -13,6 +13,7 @@ mod element;
 mod item;
 mod printers;
 mod util;
+pub mod header;
 
 fn main() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();

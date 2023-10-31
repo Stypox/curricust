@@ -4,6 +4,7 @@ use std::path::Path;
 use crate::attr::context::Context;
 use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
+use crate::item::talk_item::TalkItem;
 use crate::printers::latex_printer::LatexPrinter;
 use crate::printers::{AllPrinters, Writer};
 use crate::util::file::{include_file, include_file_with_context};
@@ -106,7 +107,13 @@ impl BaseElement {
                 "include-section-project" => {
                     Self::parse_include_section::<ProjectItem>(value, &mut sections, &ctx, root)?
                 }
-                _ => return Err(format!("Base element can't have children of type {key:?}")),
+                "section-talk" => {
+                    Self::parse_section::<TalkItem>(value, &mut sections, &ctx)?
+                }
+                "include-section-talk" => {
+                    Self::parse_include_section::<TalkItem>(value, &mut sections, &ctx, root)?
+                }
+                _ => return Err(format!("Base element can't have children of type {key}")),
             }
         }
 

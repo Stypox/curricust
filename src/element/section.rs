@@ -4,7 +4,7 @@ use yaml_rust::Yaml;
 
 use crate::{
     attr::{context::Context, text_with_attributes::TextWithAttributes},
-    printers::{latex_printer::LatexPrinter, markdown_to_latex::write_markdown, Writer},
+    printers::{latex_printer::{LatexPrinter, SectionItemLatexPrinter, write_latex_command_call}, markdown_to_latex::write_markdown, Writer},
     util::yaml::YamlConversions,
 };
 
@@ -53,19 +53,16 @@ impl<T: SectionItem> SectionElement<T> {
 }
 
 #[allow(clippy::write_literal)]
-impl<T: LatexPrinter> LatexPrinter for SectionElement<T> {
-    fn cvdl_print(&self, f: &mut Writer) -> std::io::Result<()> {
-        write!(f, r#"\cvsect{{"#)?;
-        write_markdown(f, &self.title)?;
-        writeln!(f, "}}")?;
-        // TODO self.description
+impl<T: SectionItemLatexPrinter> LatexPrinter for SectionElement<T> {
+    fn latex_print(&self, f: &mut Writer) -> std::io::Result<()> {
+        write_latex_command_call(f, T::SECTION_COMMAND, &[&self.title, self.description.as_deref().unwrap_or("")])?;
+        writeln!(f, "{{")?;
         if let Some(items) = &self.items {
-            writeln!(f, "{}", r#"\begin{entrylist}"#)?;
             for item in items {
-                item.cvdl_print(f)?;
+                item.latex_print(f)?;
             }
-            writeln!(f, "{}", r#"\end{entrylist}"#)?;
         }
+        writeln!(f, "}}")?;
         Ok(())
     }
 }

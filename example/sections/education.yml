@@ -11,20 +11,20 @@ items:
     degree-it-short: Tipo
     institution-en: University of Whatever
     institution-it: Università di Boh
-    dates: 1530-{{present}}
+    when: 1530-{{present}}
     grade: 29/31
     details: been there done that
 
   - id: high-school
     degree: The high school type
     institution: The high school name
-    dates: 1526-1530
+    when: 1526-1530
     grade: 84/100
     details: |
       - been there
       - done that
 
   - id: this-is-invisible
-    dates: 1234-5678
+    when: 1234-5678
     degree: refgs
     institution: abcd

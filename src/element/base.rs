@@ -117,17 +117,18 @@ impl BaseElement {
 
 #[allow(clippy::write_literal)]
 impl LatexPrinter for BaseElement {
-    fn cvdl_print(&self, f: &mut Writer) -> std::io::Result<()> {
-        writeln!(f, "{}", r#"\documentclass[11pt]{developercv}"#)?;
+    fn latex_print(&self, f: &mut Writer) -> std::io::Result<()> {
+        writeln!(f, "{}", r#"\documentclass[11pt]{cvtemplate}"#)?;
         writeln!(f, "{}", r#"\usepackage{multicol}"#)?;
         writeln!(f, "{}", r#"\setlength{\columnsep}{0mm}"#)?;
         writeln!(f, "{}\n", r#"\begin{document}"#)?;
-        self.header.cvdl_print(f)?;
-        writeln!(f)?;
+        self.header.latex_print(f)?;
+        writeln!(f, "{{}}{{}}{{")?;
         for section in &self.sections {
-            section.cvdl_print(f)?;
+            section.latex_print(f)?;
             writeln!(f)?;
         }
+        writeln!(f, "}}")?;
         writeln!(f, "{}", r#"\end{document}"#)?;
         Ok(())
     }

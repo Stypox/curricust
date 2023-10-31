@@ -1,12 +1,14 @@
 use resume_cv_proc_macro::{CvElementBuilder, CvSectionItem};
 use std::io::Write;
 
-use crate::printers::{latex_printer::LatexSectionItem, markdown_to_latex::write_markdown, Writer};
+use crate::printers::{
+    latex_printer::{write_latex_command_call, LatexPrinter, SectionItemLatexPrinter},
+    markdown_to_latex::write_markdown,
+    Writer,
+};
 
 #[derive(Debug, CvElementBuilder, CvSectionItem)]
 pub struct ProjectItem {
-    #[cv_element_builder(text_with_attributes)]
-    pub dates: Option<String>,
     #[cv_element_builder(text_with_attributes)]
     pub name: String,
     #[cv_element_builder(text_with_attributes)]
@@ -14,36 +16,27 @@ pub struct ProjectItem {
     #[cv_element_builder(text_with_attributes)]
     pub links: Option<String>,
     #[cv_element_builder(text_with_attributes)]
+    pub when: Option<String>,
+    #[cv_element_builder(text_with_attributes)]
     pub details: Option<String>,
 }
 
-impl LatexSectionItem for ProjectItem {
-    fn cvdl_print_left(&self, f: &mut Writer) -> std::io::Result<()> {
-        if let Some(dates) = &self.dates {
-            write_markdown(f, dates)?;
-            write!(f, r" \vspace{{3pt}}\linebreak ")?;
-        }
-        write!(f, r"\footnotesize{{")?;
-        write_markdown(f, &self.technologies)?;
-        write!(f, r"}}")?;
-        Ok(())
+impl LatexPrinter for ProjectItem {
+    fn latex_print(&self, f: &mut Writer) -> std::io::Result<()> {
+        write_latex_command_call(
+            f,
+            "itemproject",
+            &[
+                &self.name,
+                &self.technologies,
+                self.links.as_deref().unwrap_or(""),
+                self.when.as_deref().unwrap_or(""),
+                self.details.as_deref().unwrap_or(""),
+            ],
+        )
     }
+}
 
-    fn cvdl_print_heading(&self, f: &mut Writer) -> std::io::Result<()> {
-        write_markdown(f, &self.name)
-    }
-
-    fn cvdl_print_qualifier(&self, f: &mut Writer) -> std::io::Result<()> {
-        if let Some(links) = &self.links {
-            write_markdown(f, links)?;
-        }
-        Ok(())
-    }
-
-    fn cvdl_print_description(&self, f: &mut Writer) -> std::io::Result<()> {
-        if let Some(details) = &self.details {
-            write_markdown(f, details)?;
-        }
-        Ok(())
-    }
+impl SectionItemLatexPrinter for ProjectItem {
+    const SECTION_COMMAND: &'static str = "sectionproject";
 }

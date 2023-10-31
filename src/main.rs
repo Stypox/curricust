@@ -40,7 +40,7 @@ fn main() -> Result<(), String> {
     let outputfile = args.get(2).ok_or_else(usage)?;
     let outputfile = File::create(outputfile).err_str()?;
     base_element
-        .cvdl_print(&mut Writer::File(outputfile))
+        .latex_print(&mut Writer::File(outputfile))
         .err_str()?;
     Ok(())
 }

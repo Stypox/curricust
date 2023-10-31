@@ -1,9 +1,8 @@
 use resume_cv_proc_macro::{CvElementBuilder, CvSectionItem};
-use std::io::Write;
+
 
 use crate::printers::{
     latex_printer::{write_latex_command_call, LatexPrinter, SectionItemLatexPrinter},
-    markdown_to_latex::write_markdown,
     Writer,
 };
 

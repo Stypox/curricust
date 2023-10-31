@@ -1,11 +1,11 @@
 use resume_cv_proc_macro::CvElementBuilder;
-use std::io::Write;
+
 
 use yaml_rust::Yaml;
 
 use crate::{
     attr::text_with_attributes::TextWithAttributes,
-    printers::{latex_printer::{LatexPrinter, write_latex_command_call}, markdown_to_latex::write_markdown, Writer},
+    printers::{latex_printer::{LatexPrinter, write_latex_command_call}, Writer},
     util::yaml::YamlConversions,
 };
 

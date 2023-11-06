@@ -4,7 +4,7 @@ use yaml_rust::Yaml;
 
 use crate::{
     attr::{context::Context, text_with_attributes::TextWithAttributes},
-    writer::{latex_writer::{LatexWriter, SectionItemLatexWriter, write_latex_command_call}, Writer},
+    writer::{latex_writer::{LatexWriter, SectionItemLatexWriter, write_latex_command_call}, MyWrite},
     util::yaml::YamlConversions,
 };
 
@@ -54,7 +54,7 @@ impl<T: SectionItem> SectionElement<T> {
 
 #[allow(clippy::write_literal)]
 impl<T: SectionItemLatexWriter> LatexWriter for SectionElement<T> {
-    fn latex_write(&self, f: &mut Writer) -> std::io::Result<()> {
+    fn latex_write(&self, f: &mut MyWrite) -> std::io::Result<()> {
         write_latex_command_call(f, T::SECTION_COMMAND, &[&self.title, self.description.as_deref().unwrap_or("")])?;
         writeln!(f, "{{")?;
         if let Some(items) = &self.items {

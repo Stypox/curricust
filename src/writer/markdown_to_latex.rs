@@ -3,7 +3,7 @@ use markdown::mdast::{Heading, List, Node};
 use regex::{Captures, Regex};
 use std::io::Write;
 
-use super::Writer;
+use super::MyWrite;
 
 fn escape_latex(value: &str) -> std::borrow::Cow<'_, str> {
     lazy_static! {
@@ -16,7 +16,7 @@ fn escape_latex(value: &str) -> std::borrow::Cow<'_, str> {
 }
 
 fn write_markdown_children(
-    f: &mut Writer,
+    f: &mut MyWrite,
     children: Vec<Node>,
     before: &str,
     after: &str,
@@ -30,7 +30,7 @@ fn write_markdown_children(
 }
 
 fn write_markdown_value(
-    f: &mut Writer,
+    f: &mut MyWrite,
     value: &str,
     before: &str,
     after: &str,
@@ -39,7 +39,7 @@ fn write_markdown_value(
     write!(f, "{before}{value}{after}")
 }
 
-fn write_markdown_node(f: &mut Writer, node: Node) -> std::io::Result<()> {
+fn write_markdown_node(f: &mut MyWrite, node: Node) -> std::io::Result<()> {
     match node {
         Node::Root(a) => write_markdown_children(f, a.children, "", ""),
         Node::List(List {
@@ -124,7 +124,7 @@ fn write_markdown_node(f: &mut Writer, node: Node) -> std::io::Result<()> {
     Ok(())
 }
 
-pub fn write_markdown(f: &mut Writer, md: &str) -> std::io::Result<()> {
+pub fn write_markdown(f: &mut MyWrite, md: &str) -> std::io::Result<()> {
     // calling unwrap since it can't return an error with the default settings
     let root = markdown::to_mdast(md, &markdown::ParseOptions::default()).unwrap();
     write_markdown_node(f, root)

@@ -29,7 +29,7 @@ impl SkillsElement {
 }
 
 impl LatexWriter for SkillsElement {
-    fn latex_write(&self, f: &mut crate::writer::Writer) -> std::io::Result<()> {
+    fn latex_write(&self, f: &mut crate::writer::MyWrite) -> std::io::Result<()> {
         write_latex_command_call(f, "sectionskills", &[&self.title, &self.skills])
     }
 }

@@ -3,7 +3,7 @@ use resume_cv_proc_macro::{CvElementBuilder, CvSectionItem};
 
 use crate::writer::{
     latex_writer::{write_latex_command_call, LatexWriter, SectionItemLatexWriter},
-    Writer,
+    MyWrite,
 };
 
 #[derive(Debug, CvElementBuilder, CvSectionItem)]
@@ -21,7 +21,7 @@ pub struct EducationItem {
 }
 
 impl LatexWriter for EducationItem {
-    fn latex_write(&self, f: &mut Writer) -> std::io::Result<()> {
+    fn latex_write(&self, f: &mut MyWrite) -> std::io::Result<()> {
         write_latex_command_call(
             f,
             "itemeducation",

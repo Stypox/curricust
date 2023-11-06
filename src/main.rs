@@ -2,7 +2,7 @@ use std::{env, fs::File, path::PathBuf};
 
 use crate::{
     element::base::BaseElement,
-    writer::{latex_writer::LatexWriter, Writer},
+    writer::{latex_writer::LatexWriter, MyWrite},
     util::{error::ErrorToString, file::yaml_from_file},
 };
 
@@ -41,7 +41,7 @@ fn main() -> Result<(), String> {
     let outputfile = args.get(2).ok_or_else(usage)?;
     let outputfile = File::create(outputfile).err_str()?;
     base_element
-        .latex_write(&mut Writer::File(outputfile))
+        .latex_write(&mut MyWrite::File(outputfile))
         .err_str()?;
     Ok(())
 }

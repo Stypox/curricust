@@ -6,7 +6,7 @@ use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
 use crate::item::talk_item::TalkItem;
 use crate::writer::latex_writer::LatexWriter;
-use crate::writer::{AllWriters, Writer};
+use crate::writer::{AllWriters, MyWrite};
 use crate::util::file::{include_file, include_file_with_context};
 use crate::util::yaml::YamlConversions;
 use multimap::MultiMap;
@@ -124,7 +124,7 @@ impl BaseElement {
 
 #[allow(clippy::write_literal)]
 impl LatexWriter for BaseElement {
-    fn latex_write(&self, f: &mut Writer) -> std::io::Result<()> {
+    fn latex_write(&self, f: &mut MyWrite) -> std::io::Result<()> {
         writeln!(f, "{}", r#"\documentclass[11pt]{cvtemplate}"#)?;
         writeln!(f, "{}", r#"\usepackage{multicol}"#)?;
         writeln!(f, "{}", r#"\setlength{\columnsep}{0mm}"#)?;

@@ -1,10 +1,10 @@
 //! https://www.overleaf.com/latex/templates/cv-developer/rdycxzvvnvcc
 
-use super::{markdown_to_latex, Writer};
+use super::{markdown_to_latex, MyWrite};
 use std::io::Write;
 
 pub trait LatexWriter {
-    fn latex_write(&self, f: &mut Writer) -> std::io::Result<()>;
+    fn latex_write(&self, f: &mut MyWrite) -> std::io::Result<()>;
 }
 
 pub trait SectionItemLatexWriter: LatexWriter {
@@ -12,7 +12,7 @@ pub trait SectionItemLatexWriter: LatexWriter {
 }
 
 pub fn write_latex_command_call(
-    f: &mut Writer,
+    f: &mut MyWrite,
     command: &str,
     arguments: &[&str],
 ) -> std::io::Result<()> {

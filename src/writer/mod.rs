@@ -7,26 +7,26 @@ use self::latex_writer::LatexWriter;
 
 // keep Stdout and Stderr for easy testing
 #[allow(dead_code)]
-pub enum Writer {
+pub enum MyWrite {
     Stdout,
     Stderr,
     File(File),
 }
 
-impl std::io::Write for Writer {
+impl std::io::Write for MyWrite {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         match self {
-            Writer::Stdout => std::io::stdout().write(buf),
-            Writer::Stderr => std::io::stderr().write(buf),
-            Writer::File(f) => f.write(buf),
+            MyWrite::Stdout => std::io::stdout().write(buf),
+            MyWrite::Stderr => std::io::stderr().write(buf),
+            MyWrite::File(f) => f.write(buf),
         }
     }
 
     fn flush(&mut self) -> std::io::Result<()> {
         match self {
-            Writer::Stdout => std::io::stdout().flush(),
-            Writer::Stderr => std::io::stderr().flush(),
-            Writer::File(f) => f.flush(),
+            MyWrite::Stdout => std::io::stdout().flush(),
+            MyWrite::Stderr => std::io::stderr().flush(),
+            MyWrite::File(f) => f.flush(),
         }
     }
 }

@@ -10,7 +10,7 @@ use yaml_rust::Yaml;
 
 use crate::{
     attr::{text_with_attributes::TextWithAttributes, context::Context},
-    writer::{latex_writer::{LatexWriter, write_latex_command_call}, Writer},
+    writer::{latex_writer::{LatexWriter, write_latex_command_call}, MyWrite},
     util::{yaml::YamlConversions, file::include_file},
 };
 
@@ -84,7 +84,7 @@ impl HeaderElement {
 
 #[allow(clippy::write_literal)]
 impl LatexWriter for HeaderElement {
-    fn latex_write(&self, f: &mut Writer) -> std::io::Result<()> {
+    fn latex_write(&self, f: &mut MyWrite) -> std::io::Result<()> {
         write_latex_command_call(
             f,
             "cv",

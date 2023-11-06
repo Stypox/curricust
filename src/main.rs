@@ -13,7 +13,7 @@ mod element;
 mod item;
 mod writer;
 mod util;
-pub mod header;
+mod header;
 
 #[tokio::main]
 async fn main() -> Result<(), String> {

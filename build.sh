@@ -1,9 +1,16 @@
 #!/bin/sh
 
-if [ "$1" = "--dark" ]; then
-    DARK="true";
-    shift;
-fi
+while true; do
+    if [ "$1" = "--dark" ]; then
+        DARK="true";
+        shift;
+    elif [ "$1" = "--watch" ]; then
+        WATCH="true";
+        shift;
+    else
+        break;
+    fi
+done;
 
 function buildPdf() {
     cargo run -- "$@" || return
@@ -20,9 +27,11 @@ function buildPdf() {
 
 buildPdf "$@"
 
-inotifywait --recursive --monitor \
-    --event modify,move,create,delete \
-    "$(dirname "$1")" "./src/" "./resume_cv_proc_macro" "$(dirname "$2")/cvtemplate.cls" \
-    | while read whatchanged; do
-        buildPdf "$@"
-    done
+if [ "$WATCH" = "true" ]; then
+    inotifywait --recursive --monitor \
+        --event modify,move,create,delete \
+        "$(dirname "$1")" "./src/" "./resume_cv_proc_macro" "$(dirname "$2")/cvtemplate.cls" \
+        | while read whatchanged; do
+            buildPdf "$@"
+        done
+fi

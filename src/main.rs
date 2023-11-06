@@ -40,8 +40,13 @@ fn main() -> Result<(), String> {
 
     let outputfile = args.get(2).ok_or_else(usage)?;
     let outputfile = File::create(outputfile).err_str()?;
+    let mut my_write = MyWrite::file(outputfile);
+
+    // write the element in latex using the MyWrite instance, which also
+    // collects urls referenced in the document
     base_element
-        .latex_write(&mut MyWrite::File(outputfile))
+        .latex_write(&mut my_write)
         .err_str()?;
+
     Ok(())
 }

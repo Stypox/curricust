@@ -82,12 +82,16 @@ fn write_markdown_node(f: &mut MyWrite, node: Node) -> std::io::Result<()> {
 
         Node::Emphasis(a) => write_markdown_children(f, a.children, "\\emph{", "}"),
         Node::Strong(a) => write_markdown_children(f, a.children, "\\textbf{", "}"),
-        Node::Link(a) => write_markdown_children(
-            f,
-            a.children,
-            &format!("\\href{{{}}}{{", escape_latex(&a.url)),
-            "}",
-        ),
+        Node::Link(a) => {
+            let res = write_markdown_children(
+                f,
+                a.children,
+                &format!("\\href{{{}}}{{", escape_latex(&a.url)),
+                "}",
+            );
+            f.add_url_to_check(a.url);
+            res
+        },
 
         Node::Heading(Heading {
             children, depth: 1, ..

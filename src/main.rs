@@ -49,7 +49,9 @@ async fn main() -> Result<(), String> {
         .latex_write(&mut my_write)
         .err_str()?;
 
-    my_write.check_urls().await?;
+    if let Err(url_errors) = my_write.check_urls().await {
+        print!("{url_errors}")
+    }
 
     Ok(())
 }

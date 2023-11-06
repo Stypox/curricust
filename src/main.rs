@@ -1,4 +1,7 @@
-use std::{env, fs::File, path::PathBuf};
+use std::fs::File;
+
+use clap::Parser;
+use util::args::Args;
 
 use crate::{
     element::base::BaseElement,
@@ -17,31 +20,18 @@ mod header;
 
 #[tokio::main]
 async fn main() -> Result<(), String> {
-    let args: Vec<String> = env::args().collect();
-    let usage = || {
-        format!(
-            "Usage: {} inputfile.yml outputfile.tex",
-            args.get(0).unwrap_or(&"resume-cv-rust".to_string())
-        )
-    };
-    if args.len() != 3 {
-        return Err(usage());
-    }
+    let args = Args::parse();
 
-    let inputfile = args.get(1).ok_or_else(usage)?;
-    let inputfile = PathBuf::from(inputfile);
-    let root = inputfile
+    let root = args.input
         .parent()
         .ok_or("Input file does not have a parent")?;
 
-    let yaml = yaml_from_file(&inputfile)?;
+    let yaml = yaml_from_file(&args.input)?;
     // println!("Yaml: {yaml:?}\n");
     let base_element = BaseElement::new(root, yaml)?;
     // println!("Base element: {base_element:?}\n");
 
-    let outputfile = args.get(2).ok_or_else(usage)?;
-    let outputfile = File::create(outputfile).err_str()?;
-    let mut my_write = MyWrite::file(outputfile);
+    let mut my_write = MyWrite::file(File::create(args.output).err_str()?);
 
     // write the element in latex using the MyWrite instance, which also
     // collects urls referenced in the document
@@ -49,8 +39,10 @@ async fn main() -> Result<(), String> {
         .latex_write(&mut my_write)
         .err_str()?;
 
-    if let Err(url_errors) = my_write.check_urls().await {
-        print!("{url_errors}")
+    if args.check_links {
+        if let Err(url_errors) = my_write.check_urls().await {
+            print!("{url_errors}")
+        }
     }
 
     Ok(())

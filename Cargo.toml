@@ -17,3 +17,4 @@ variant_count = "1.1.0"
 futures = "0.3"
 tokio = { version = "1", features = ["rt", "macros", "net", "rt-multi-thread"] }
 reqwest = "0.11"
+clap = { version = "4.4.7", features = ["derive"] }

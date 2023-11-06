@@ -4,7 +4,7 @@ use yaml_rust::Yaml;
 
 use crate::{
     attr::{context::Context, text_with_attributes::TextWithAttributes},
-    writer::{latex_writer::{LatexWriter, SectionItemLatexWriter, write_latex_command_call}, MyWrite},
+    writer::{latex_writer::{LatexWriter, SectionItemLatexWriter, write_latex_command_call}, write::MyWrite},
     util::yaml::YamlConversions,
 };
 

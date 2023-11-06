@@ -2,7 +2,7 @@ use std::{env, fs::File, path::PathBuf};
 
 use crate::{
     element::base::BaseElement,
-    writer::{latex_writer::LatexWriter, MyWrite},
+    writer::{latex_writer::LatexWriter, write::MyWrite},
     util::{error::ErrorToString, file::yaml_from_file},
 };
 

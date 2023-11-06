@@ -10,7 +10,7 @@ use yaml_rust::Yaml;
 
 use crate::{
     attr::{text_with_attributes::TextWithAttributes, context::Context},
-    writer::{latex_writer::{LatexWriter, write_latex_command_call}, MyWrite},
+    writer::{latex_writer::{LatexWriter, write_latex_command_call}, write::MyWrite},
     util::{yaml::YamlConversions, file::include_file},
 };
 

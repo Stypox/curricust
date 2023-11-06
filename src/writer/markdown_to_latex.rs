@@ -3,7 +3,7 @@ use markdown::mdast::{Heading, List, Node};
 use regex::{Captures, Regex};
 use std::io::Write;
 
-use super::MyWrite;
+use super::write::MyWrite;
 
 fn escape_latex(value: &str) -> std::borrow::Cow<'_, str> {
     lazy_static! {

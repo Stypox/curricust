@@ -1,6 +1,6 @@
 //! https://www.overleaf.com/latex/templates/cv-developer/rdycxzvvnvcc
 
-use super::{markdown_to_latex, MyWrite};
+use super::{markdown_to_latex, write::MyWrite};
 use std::io::Write;
 
 pub trait LatexWriter {

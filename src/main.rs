@@ -15,7 +15,8 @@ mod writer;
 mod util;
 pub mod header;
 
-fn main() -> Result<(), String> {
+#[tokio::main]
+async fn main() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();
     let usage = || {
         format!(
@@ -47,6 +48,8 @@ fn main() -> Result<(), String> {
     base_element
         .latex_write(&mut my_write)
         .err_str()?;
+
+    my_write.check_urls().await?;
 
     Ok(())
 }

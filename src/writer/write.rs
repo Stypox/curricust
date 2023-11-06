@@ -1,5 +1,9 @@
 use std::fs::File;
 
+use futures::future::join_all;
+
+use crate::util::error::ErrorToString;
+
 
 pub struct MyWrite {
     urls: Vec<String>,
@@ -31,10 +35,6 @@ impl std::io::Write for MyWrite {
 }
 
 impl MyWrite {
-    pub fn add_url_to_check(&mut self, link: String) {
-        self.urls.push(link);
-    }
-
     #[allow(dead_code)] // keep for easy testing
     pub fn stdout() -> Self {
         Self { urls: vec![], handle: MyWriteHandle::Stdout }
@@ -47,5 +47,41 @@ impl MyWrite {
 
     pub fn file(f: File) -> Self {
         Self { urls: vec![], handle: MyWriteHandle::File(f) }
+    }
+
+
+    pub fn add_url_to_check(&mut self, link: String) {
+        self.urls.push(link);
+    }
+
+    pub async fn check_urls(&self) -> Result<(), String> {
+        async fn check_url(url: &str) -> Result<(), String> {
+            let status = reqwest::get(url)
+                .await
+                .err_str()?
+                .status();
+
+            if status == 200 {
+                Ok(())
+            } else {
+                Err(format!("Error code {status} for URL {url}"))
+            }
+        }
+
+        let results = join_all(self.urls.iter().map(|e| { check_url(e) })).await;
+
+        let mut error = String::new();
+        for result in results {
+            if let Err(e) = result {
+                error.push_str(&e);
+                error.push('\n');
+            }
+        }
+
+        if error.is_empty() {
+            Ok(())
+        } else {
+            Err(error)
+        }
     }
 }

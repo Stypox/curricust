@@ -1,7 +1,7 @@
 use resume_cv_proc_macro::{CvElementBuilder, CvSectionItem};
 
-use crate::printers::{
-    latex_printer::{write_latex_command_call, LatexPrinter, SectionItemLatexPrinter},
+use crate::writer::{
+    latex_writer::{write_latex_command_call, LatexWriter, SectionItemLatexWriter},
     Writer,
 };
 
@@ -21,8 +21,8 @@ pub struct JobItem {
     pub details: Option<String>,
 }
 
-impl LatexPrinter for JobItem {
-    fn latex_print(&self, f: &mut Writer) -> std::io::Result<()> {
+impl LatexWriter for JobItem {
+    fn latex_write(&self, f: &mut Writer) -> std::io::Result<()> {
         write_latex_command_call(
             f,
             "itemjob",
@@ -38,6 +38,6 @@ impl LatexPrinter for JobItem {
     }
 }
 
-impl SectionItemLatexPrinter for JobItem {
+impl SectionItemLatexWriter for JobItem {
     const SECTION_COMMAND: &'static str = "sectionjob";
 }

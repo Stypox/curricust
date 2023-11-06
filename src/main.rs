@@ -2,7 +2,7 @@ use std::{env, fs::File, path::PathBuf};
 
 use crate::{
     element::base::BaseElement,
-    printers::{latex_printer::LatexPrinter, Writer},
+    writer::{latex_writer::LatexWriter, Writer},
     util::{error::ErrorToString, file::yaml_from_file},
 };
 
@@ -11,7 +11,7 @@ extern crate yaml_rust;
 mod attr;
 mod element;
 mod item;
-mod printers;
+mod writer;
 mod util;
 pub mod header;
 
@@ -41,7 +41,7 @@ fn main() -> Result<(), String> {
     let outputfile = args.get(2).ok_or_else(usage)?;
     let outputfile = File::create(outputfile).err_str()?;
     base_element
-        .latex_print(&mut Writer::File(outputfile))
+        .latex_write(&mut Writer::File(outputfile))
         .err_str()?;
     Ok(())
 }

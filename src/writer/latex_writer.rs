@@ -3,11 +3,11 @@
 use super::{markdown_to_latex, Writer};
 use std::io::Write;
 
-pub trait LatexPrinter {
-    fn latex_print(&self, f: &mut Writer) -> std::io::Result<()>;
+pub trait LatexWriter {
+    fn latex_write(&self, f: &mut Writer) -> std::io::Result<()>;
 }
 
-pub trait SectionItemLatexPrinter: LatexPrinter {
+pub trait SectionItemLatexWriter: LatexWriter {
     const SECTION_COMMAND: &'static str;
 }
 

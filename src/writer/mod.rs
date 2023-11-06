@@ -1,9 +1,9 @@
-pub mod latex_printer;
+pub mod latex_writer;
 pub mod markdown_to_latex;
 
 use std::{fmt::Debug, fs::File};
 
-use self::latex_printer::LatexPrinter;
+use self::latex_writer::LatexWriter;
 
 // keep Stdout and Stderr for easy testing
 #[allow(dead_code)]
@@ -31,6 +31,6 @@ impl std::io::Write for Writer {
     }
 }
 
-pub trait AllPrinters: LatexPrinter + Debug {}
+pub trait AllWriters: LatexWriter + Debug {}
 
-impl<T: LatexPrinter + Debug> AllPrinters for T {}
+impl<T: LatexWriter + Debug> AllWriters for T {}

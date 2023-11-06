@@ -1,7 +1,7 @@
 use resume_cv_proc_macro::CvElementBuilder;
 use yaml_rust::Yaml;
 
-use crate::{printers::latex_printer::{LatexPrinter, write_latex_command_call}, attr::{text_with_attributes::TextWithAttributes, context::Context}, util::yaml::YamlConversions};
+use crate::{writer::latex_writer::{LatexWriter, write_latex_command_call}, attr::{text_with_attributes::TextWithAttributes, context::Context}, util::yaml::YamlConversions};
 
 #[derive(Debug, CvElementBuilder)]
 pub struct SummaryElement {
@@ -28,8 +28,8 @@ impl SummaryElement {
     }
 }
 
-impl LatexPrinter for SummaryElement {
-    fn latex_print(&self, f: &mut crate::printers::Writer) -> std::io::Result<()> {
+impl LatexWriter for SummaryElement {
+    fn latex_write(&self, f: &mut crate::writer::Writer) -> std::io::Result<()> {
         write_latex_command_call(f, "sectionsummary", &[&self.title, &self.summary])
     }
 }

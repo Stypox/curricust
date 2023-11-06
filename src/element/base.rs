@@ -5,8 +5,8 @@ use crate::attr::context::Context;
 use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
 use crate::item::talk_item::TalkItem;
-use crate::printers::latex_printer::LatexPrinter;
-use crate::printers::{AllPrinters, Writer};
+use crate::writer::latex_writer::LatexWriter;
+use crate::writer::{AllWriters, Writer};
 use crate::util::file::{include_file, include_file_with_context};
 use crate::util::yaml::YamlConversions;
 use multimap::MultiMap;
@@ -23,7 +23,7 @@ use crate::item::SectionItem;
 #[derive(Debug)]
 pub struct BaseElement {
     header: HeaderElement,
-    sections: Vec<Box<dyn AllPrinters>>,
+    sections: Vec<Box<dyn AllWriters>>,
 }
 
 impl BaseElement {
@@ -40,27 +40,27 @@ impl BaseElement {
     }
 
     fn parse_section<T>(
-        sections: &mut Vec<Box<dyn AllPrinters>>,
+        sections: &mut Vec<Box<dyn AllWriters>>,
         ctx: &Context,
         value: Yaml,
     ) -> Result<(), String>
     where
-        T: AllPrinters + SectionItem + 'static,
-        SectionElement<T>: AllPrinters,
+        T: AllWriters + SectionItem + 'static,
+        SectionElement<T>: AllWriters,
     {
         sections.push(Box::new(SectionElement::<T>::parse(ctx, value)?));
         Ok(())
     }
 
-    fn parse_include_section<T: AllPrinters>(
-        sections: &mut Vec<Box<dyn AllPrinters>>,
+    fn parse_include_section<T: AllWriters>(
+        sections: &mut Vec<Box<dyn AllWriters>>,
         ctx: &Context,
         root: &Path,
         value: Yaml,
     ) -> Result<(), String>
     where
-        T: AllPrinters + SectionItem + 'static,
-        SectionElement<T>: AllPrinters,
+        T: AllWriters + SectionItem + 'static,
+        SectionElement<T>: AllWriters,
     {
         let (override_ctx, value) = include_file_with_context(root, ctx.clone(), value)?;
         sections.push(Box::new(SectionElement::<T>::parse(&override_ctx, value)?));
@@ -71,7 +71,7 @@ impl BaseElement {
         let array = array.einto_vec()?;
         let mut ctx = Context::default();
         let mut header = HeaderElement::builder();
-        let mut sections: Vec<Box<dyn AllPrinters>> = vec![];
+        let mut sections: Vec<Box<dyn AllWriters>> = vec![];
 
         for yaml in array {
             let (key, value) = yaml.einto_single_element_hash()?;
@@ -123,16 +123,16 @@ impl BaseElement {
 }
 
 #[allow(clippy::write_literal)]
-impl LatexPrinter for BaseElement {
-    fn latex_print(&self, f: &mut Writer) -> std::io::Result<()> {
+impl LatexWriter for BaseElement {
+    fn latex_write(&self, f: &mut Writer) -> std::io::Result<()> {
         writeln!(f, "{}", r#"\documentclass[11pt]{cvtemplate}"#)?;
         writeln!(f, "{}", r#"\usepackage{multicol}"#)?;
         writeln!(f, "{}", r#"\setlength{\columnsep}{0mm}"#)?;
         writeln!(f, "{}\n", r#"\begin{document}"#)?;
-        self.header.latex_print(f)?;
+        self.header.latex_write(f)?;
         writeln!(f, "{{}}{{}}{{")?;
         for section in &self.sections {
-            section.latex_print(f)?;
+            section.latex_write(f)?;
             writeln!(f)?;
         }
         writeln!(f, "}}")?;

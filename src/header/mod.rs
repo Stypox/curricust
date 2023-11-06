@@ -10,7 +10,7 @@ use yaml_rust::Yaml;
 
 use crate::{
     attr::{text_with_attributes::TextWithAttributes, context::Context},
-    printers::{latex_printer::{LatexPrinter, write_latex_command_call}, Writer},
+    writer::{latex_writer::{LatexWriter, write_latex_command_call}, Writer},
     util::{yaml::YamlConversions, file::include_file},
 };
 
@@ -83,8 +83,8 @@ impl HeaderElement {
 }
 
 #[allow(clippy::write_literal)]
-impl LatexPrinter for HeaderElement {
-    fn latex_print(&self, f: &mut Writer) -> std::io::Result<()> {
+impl LatexWriter for HeaderElement {
+    fn latex_write(&self, f: &mut Writer) -> std::io::Result<()> {
         write_latex_command_call(
             f,
             "cv",
@@ -102,11 +102,11 @@ impl LatexPrinter for HeaderElement {
 
         write!(f, "{{")?;
         if let Some(summary) = &self.summary {
-            summary.latex_print(f)?;
+            summary.latex_write(f)?;
         }
         write!(f, "}}{{")?;
         if let Some(skills) = &self.skills {
-            skills.latex_print(f)?;
+            skills.latex_write(f)?;
         }
         write!(f, "}}")?;
 

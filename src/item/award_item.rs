@@ -1,8 +1,8 @@
 use resume_cv_proc_macro::{CvElementBuilder, CvSectionItem};
 
 
-use crate::printers::{
-    latex_printer::{write_latex_command_call, LatexPrinter, SectionItemLatexPrinter},
+use crate::writer::{
+    latex_writer::{write_latex_command_call, LatexWriter, SectionItemLatexWriter},
     Writer,
 };
 
@@ -16,8 +16,8 @@ pub struct AwardItem {
     pub grade: Option<String>,
 }
 
-impl LatexPrinter for AwardItem {
-    fn latex_print(&self, f: &mut Writer) -> std::io::Result<()> {
+impl LatexWriter for AwardItem {
+    fn latex_write(&self, f: &mut Writer) -> std::io::Result<()> {
         write_latex_command_call(
             f,
             "itemaward",
@@ -26,6 +26,6 @@ impl LatexPrinter for AwardItem {
     }
 }
 
-impl SectionItemLatexPrinter for AwardItem {
+impl SectionItemLatexWriter for AwardItem {
     const SECTION_COMMAND: &'static str = "sectionaward";
 }

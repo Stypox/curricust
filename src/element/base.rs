@@ -122,13 +122,12 @@ impl BaseElement {
     }
 }
 
-#[allow(clippy::write_literal)]
 impl LatexWriter for BaseElement {
     fn latex_write(&self, f: &mut MyWrite) -> std::io::Result<()> {
-        writeln!(f, "{}", r"\documentclass[11pt]{cvtemplate}")?;
-        writeln!(f, "{}", r"\usepackage{multicol}")?;
-        writeln!(f, "{}", r"\setlength{\columnsep}{0mm}")?;
-        writeln!(f, "{}\n", r"\begin{document}")?;
+        writeln!(f, r"\documentclass[11pt]{{cvtemplate}}")?;
+        writeln!(f, r"\usepackage{{multicol}}")?;
+        writeln!(f, r"\setlength{{\columnsep}}{{0mm}}")?;
+        writeln!(f, "\\begin{{document}}\n")?;
         self.header.latex_write(f)?;
         writeln!(f, "{{}}{{}}{{")?;
         for section in &self.sections {
@@ -136,7 +135,7 @@ impl LatexWriter for BaseElement {
             writeln!(f)?;
         }
         writeln!(f, "}}")?;
-        writeln!(f, "{}", r"\end{document}")?;
+        writeln!(f, r"\end{{document}}")?;
         Ok(())
     }
 }

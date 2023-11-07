@@ -82,7 +82,6 @@ impl HeaderElement {
     }
 }
 
-#[allow(clippy::write_literal)]
 impl LatexWriter for HeaderElement {
     fn latex_write(&self, f: &mut MyWrite) -> std::io::Result<()> {
         write_latex_command_call(

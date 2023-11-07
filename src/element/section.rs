@@ -52,7 +52,6 @@ impl<T: SectionItem> SectionElement<T> {
     }
 }
 
-#[allow(clippy::write_literal)]
 impl<T: SectionItemLatexWriter> LatexWriter for SectionElement<T> {
     fn latex_write(&self, f: &mut MyWrite) -> std::io::Result<()> {
         write_latex_command_call(f, T::SECTION_COMMAND, &[&self.title, self.description.as_deref().unwrap_or("")])?;

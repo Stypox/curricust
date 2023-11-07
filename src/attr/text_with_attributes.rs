@@ -70,7 +70,7 @@ pub fn into_best_matching_dictionary(
     };
 
     lazy_static! {
-        static ref DICTIONARY_REGEX: Regex = Regex::new(r#"\{\{([^\{\}]+)\}\}"#).unwrap();
+        static ref DICTIONARY_REGEX: Regex = Regex::new(r"\{\{([^\{\}]+)\}\}").unwrap();
     }
 
     let mut error = None;

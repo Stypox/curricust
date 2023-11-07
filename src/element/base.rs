@@ -124,7 +124,7 @@ impl BaseElement {
 
 impl LatexWriter for BaseElement {
     fn latex_write(&self, f: &mut MyWrite) -> std::io::Result<()> {
-        writeln!(f, r"\documentclass[11pt]{{cvtemplate}}")?;
+        writeln!(f, r"\documentclass[11pt]{{resumecvrusttemplate}}")?;
         writeln!(f, r"\usepackage{{multicol}}")?;
         writeln!(f, r"\setlength{{\columnsep}}{{0mm}}")?;
         writeln!(f, "\\begin{{document}}\n")?;

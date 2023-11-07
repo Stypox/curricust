@@ -17,6 +17,7 @@ while true; do
         echo "Arguments:"
         echo "  <BASE_YML_PATH>   The base YAML file to use as input"
         echo "  <OUTPUT_TEX_PATH> The output LaTeX file to then convert to PDF"
+        echo "                    (the folder it is in will be cluttered with build files!)"
         echo "  <TEMPLATE_PATH>   The .cls template to use"
         echo
         echo "Options:"

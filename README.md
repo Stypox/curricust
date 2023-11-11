@@ -28,7 +28,7 @@ With the `--check-links` option the Rust converter will make a GET request to al
 
 ## YAML file structure
 
-Text fields support basic Markdown, so you can insert links and put emphasis on things.
+Text fields support basic Markdown, so you can insert links, lists and put emphasis on things.
 
 Take a look a the `example/` folder for an actual example of the rules explained below.
 
@@ -81,6 +81,8 @@ If you want to create or adapt your own style you need to implement some LaTeX f
 ### Developer CV
 
 The [Developer CV](https://www.overleaf.com/latex/templates/cv-developer/rdycxzvvnvcc) found on OverLeaf with a few changes: [developercv.cls](./template/developercv.cls).
+
+![Developer CV](./example/developercv.png)
 
 On Arch Linux the following `texlive` packages are needed for this template:
 - `texlive-basic` - initial installation

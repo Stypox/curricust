@@ -12,7 +12,7 @@ while true; do
     elif [ "$1" = "--help" ]; then
         echo "Wrapper around resume-cv-rust for conversion from YML directly to PDF."
         echo "Usage: $0 [--help] [--dark] [--watch] <BASE_YML_PATH> <OUTPUT_TEX_PATH> <TEMPLATE_PATH>"
-        echo "Pass arguments to resume-cv-rust after --, e.g. $0 ... -- --help"
+        echo "Pass arguments to resume-cv-rust after --, e.g. $0 ... -- --check-links"
         echo
         echo "Arguments:"
         echo "  <BASE_YML_PATH>   The base YAML file to use as input"
@@ -24,6 +24,9 @@ while true; do
         echo "  --help  Print help"
         echo "  --dark  Invert colors in the PDF"
         echo "  --watch Automatically rebuild the .tex and the PDF when any relevant file changes"
+        echo
+        echo "Help for resume-cv-rust (<INPUT> and <OUTPUT> are passed through):"
+        cargo run -- --help
         exit 0
 
     elif [ "$1" = "--dark" ]; then

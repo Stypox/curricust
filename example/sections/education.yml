@@ -3,26 +3,32 @@ title-it: Educazione
 
 items:
   - id: bachelor
-    degree-en-long: The uni type
-    degree-it-long: |
-      Il tipo
-      di uni
-    degree-en-short: Type
-    degree-it-short: Tipo
-    institution-en: University of Whatever
-    institution-it: Università di Boh
-    when: 1530-{{present}}
-    grade: 29/31
+    degree-en: Bachelor of Science
+    degree-it: Laurea di primo livello
+    institution-en: Columbia University
+    institution-it: Università di Columbia
+    when: 1936-{{present}}
+    grade: 5.94/6.0
     details: been there done that
 
   - id: high-school
-    degree: The high school type
-    institution: The high school name
-    when: 1526-1530
-    grade: 84/100
-    details: |
-      - been there
-      - done that
+    degree-it: Scuola superiore dei ragazzi
+    degree-en: Boys high school
+    institution: Brooklyn
+    when: 1925-1935
+    grade: 100/100
+    details-it-short:
+      Ho imparato a scrivere
+    details-it-long: |
+      - Ho imparato a scrivere
+      - Lorem ipsum dolor sit amet
+      - Consectetur adipiscing elit
+    details-en-short:
+      I learned to write
+    details-en-long: |
+      - I learned to write
+      - Lorem ipsum dolor sit amet
+      - Consectetur adipiscing elit
 
   - id: this-is-invisible
     when: 1234-5678

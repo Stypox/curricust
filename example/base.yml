@@ -1,15 +1,17 @@
-- locale: it
-- display: short
-
-- dictionary:
-    test_ciao-it: "ciao"
-    test_ciao-en-long: "ciaone"
+- locale: en
+- display: long
 
 - include-dictionary:
     file: util/dictionary.yml
 
 - include-header:
     file: util/header.yml
+
+- header:
+    summary:
+      title-en: Summary
+      title-it: Riassunto
+      summary: I like writing books about robots.
 
 - include-section-education:
     file: sections/education.yml

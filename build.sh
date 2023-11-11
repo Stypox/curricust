@@ -10,9 +10,9 @@ while true; do
         break;
 
     elif [ "$1" = "--help" ]; then
-        echo "Wrapper around resume-cv-rust for automatic conversion from LaTeX to PDF."
+        echo "Wrapper around resume-cv-rust for conversion from YML directly to PDF."
         echo "Usage: $0 [--help] [--dark] [--watch] <BASE_YML_PATH> <OUTPUT_TEX_PATH> <TEMPLATE_PATH>"
-        echo "Pass arguments to resume-cv-rust after --, e.g. $0 ... -- --check-links"
+        echo "Pass arguments to resume-cv-rust after --, e.g. $0 ... -- --help"
         echo
         echo "Arguments:"
         echo "  <BASE_YML_PATH>   The base YAML file to use as input"

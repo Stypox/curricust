@@ -264,11 +264,11 @@
 \newcommand{\sectionskills}{\@sectionelement}
 
 % Arguments:
-% 1 leftmost when text
-% 2 leftmost tags text (optional)
-% 3 bold entry heading
-% 4 bold right-aligned entry qualifier
-% 5 entry description text (optional)
+% 1 leftmost "when" text (optional)
+% 2 leftmost "tags" text (optional)
+% 3 bold entry "heading"
+% 4 semi-bold italic right-aligned entry qualifier (optional)
+% 5 entry "description" text
 \newcommand{\@entry}[5]{
 	\parbox[t]{0.16\textwidth}{% 16% of the text width of the page
 		\raggedright{
@@ -294,7 +294,7 @@
 			\hspace{2pt}
 			\hfill% Horizontal whitespace
 			\mbox{}~\hfill{}
-			{\footnotesize \textbf{\mbox{#4}}}\\% Right-aligned entry qualifier text
+			{\footnotesize \emph{\fontseries{sb}\selectfont \mbox{#4}}}\\% Right-aligned entry qualifier text
 			#5 % Entry description text
 		}
 	}\\\\
@@ -313,12 +313,20 @@
 % Arguments:
 % 1 role
 % 2 company
-% 3 where
+% 3 where (optional)
 % 4 when
 % 5 topics (optional)
 % 6 details (optional)
 \newcommand{\itemjob}[6]{
-	\@entry{#4}{#5}{#1 \textnormal{#3}}{#2}{#6}
+	\@entry{#4}{#5}{#1}{
+		#2%
+		\if #2\empty \else
+			\if #3\empty \else
+				,
+			\fi
+		\fi
+		#3
+	}{#6}
 }
 
 % Arguments:

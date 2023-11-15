@@ -35,14 +35,6 @@
 \setlength{\parindent}{0mm} % Suppress paragraph indentation
 
 \usepackage[hidelinks]{hyperref} % Required for links but hide the default boxes around links
-\usepackage{xcolor}
-\hypersetup{
-	pdfborderstyle={/S/U/W 1},
-	linkbordercolor=black,
-	citebordercolor=black,
-	filebordercolor=black,
-	urlbordercolor=black,
-}
 
 \pagestyle{empty} % No headers or footers
 
@@ -119,6 +111,10 @@
 	\begingroup%
 		\setbox0=\hbox{#1}\parbox{\wd0}{\box0}%
 	\endgroup%
+}
+
+\newcommand{\cvhref}[2]{%
+	\href{#1}{\smash{\underline{\smash{#2}\vphantom{T}}}\vphantom{#2}}%
 }
 
 

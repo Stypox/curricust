@@ -86,7 +86,7 @@ fn write_markdown_node(f: &mut MyWrite, node: Node) -> std::io::Result<()> {
             let res = write_markdown_children(
                 f,
                 a.children,
-                &format!("\\href{{{}}}{{", escape_latex(&a.url)),
+                &format!("\\cvhref{{{}}}{{", escape_latex(&a.url)),
                 "}",
             );
             f.add_url_to_check(a.url);

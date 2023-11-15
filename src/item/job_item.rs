@@ -12,7 +12,7 @@ pub struct JobItem {
     #[cv_element_builder(text_with_attributes)]
     pub company: String,
     #[cv_element_builder(text_with_attributes)]
-    pub where_: String,
+    pub where_: Option<String>,
     #[cv_element_builder(text_with_attributes)]
     pub when: String,
     #[cv_element_builder(text_with_attributes)]
@@ -29,7 +29,7 @@ impl LatexWriter for JobItem {
             &[
                 &self.role,
                 &self.company,
-                &self.where_,
+                self.where_.as_deref().unwrap_or(""),
                 &self.when,
                 self.topics.as_deref().unwrap_or(""),
                 self.details.as_deref().unwrap_or(""),

@@ -78,7 +78,7 @@ if [ "$WATCH" = "true" ]; then
     inotifywait --recursive --monitor \
         --event modify,move,create,delete \
         "$(dirname "$BASE_YML_PATH")" "./src/" "./resume_cv_proc_macro" "$TEMPLATE_PATH" \
-        --exclude "$(dirname "$OUTPUT_TEX_PATH")" \
+        --exclude "($(dirname "$OUTPUT_TEX_PATH"))|(\.git)" \
         | while read whatchanged; do
             buildPdf "$@"
         done

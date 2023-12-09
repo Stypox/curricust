@@ -48,7 +48,7 @@ impl BaseElement {
         T: AllWriters + SectionItem + 'static,
         SectionElement<T>: AllWriters,
     {
-        sections.push(Box::new(SectionElement::<T>::parse(ctx, value)?));
+        sections.push(Box::new(SectionElement::<T>::parse(ctx, false, value)?));
         Ok(())
     }
 
@@ -63,7 +63,7 @@ impl BaseElement {
         SectionElement<T>: AllWriters,
     {
         let (override_ctx, value) = include_file_with_context(root, ctx.clone(), value)?;
-        sections.push(Box::new(SectionElement::<T>::parse(&override_ctx, value)?));
+        sections.push(Box::new(SectionElement::<T>::parse(&override_ctx, false, value)?));
         Ok(())
     }
 

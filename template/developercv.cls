@@ -205,21 +205,34 @@
 
 \def\Vhrulefill{\leavevmode\leaders\hrule height 0.7ex depth \dimexpr0.4pt-0.7ex\hfill\kern0pt}
 
+% Arguments:
+% 1 any non-empty string makes the title be rendered as in a subsection
+% 2 the actual text to render as title
+\newcommand{\@titlesectionorsubsection}[2]{
+	\def\temp{#1}\ifx\temp\empty
+		\MakeUppercase{\textbf{#2}} \hspace{4pt} \Vhrulefill \\%
+	\else
+		\textbf{#2} \\%
+	\fi
+}
 
 % Arguments:
-% 1 title
-% 2 description (optional)
-% 3 entries
-\newcommand{\@section}[3]{
+% 1 any non-empty string makes the title be rendered as in a subsection
+% 2 title
+% 3 description (optional)
+% 4 entries
+% 5 subsections
+\newcommand{\@section}[5]{
 	\begin{minipage}{\textwidth}
 		\vspace{\baselineskip}
-		\MakeUppercase{\textbf{#1}} \hspace{4pt} \Vhrulefill \\
-		\if #2\empty \else
-			#2\\
+		\@titlesectionorsubsection{#1}{#2}
+		\if #3\empty \else
+			#3\\
 		\fi
 		\begin{@entrylist}
-			#3
+			#4
 		\end{@entrylist}
+		#5
 	\end{minipage}
 }
 \newcommand{\sectioneducation}{\@section}
@@ -227,21 +240,24 @@
 \newcommand{\sectionproject}{\@section}
 
 % Arguments:
-% 1 title
-% 2 description (optional)
-% 3 entries
-\newcommand{\@sectionlist}[3]{
+% 1 any non-empty string makes the title be rendered as in a subsection
+% 2 title
+% 3 description (optional)
+% 4 entries
+% 5 subsections
+\newcommand{\@sectionlist}[5]{
 	\begin{minipage}{\textwidth}
 		\vspace{\baselineskip}
-		\MakeUppercase{\textbf{#1}} \hspace{4pt} \Vhrulefill \\
-		\ifx #2\empty \else
+		\@titlesectionorsubsection{#1}{#2}
+		\ifx #3\empty \else
 			\\[-8pt]
-			#2
+			#3
 			\\[-4pt]
 		\fi
 		\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=9pt]
-			#3
+			#4
 		\end{itemize}
+		#5
 		\vspace{12pt}
 	\end{minipage}
 }
@@ -253,7 +269,7 @@
 % 2 description
 \newcommand{\@sectionelement}[2]{
 	\vspace{\baselineskip}
-	\MakeUppercase{\textbf{#1}} \hspace{4pt} \Vhrulefill \\
+	\@titlesectionorsubsection{}{#1}
 	#2 \hfill \\
 }
 \newcommand{\sectionsummary}{\@sectionelement}

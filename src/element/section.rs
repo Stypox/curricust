@@ -75,7 +75,7 @@ impl<T: SectionItemLatexWriter> LatexWriter for SectionElement<T> {
         };
 
         write_latex_command_call(f, T::SECTION_COMMAND, &[is_subsection_text, &self.title, self.description.as_deref().unwrap_or("")])?;
-        writeln!(f, "{{")?;
+        write!(f, "{{")?;
         for item in self.items.iter().flatten() {
             item.latex_write(f)?;
         }

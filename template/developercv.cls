@@ -229,9 +229,11 @@
 		\if #3\empty \else
 			#3\\
 		\fi
-		\begin{@entrylist}
-			#4
-		\end{@entrylist}
+		\ifx #4\empty \else
+			\begin{@entrylist}
+				#4
+			\end{@entrylist}
+		\fi
 		#5
 	\end{minipage}
 }
@@ -254,9 +256,11 @@
 			#3
 			\\[-4pt]
 		\fi
-		\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=9pt]
-			#4
-		\end{itemize}
+		\ifx #4\empty \else
+			\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=9pt]
+				#4
+			\end{itemize}
+		\fi
 		#5
 		\vspace{12pt}
 	\end{minipage}

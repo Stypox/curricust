@@ -227,7 +227,7 @@
 		\vspace{\baselineskip}
 		\@titlesectionorsubsection{#1}{#2}
 		\if #3\empty \else
-			#3\\
+			#3~\\
 		\fi
 		\ifx #4\empty \else
 			\begin{@entrylist}

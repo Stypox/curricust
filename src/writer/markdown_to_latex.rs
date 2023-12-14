@@ -50,7 +50,7 @@ fn write_markdown_node(f: &mut MyWrite, node: Node) -> std::io::Result<()> {
             f,
             children,
             "{\\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=0pt]\n",
-            "\\end{itemize}}\n",
+            "\\end{itemize}}\\leavevmode\n",
         ),
         Node::List(List {
             children,
@@ -60,7 +60,7 @@ fn write_markdown_node(f: &mut MyWrite, node: Node) -> std::io::Result<()> {
             f,
             children,
             "{\\begin{enumerate}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=0pt]\n",
-            "\\end{enumerate}}\n",
+            "\\end{enumerate}}\\leavevmode\n",
         ),
         Node::ListItem(a) => write_markdown_children(f, a.children, "\\item ", "\n"),
 

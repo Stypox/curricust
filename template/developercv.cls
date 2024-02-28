@@ -289,11 +289,11 @@
 	\parbox[t]{0.16\textwidth}{% 16% of the text width of the page
 		\raggedright{
 			\small
-			\if #1\empty
+			\def\temp{#1}\ifx\temp\empty
 				\footnotesize{#2}
 			\else
 				#1
-				\if #2\empty \else
+				\def\temp{#2}\ifx\temp\empty\else
 					\vspace{3pt}
 					\linebreak
 					\footnotesize{#2}

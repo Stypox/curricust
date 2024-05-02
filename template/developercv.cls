@@ -75,26 +75,53 @@
 
 \usepackage{fontawesome} % Required for FontAwesome icons
 
-% Command to output an icon in a black square box with text to the right
+% Command to output an icon in a black square box
+% with text to the right of the icon
 % Arguments:
 % 1 the FontAwesome icon name
 % 2 the box size
 % 3 the text
-\newcommand{\icon}[3]{
+\newcommand{\iconleft}[3]{
 	\vcenteredhbox{\pgfsetfillopacity{0}\colorbox{white}{\pgfsetfillopacity{1}\makebox(#2, #2){\Large\csname fa#1\endcsname}}\pgfsetfillopacity{1}}% Icon and box
 	\hspace{0.1cm}% Whitespace
 	\vcenteredhbox{#3}% Text
 }
 
-% Command to output an icon in a black square box with text to the right,
+% Command to output an icon in a black square box
+% with text to the left of the icon
+% Arguments:
+% 1 the FontAwesome icon name
+% 2 the box size
+% 3 the text
+\newcommand{\iconright}[3]{
+	\vcenteredhbox{#3}% Text
+	\hspace{0.1cm}% Whitespace
+	\vcenteredhbox{\pgfsetfillopacity{0}\colorbox{white}{\pgfsetfillopacity{1}\makebox(#2, #2){\Large\csname fa#1\endcsname}}\pgfsetfillopacity{1}}% Icon and box
+}
+
+% Command to output an icon in a black square box
+% with text to the right of the icon,
 % but only if the text is non empty
 % Arguments:
 % 1 the FontAwesome icon name
 % 2 the box size
 % 3 the text
-\newcommand{\maybeicon}[3]{
+\newcommand{\maybeiconleft}[3]{
 	\ifx #3\empty \else
-		\icon{#1}{#2}{#3}\\
+		\iconleft{#1}{#2}{#3}\\
+	\fi
+}
+
+% Command to output an icon in a black square box
+% with text to the left of the icon,
+% but only if the text is non empty
+% Arguments:
+% 1 the FontAwesome icon name
+% 2 the box size
+% 3 the text
+\newcommand{\maybeiconright}[3]{
+	\ifx #3\empty \else
+		\iconright{#1}{#2}{#3}\\
 	\fi
 }
 
@@ -159,15 +186,15 @@
 		\hfill
 		\begin{minipage}[t]{0.32\textwidth}
 			\vspace{-\baselineskip}
-			\maybeicon{Envelope}{11}{\argemail}
-			\maybeicon{Phone}{11}{\argphone}
-			\maybeicon{MapMarker}{11}{\arglocation}
+			\maybeiconleft{Envelope}{11}{\argemail}
+			\maybeiconleft{Phone}{11}{\argphone}
+			\maybeiconleft{MapMarker}{11}{\arglocation}
 		\end{minipage}
 		\begin{minipage}[t]{0.23\textwidth}
 			\vspace{-\baselineskip}
-			\maybeicon{Globe}{11}{\argwebsite}
-			\maybeicon{Github}{11}{\arggithub}
-			\maybeicon{LinkedinSquare}{11}{\arglinkedin}
+			\maybeiconleft{Globe}{11}{\argwebsite}
+			\maybeiconleft{Github}{11}{\arggithub}
+			\maybeiconleft{LinkedinSquare}{11}{\arglinkedin}
 		\end{minipage}
 	\else
 		\begin{minipage}[t][][b]{0.18\textwidth}
@@ -175,8 +202,10 @@
 			\includegraphics[width=\textwidth]{\argimage}
 		\end{minipage}
 		\hspace{0.03\textwidth}
+		\hfill
 		\begin{minipage}[t]{0.35\textwidth}
-			\vspace{0.08\textwidth}
+			\vspace{0.01\textwidth}
+			\centering
 			{\fontsize{16}{20}\textbf{\MakeUppercase{\argname}}}
 			\vspace{6pt}\\
 			{\Large \argmotto}
@@ -184,12 +213,14 @@
 		\hfill
 		\begin{minipage}[t]{0.32\textwidth}
 			\vspace{-\baselineskip}
-			\maybeicon{Globe}{11}{\argwebsite}
-			\maybeicon{Github}{11}{\arggithub}
-			\maybeicon{Phone}{11}{\argphone}
-			\maybeicon{Envelope}{11}{\argemail}
-			\maybeicon{LinkedinSquare}{11}{\arglinkedin}
-			\maybeicon{MapMarker}{11}{\arglocation}
+			\begin{flushright}
+				\maybeiconright{Globe}{11}{\argwebsite}
+				\maybeiconright{Github}{11}{\arggithub}
+				\maybeiconright{Phone}{11}{\argphone}
+				\maybeiconright{Envelope}{11}{\argemail}
+				\maybeiconright{LinkedinSquare}{11}{\arglinkedin}
+				\maybeiconright{MapMarker}{11}{\arglocation}
+			\end{flushright}
 		\end{minipage}
 	\fi
 

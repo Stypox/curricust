@@ -52,7 +52,11 @@ impl HeaderElement {
                 if image.is_empty() {
                     header.image(PathBuf::new())
                 } else {
-                    header.image(root.join(image))
+                    header.image(
+                        root.join(image.clone())
+                            .canonicalize()
+                            .map_err(|e| format!("{e}: {image}"))?
+                    )
                 }
             },
             "summary" => header.summary(SummaryElement::parse(ctx, value)?),

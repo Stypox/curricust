@@ -122,24 +122,26 @@
 % Arguments:
 % 1 name
 % 2 career
-% 3 email (optional)
-% 4 phone (optional)
-% 5 location (optional)
-% 6 website (optional)
-% 7 github (optional)
-% 8 linkedin (optional)
-% 9 about me section
-% 10 skills section
-% 11 sections
-\newcommand{\cv}[8]{
+% 3 image
+% 4 email (optional)
+% 5 phone (optional)
+% 6 location (optional)
+% 7 website (optional)
+% 8 github (optional)
+% 9 linkedin (optional)
+% 10 about me section
+% 11 skills section
+% 12 sections
+\newcommand{\cv}[9]{
 	\edef\argname{\unexpanded{#1}}%
 	\edef\argmotto{\unexpanded{#2}}%
-	\edef\argemail{\unexpanded{#3}}%
-	\edef\argphone{\unexpanded{#4}}%
-	\edef\arglocation{\unexpanded{#5}}%
-	\edef\argwebsite{\unexpanded{#6}}%
-	\edef\arggithub{\unexpanded{#7}}%
-	\edef\arglinkedin{\unexpanded{#8}}%
+	\edef\argimage{\unexpanded{#3}}%
+	\edef\argemail{\unexpanded{#4}}%
+	\edef\argphone{\unexpanded{#5}}%
+	\edef\arglocation{\unexpanded{#6}}%
+	\edef\argwebsite{\unexpanded{#7}}%
+	\edef\arggithub{\unexpanded{#8}}%
+	\edef\arglinkedin{\unexpanded{#9}}%
 	\cv@continued
 }
 \newcommand{\cv@continued}[3]{
@@ -147,25 +149,49 @@
 	\edef\argskills{\unexpanded{#2}}%
 	\edef\argsections{\unexpanded{#3}}%
 
-	\begin{minipage}[t]{0.35\textwidth}
-		\vspace{-\baselineskip}
-		{\fontsize{16}{20}\textbf{\MakeUppercase{\argname}}}
-		\vspace{6pt}\\
-		{\Large \argmotto}
-	\end{minipage}
-	\hfill
-	\begin{minipage}[t]{0.32\textwidth}
-		\vspace{-\baselineskip}
-		\maybeicon{Envelope}{11}{\argemail}
-		\maybeicon{Phone}{11}{\argphone}
-		\maybeicon{MapMarker}{11}{\arglocation}
-	\end{minipage}
-	\begin{minipage}[t]{0.23\textwidth}
-		\vspace{-\baselineskip}
-		\maybeicon{Globe}{11}{\argwebsite}
-		\maybeicon{Github}{11}{\arggithub}
-		\maybeicon{LinkedinSquare}{11}{\arglinkedin}
-	\end{minipage}
+	\ifx \argimage\empty
+		\begin{minipage}[t]{0.35\textwidth}
+			\vspace{-\baselineskip}
+			{\fontsize{16}{20}\textbf{\MakeUppercase{\argname}}}
+			\vspace{6pt}\\
+			{\Large \argmotto}
+		\end{minipage}
+		\hfill
+		\begin{minipage}[t]{0.32\textwidth}
+			\vspace{-\baselineskip}
+			\maybeicon{Envelope}{11}{\argemail}
+			\maybeicon{Phone}{11}{\argphone}
+			\maybeicon{MapMarker}{11}{\arglocation}
+		\end{minipage}
+		\begin{minipage}[t]{0.23\textwidth}
+			\vspace{-\baselineskip}
+			\maybeicon{Globe}{11}{\argwebsite}
+			\maybeicon{Github}{11}{\arggithub}
+			\maybeicon{LinkedinSquare}{11}{\arglinkedin}
+		\end{minipage}
+	\else
+		\begin{minipage}[t][][b]{0.18\textwidth}
+			\vspace{-\baselineskip}
+			\includegraphics[width=\textwidth]{\argimage}
+		\end{minipage}
+		\hspace{0.03\textwidth}
+		\begin{minipage}[t]{0.35\textwidth}
+			\vspace{0.08\textwidth}
+			{\fontsize{16}{20}\textbf{\MakeUppercase{\argname}}}
+			\vspace{6pt}\\
+			{\Large \argmotto}
+		\end{minipage}
+		\hfill
+		\begin{minipage}[t]{0.32\textwidth}
+			\vspace{-\baselineskip}
+			\maybeicon{Globe}{11}{\argwebsite}
+			\maybeicon{Github}{11}{\arggithub}
+			\maybeicon{Phone}{11}{\argphone}
+			\maybeicon{Envelope}{11}{\argemail}
+			\maybeicon{LinkedinSquare}{11}{\arglinkedin}
+			\maybeicon{MapMarker}{11}{\arglocation}
+		\end{minipage}
+	\fi
 
 	\ifx \argsummary\empty
 		% show just the skills full width, if there are any

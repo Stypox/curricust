@@ -1,7 +1,7 @@
 pub mod summary_element;
 pub mod skills_element;
 
-use std::{io::Write, path::Path};
+use std::{io::Write, path::{Path, PathBuf}};
 
 use curricust_proc_macro::CvElementBuilder;
 
@@ -37,6 +37,7 @@ pub struct HeaderElement {
     #[cv_element_builder(text_with_attributes)]
     linkedin: Option<String>,
 
+    image: Option<PathBuf>,
     summary: Option<SummaryElement>,
     skills: Option<SkillsElement>,
 }
@@ -46,6 +47,14 @@ impl HeaderElement {
         ctx: &Context,
         root: &Path, key: &str, value: Yaml) -> Result<Option<Yaml>, String> {
         match key {
+            "image" => {
+                let image = value.einto_string()?;
+                if image.is_empty() {
+                    header.image(PathBuf::new())
+                } else {
+                    header.image(root.join(image))
+                }
+            },
             "summary" => header.summary(SummaryElement::parse(ctx, value)?),
             "include-summary" => header.summary(SummaryElement::parse(ctx, include_file(root, value)?)?),
             "skills" => header.skills(SkillsElement::parse(ctx, value)?),
@@ -90,6 +99,7 @@ impl LatexWriter for HeaderElement {
             &[
                 &self.name,
                 self.career.as_deref().unwrap_or(""),
+                self.image.as_deref().map(|p| p.to_str().unwrap()).unwrap_or(""),
                 self.email.as_deref().unwrap_or(""),
                 self.phone.as_deref().unwrap_or(""),
                 self.location.as_deref().unwrap_or(""),

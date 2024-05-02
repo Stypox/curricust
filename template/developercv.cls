@@ -281,7 +281,6 @@
 % 5 subsections
 \newcommand{\@section}[5]{
 	\begin{minipage}{\textwidth}
-		\vspace{\baselineskip}
 		\@titlesectionorsubsection{#1}{#2}
 		\if #3\empty \else
 			#3~\\
@@ -330,8 +329,10 @@
 % 2 description
 \newcommand{\@sectionelement}[2]{
 	\vspace{\baselineskip}
+	\vspace{4pt}
 	\@titlesectionorsubsection{}{#1}
 	#2 \hfill \\
+	\vspace{4pt}
 }
 \newcommand{\sectionsummary}{\@sectionelement}
 \newcommand{\sectionskills}{\@sectionelement}

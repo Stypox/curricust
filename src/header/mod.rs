@@ -3,7 +3,7 @@ pub mod skills_element;
 
 use std::{io::Write, path::Path};
 
-use resume_cv_proc_macro::CvElementBuilder;
+use curricust_proc_macro::CvElementBuilder;
 
 
 use yaml_rust::Yaml;

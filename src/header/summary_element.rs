@@ -1,4 +1,4 @@
-use resume_cv_proc_macro::CvElementBuilder;
+use curricust_proc_macro::CvElementBuilder;
 use yaml_rust::Yaml;
 
 use crate::{writer::{latex_writer::{LatexWriter, write_latex_command_call}, write::MyWrite}, attr::{text_with_attributes::TextWithAttributes, context::Context}, util::yaml::YamlConversions};

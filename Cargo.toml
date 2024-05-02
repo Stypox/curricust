@@ -1,5 +1,5 @@
 [package]
-name = "curriculust"
+name = "curricust"
 version = "1.0.0"
 edition = "2021"
 
@@ -11,7 +11,7 @@ multimap = "0.9.0"
 regex = "1.10.2"
 derive_builder = "0.12.0"
 lazy_static = "1.4.0"
-resume_cv_proc_macro = { path = "resume_cv_proc_macro" }
+curricust_proc_macro = { path = "curricust_proc_macro" }
 markdown = "1.0.0-alpha.14"
 variant_count = "1.1.0"
 futures = "0.3"

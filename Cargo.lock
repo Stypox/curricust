@@ -203,10 +203,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e496a50fda8aacccc86d7529e2c1e0892dbd0f898a6b5645b5561b89c3210efa"
 
 [[package]]
-name = "curriculust"
+name = "curricust"
 version = "1.0.0"
 dependencies = [
  "clap",
+ "curricust_proc_macro",
  "derive_builder",
  "futures",
  "lazy_static",
@@ -214,10 +215,18 @@ dependencies = [
  "multimap",
  "regex",
  "reqwest",
- "resume_cv_proc_macro",
  "tokio",
  "variant_count",
  "yaml-rust",
+]
+
+[[package]]
+name = "curricust_proc_macro"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.38",
 ]
 
 [[package]]
@@ -874,15 +883,6 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "winreg",
-]
-
-[[package]]
-name = "resume_cv_proc_macro"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.38",
 ]
 
 [[package]]

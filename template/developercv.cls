@@ -7,7 +7,7 @@
 % https://www.overleaf.com/latex/templates/cv-developer/rdycxzvvnvcc
 %
 % Authors:
-% Adapted by Stypox for use with Curriculust
+% Adapted by Stypox for use with Curricust
 % Based on a template by Omar Roldan
 % Based on a template by Jan Vorisek (jan@vorisek.me)
 % Based on a template by Jan Küster (info@jankuester.com)

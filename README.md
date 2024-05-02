@@ -1,4 +1,4 @@
-# Curriculust - CV generator
+# Curricust - CV generator
 
 Write your curriculum/resume in YAML files, and convert those to a PDF based on a LaTeX template. The YAML->LaTeX converter is written in Rust, while the LaTeX->PDF conversion can be done e.g. with `pdflatex`.
 
@@ -19,7 +19,7 @@ Writing a CV in YAML allows you to:
 |---|---|---|---|---|---|---|
 |Web services</br><sup>e.g. Europass</sup>|❌|✔️|✔️|❌|🟡|❌|
 |Bare LaTeX|✔️|✔️|✔️|❌|🟡|❌|
-|Curriculust|✔️|✔️|✔️|✔️|✔️|✔️|
+|Curricust|✔️|✔️|✔️|✔️|✔️|✔️|
 
 ### Additional features
 

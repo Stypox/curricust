@@ -1,4 +1,4 @@
-use resume_cv_proc_macro::CvElementBuilder;
+use curricust_proc_macro::CvElementBuilder;
 use std::{fmt::Debug, io::Write};
 use yaml_rust::Yaml;
 

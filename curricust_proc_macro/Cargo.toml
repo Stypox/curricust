@@ -1,10 +1,10 @@
 [package]
-name = "resume_cv_proc_macro"
+name = "curricust_proc_macro"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "resume_cv_proc_macro"
+name = "curricust_proc_macro"
 path = "src/lib.rs"
 proc-macro = true
 

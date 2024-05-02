@@ -1,4 +1,4 @@
-use resume_cv_proc_macro::{CvElementBuilder, CvSectionItem};
+use curricust_proc_macro::{CvElementBuilder, CvSectionItem};
 
 
 use crate::writer::{

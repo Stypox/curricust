@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "resume_cv_proc_macro"
+name = "curricust_proc_macro"
 version = "0.1.0"
 dependencies = [
  "proc-macro2",

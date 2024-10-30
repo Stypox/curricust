@@ -10,9 +10,9 @@ while true; do
         break;
 
     elif [ "$1" = "--help" ]; then
-        echo "Wrapper around the curriculust Rust program for conversion from YML directly to PDF."
+        echo "Wrapper around the curricust Rust program for conversion from YML directly to PDF."
         echo "Usage: $0 [--help] [--dark] [--watch] <BASE_YML_PATH> <OUTPUT_TEX_PATH> <TEMPLATE_PATH>"
-        echo "Pass arguments the curriculust Rust program after --, e.g. $0 ... -- --check-links"
+        echo "Pass arguments the curricust Rust program after --, e.g. $0 ... -- --check-links"
         echo
         echo "Arguments:"
         echo "  <BASE_YML_PATH>   The base YAML file to use as input"
@@ -25,7 +25,7 @@ while true; do
         echo "  --dark  Invert colors in the PDF"
         echo "  --watch Automatically rebuild the .tex and the PDF when any relevant file changes"
         echo
-        echo "Help for curriculust (<INPUT> and <OUTPUT> are passed through):"
+        echo "Help for curricust (<INPUT> and <OUTPUT> are passed through):"
         cargo run -- --help
         exit 0
 
@@ -47,7 +47,7 @@ while true; do
     else
         echo "Unexpected argument: $1"
         echo "Use this to get help about the build script: $0 --help"
-        echo "Use this to get help about curriculust: $0 -- --help"
+        echo "Use this to get help about curricust: $0 -- --help"
         exit 1
     fi
 

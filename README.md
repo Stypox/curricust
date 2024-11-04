@@ -71,6 +71,21 @@ Internally `build.sh` calls:
 
 For example, to build the example in the `example/` folder with the Developer CV template, the command would be `./build.sh ./example/base.yml ./build/example.tex ./template/developercv.cls`.
 
+## Dockerfile usage
+
+Docker is supported through the provided Dockerfile. It packages the main `curricust` binary and the `build.sh` script (slightly patched for docker support) under `curricust-watch`. The default entrypoint is `curricust-watch` but can be changed using the `--entrypoint` flag for docker.
+The container workdir is under /src, so just mount your cv source files unders /src and you can reference them directly.
+Practical example:
+```sh
+git clone https://github.com/Stypox/curricust
+cd curricust
+docker build . -t curricust:latest
+# this is clunky, but important, see the note below.
+mkdir out
+docker run --rm -it -v "$PWD/example:/src" -v "$PWD/template/:/src/template" curricust base.yml out/out.pdf template/developercv.cls --watch
+```
+**Note: docker support it's very limited at the current stage. It is not guaranteed to work out of the box.**
+
 
 ## Templates
 

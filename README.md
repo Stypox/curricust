@@ -30,7 +30,7 @@ With the `--check-links` option the Rust converter will make a GET request to al
 
 Text fields support basic Markdown, so you can insert links, lists and put emphasis on things.
 
-Take a look a the `example/` folder for an actual example of the rules explained below.
+Take a look at the `example/` folder for an actual example of the rules explained below.
 
 ### Text field attributes
 

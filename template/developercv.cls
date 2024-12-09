@@ -355,7 +355,7 @@
 					\vspace{3pt}
 					\linebreak
 					\footnotesize{#2}
-				\fi
+				\fi\\
 			\fi
 		}
 	}%

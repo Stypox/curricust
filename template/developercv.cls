@@ -35,6 +35,7 @@
 \setlength{\parindent}{0mm} % Suppress paragraph indentation
 
 \usepackage[hidelinks]{hyperref} % Required for links but hide the default boxes around links
+\usepackage[normalem]{ulem} % For dashed underlines
 
 \pagestyle{empty} % No headers or footers
 
@@ -141,7 +142,7 @@
 }
 
 \newcommand{\cvhref}[2]{%
-	\href{#1}{\smash{\underline{\smash{#2}\vphantom{T}}}\vphantom{#2}}%
+	\href{#1}{\smash{\dashuline{\smash{#2}\vphantom{T}}}\vphantom{#2}}%
 }
 
 

@@ -73,8 +73,7 @@ fn write_markdown_node(f: &mut MyWrite, node: Node) -> std::io::Result<()> {
             if a.value == "<br>" || a.value == "<br/>" || a.value == "<br />" {
                 writeln!(f, "\\\\")
             } else {
-                return Err(std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                return Err(std::io::Error::other(
                     format!("Unimplemented html element in markdown: {a:?}"),
                 ));
             }
@@ -119,8 +118,7 @@ fn write_markdown_node(f: &mut MyWrite, node: Node) -> std::io::Result<()> {
         // Node::Code(a) => todo!(),
         // Node::Delete(a) => todo!(),
         _ => {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!("Unimplemented element in markdown: {node:?}"),
             ))
         }

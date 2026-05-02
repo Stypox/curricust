@@ -5,7 +5,7 @@ use std::iter::once;
 use field::{parse_fields, dummy_string_field, MyField};
 
 use quote::{quote, quote_spanned};
-use syn::{DataStruct, Fields, Ident, parse_macro_input, DeriveInput};
+use syn::{DataStruct, DeriveInput, Fields, Ident, parse_macro_input, spanned::Spanned};
 
 #[proc_macro_derive(CvElementBuilder, attributes(cv_element_builder))]
 pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -35,13 +35,13 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
     let recurse_fields = parse_fields(&fields.named)
         .chain(once(dummy_string_field("id")))
         .map(|f| {
-            let MyField { field_name, ty, is_optional: _, has_text_with_attributes_attr, span } = f;
+            let MyField { field_name, ty, is_optional: _, has_text_with_attributes_attr } = f;
             if has_text_with_attributes_attr {
-                quote_spanned! {span=>
+                quote_spanned! {field_name.span()=>
                     #field_name: std::vec::Vec<crate::attr::text_with_attributes::TextWithAttributes>,
                 }
             } else {
-                quote_spanned! {span=>
+                quote_spanned! {field_name.span()=>
                     #field_name: std::option::Option<#ty>,
                 }
             }
@@ -50,18 +50,18 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
     let recurse_functions = parse_fields(&fields.named)
         .chain(once(dummy_string_field("id")))
         .map(|f| {
-            let MyField { field_name, ty, is_optional: _, has_text_with_attributes_attr, span } = f;
+            let MyField { field_name, ty, is_optional: _, has_text_with_attributes_attr } = f;
 
             if has_text_with_attributes_attr {
                 let fun_name = Ident::new(("add_".to_string() + &field_name.to_string()).as_str(), field_name.span());
-                quote_spanned! {span=>
+                quote_spanned! {field_name.span()=>
                     pub fn #fun_name(&mut self, e: crate::attr::text_with_attributes::TextWithAttributes) -> &mut Self {
                         self.#field_name.push(e);
                         self
                     }
                 }
             } else {
-                quote_spanned! {span=>
+                quote_spanned! {field_name.span()=>
                     pub fn #field_name(&mut self, e: #ty) -> &mut Self {
                         self.#field_name = Some(e);
                         self
@@ -72,28 +72,28 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
 
     let recurse_build = parse_fields(&fields.named)
         .map(|f| {
-            let MyField { field_name, ty: _, is_optional, has_text_with_attributes_attr, span } = f;
+            let MyField { field_name, ty: _, is_optional, has_text_with_attributes_attr } = f;
             let field_name_error = format!("Missing {}", field_name.to_string().trim_end_matches("_"));
 
             match (has_text_with_attributes_attr, is_optional) {
                 (false, false) => {
-                    quote_spanned! {span=>
+                    quote_spanned! {field_name.span()=>
                         #field_name: self.#field_name.ok_or(#field_name_error)?,
                     }
                 },
                 (false, true) => {
-                    quote_spanned! {span=>
+                    quote_spanned! {field_name.span()=>
                         #field_name: self.#field_name,
                     }
                 },
                 (true, false) => {
-                    quote_spanned! {span=>
+                    quote_spanned! {field_name.span()=>
                         #field_name: crate::attr::text_with_attributes::into_best_matching_dictionary(self.#field_name, &active_attrs, &ctx.dictionary)?
                             .ok_or(#field_name_error)?,
                     }
                 },
                 (true, true) => {
-                    quote_spanned! {span=>
+                    quote_spanned! {field_name.span()=>
                         #field_name: crate::attr::text_with_attributes::into_best_matching_dictionary(self.#field_name, &active_attrs, &ctx.dictionary)?,
                     }
                 },
@@ -105,11 +105,11 @@ pub fn derive_cv_element_builder(input: proc_macro::TokenStream) -> proc_macro::
         .map(|f| {
             let field_name = f.field_name;
             if f.has_text_with_attributes_attr {
-                quote_spanned! {f.span=>
+                quote_spanned! {field_name.span()=>
                     #field_name: std::vec::Vec::new(),
                 }
             } else {
-                quote_spanned! {f.span=>
+                quote_spanned! {field_name.span()=>
                     #field_name: std::option::Option::None,
                 }
             }
@@ -155,19 +155,38 @@ pub fn derive_cv_section_item(input: proc_macro::TokenStream) -> proc_macro::Tok
         unimplemented!();
     };
 
-    let recurse_fields = parse_fields(&fields.named)
-        .map(|f| {
-            let MyField { field_name, span, .. } = f;
-            let fun_name = Ident::new(("add_".to_string() + &field_name.to_string()).as_str(), field_name.span());
-            let field_name = field_name.to_string();
+    let (attr_fields, plain_fields): (Vec<_>, Vec<_>) = parse_fields(&fields.named)
+        .partition(|f| f.has_text_with_attributes_attr);
+    let mut plain_fields = plain_fields.into_iter().map(|f| f.field_name).collect::<Vec<_>>();
+    let attr_fields = attr_fields.into_iter().map(|f| f.field_name).collect::<Vec<_>>();
+    plain_fields.push(Ident::new("id", fields.span()));
 
-            // trailing _ are only used for reserved Rust keywords
-            let field_name = field_name.trim_end_matches("_");
+    let recurse_fields_plain = plain_fields.into_iter().map(|field_name| {
+        let fun_name = field_name.clone();
+        let field_name = field_name.to_string();
 
-            quote_spanned! {span=>
-                #field_name => builder.#fun_name(value),
-            }
-        });
+        // trailing _ are only used for reserved Rust keywords
+        let field_name = field_name.trim_end_matches("_");
+
+        quote_spanned! {fun_name.span()=>
+            #field_name => {
+                builder.#fun_name(crate::util::yaml::YamlConversions::einto_string(value)?);
+                continue;
+            },
+        }
+    });
+
+    let recurse_fields_attr = attr_fields.into_iter().map(|field_name| {
+        let fun_name = Ident::new(("add_".to_string() + &field_name.to_string()).as_str(), field_name.span());
+        let field_name = field_name.to_string();
+
+        // trailing _ are only used for reserved Rust keywords
+        let field_name = field_name.trim_end_matches("_");
+
+        quote_spanned! {fun_name.span()=>
+            #field_name => builder.#fun_name(value),
+        }
+    });
 
     quote! {
         impl #impl_generics crate::item::SectionItem for #name #ty_generics #where_clause {
@@ -176,14 +195,14 @@ pub fn derive_cv_section_item(input: proc_macro::TokenStream) -> proc_macro::Tok
 
                 for (key, value) in hash {
                     let key = crate::util::yaml::YamlConversions::einto_string(key)?;
-                    if key == "id" {
-                        builder.id(crate::util::yaml::YamlConversions::einto_string(value)?);
-                        continue;
-                    }
-                    let (key, value) = crate::attr::text_with_attributes::TextWithAttributes::new_string(key, value)?;
-
                     match key.as_str() {
-                        #(#recurse_fields)*
+                        #(#recurse_fields_plain)*
+                        _ => {},
+                    };
+
+                    let (key, value) = crate::attr::text_with_attributes::TextWithAttributes::new_string(key, value)?;
+                    match key.as_str() {
+                        #(#recurse_fields_attr)*
                         _ => return std::result::Result::Err(std::format!("Unknown key in section item: {}", key)),
                     };
                 }

@@ -5,11 +5,13 @@ use crate::attr::context::Context;
 use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
 use crate::item::talk_item::TalkItem;
+use crate::writer::europass_xml_writer::{ATTACHMENT_XML_FILENAME, MyXmlUtils};
 use crate::writer::latex_writer::LatexWriter;
 use crate::writer::{AllWriters, write::MyWrite};
 use crate::util::file::{include_file, include_file_with_context};
 use crate::util::yaml::YamlConversions;
 use multimap::MultiMap;
+use xml_builder::{XML, XMLBuilder, XMLElement, XMLError, XMLVersion};
 use yaml_rust::Yaml;
 
 use crate::header::HeaderElement;
@@ -24,6 +26,7 @@ use crate::item::SectionItem;
 pub struct BaseElement {
     header: HeaderElement,
     sections: Vec<Box<dyn AllWriters>>,
+    language: Option<String>,
 }
 
 impl BaseElement {
@@ -45,21 +48,21 @@ impl BaseElement {
         value: Yaml,
     ) -> Result<(), String>
     where
-        T: AllWriters + SectionItem + 'static,
+        T: SectionItem + 'static,
         SectionElement<T>: AllWriters,
     {
         sections.push(Box::new(SectionElement::<T>::parse(ctx, false, value)?));
         Ok(())
     }
 
-    fn parse_include_section<T: AllWriters>(
+    fn parse_include_section<T>(
         sections: &mut Vec<Box<dyn AllWriters>>,
         ctx: &Context,
         root: &Path,
         value: Yaml,
     ) -> Result<(), String>
     where
-        T: AllWriters + SectionItem + 'static,
+        T: SectionItem + 'static,
         SectionElement<T>: AllWriters,
     {
         let (override_ctx, value) = include_file_with_context(root, ctx.clone(), value)?;
@@ -118,16 +121,20 @@ impl BaseElement {
         }
 
         let header = header.build(&ctx)?;
-        Ok(BaseElement { header, sections })
+        Ok(BaseElement { header, sections, language: ctx.get_base_attr() })
     }
-}
 
-impl LatexWriter for BaseElement {
-    fn latex_write(&self, f: &mut MyWrite) -> std::io::Result<()> {
+    pub fn latex_write(&self, f: &mut MyWrite, attach_europass_xml: bool) -> std::io::Result<()> {
         writeln!(f, r"\documentclass[11pt]{{resumecvrusttemplate}}")?;
         writeln!(f, r"\usepackage{{multicol}}")?;
+        if attach_europass_xml {
+            writeln!(f, "\\usepackage{{embedfile}}")?;
+        }
         writeln!(f, r"\setlength{{\columnsep}}{{0mm}}")?;
         writeln!(f, "\\begin{{document}}\n")?;
+        if attach_europass_xml {
+            writeln!(f, "\\embedfile{{{ATTACHMENT_XML_FILENAME}}}")?;
+        }
         self.header.latex_write(f)?;
         writeln!(f, "{{}}{{}}{{")?;
         for section in &self.sections {
@@ -137,5 +144,62 @@ impl LatexWriter for BaseElement {
         writeln!(f, "}}")?;
         writeln!(f, r"\end{{document}}")?;
         Ok(())
+    }
+
+    pub fn to_europass_xml(&self) -> Result<XML, XMLError> {
+        let candidate = XMLElement::new("Candidate")
+            .my_add_attribute("xsi:schemaLocation", "http://www.europass.eu/1.0 Candidate.xsd")
+            .my_add_attribute("xmlns", "http://www.europass.eu/1.0")
+            .my_add_attribute("xmlns:oa", "http://www.openapplications.org/oagis/9")
+            .my_add_attribute("xmlns:eures", "http://www.europass_eures.eu/1.0")
+            .my_add_attribute("xmlns:hr", "http://www.hr-xml.org/3")
+            .my_add_attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+            .my_add_child(
+                XMLElement::new("hr:DocumentID")
+                    .my_add_attribute("schemeID", "Test-0001")
+                    .my_add_attribute("schemeName", "DocumentIdentifier")
+                    .my_add_attribute("schemeAgencyName", "EUROPASS")
+                    .my_add_attribute("schemeVersionID", "4.0")
+            )?
+            .my_add_child(self.header.to_candidate_supplier_xml()?)?
+            .my_add_child(self.header.to_candidate_person_xml()?)?
+            .my_add_child({
+                let mut candidate_profile = XMLElement::new("CandidateProfile")
+                    .my_add_attribute("languageCode", self.language.as_deref().unwrap_or("en")) // TODO
+                    .my_add_child(
+                        XMLElement::new("hr:ID")
+                            .my_add_attribute("schemeID", "Test-0001")
+                            .my_add_attribute("schemeName", "CandidateProfileID")
+                            .my_add_attribute("schemeAgencyName", "EUROPASS")
+                            .my_add_attribute("schemeVersionID", "1.0")
+                    )?;
+
+                candidate_profile = self.header.extend_candidate_profile_xml(candidate_profile)?;
+
+                let mut elements = Vec::<(&'static str, XMLElement)>::new();
+                for section in &self.sections {
+                    elements.extend(section.to_europass_xml()?);
+                }
+
+                while let Some((key, _)) = elements.first().cloned() {
+                    let (elements_with_key, remaining) = elements.into_iter().partition(|e| e.0 == key);
+                    elements = remaining;
+
+                    let mut parent = XMLElement::new(key);
+                    for (_, element) in elements_with_key {
+                        parent = parent.my_add_child(element)?;
+                    }
+                    candidate_profile = candidate_profile.my_add_child(parent)?;
+                }
+
+                candidate_profile
+            })?;
+
+        let mut xml = XMLBuilder::new()
+            .version(XMLVersion::XML1_0)
+            .encoding("UTF-8".into())
+            .build();
+        xml.set_root_element(candidate);
+        Ok(xml)
     }
 }

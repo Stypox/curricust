@@ -15,7 +15,11 @@ pub struct Args {
     pub input: PathBuf,
 
     /// The output LaTeX file
-    pub output: PathBuf,
+    pub latex: PathBuf,
+
+    /// Whether to also produce an Europass XML file to attach to the PDF
+    #[arg(short('x'), long)]
+    pub attach_europass_xml: bool,
 
     /// Make GET requests to all links in the document and check
     /// if the response's status code is different from "200 OK"

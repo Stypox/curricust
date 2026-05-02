@@ -1,6 +1,7 @@
-name: Isaac Asimov
+name: Isaac
+surname: Asimov
 career: Writer
-phone: 123456789
+phone: +1 123456789
 email: isaac@example.com
 website: example.com
 image: portrait.png

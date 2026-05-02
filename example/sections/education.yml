@@ -8,6 +8,7 @@ items:
     institution-en: Columbia University
     institution-it: Università di Columbia
     when: 1936-{{present}}
+    start: "1936"
     grade: 5.94/6.0
     details: been there done that
 
@@ -16,6 +17,8 @@ items:
     degree-en: Boys high school
     institution: Brooklyn
     when: 1925-1935
+    start: "1925"
+    end: "1935"
     grade: 100/100
     details-it-short:
       Ho imparato a scrivere
@@ -32,5 +35,7 @@ items:
 
   - id: this-is-invisible
     when: 1234-5678
+    start: "1234"
+    end: "5678"
     degree: refgs
     institution: abcd

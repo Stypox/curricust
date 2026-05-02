@@ -1,11 +1,10 @@
 use curricust_proc_macro::CvElementBuilder;
+use xml_builder::{XMLElement, XMLError};
 use std::{fmt::Debug, io::Write};
 use yaml_rust::Yaml;
 
 use crate::{
-    attr::{context::Context, text_with_attributes::TextWithAttributes},
-    writer::{latex_writer::{LatexWriter, SectionItemLatexWriter, write_latex_command_call}, write::MyWrite},
-    util::yaml::YamlConversions,
+    attr::{context::Context, text_with_attributes::TextWithAttributes}, util::yaml::YamlConversions, writer::{europass_xml_writer::EuropassXmlWriter, latex_writer::{LatexWriter, SectionItemLatexWriter, write_latex_command_call}, write::MyWrite}
 };
 
 use crate::item::SectionItem;
@@ -86,5 +85,15 @@ impl<T: SectionItemLatexWriter> LatexWriter for SectionElement<T> {
         writeln!(f, "}}")?;
 
         Ok(())
+    }
+}
+
+impl<T: EuropassXmlWriter> EuropassXmlWriter for SectionElement<T> {
+    fn to_europass_xml(&self) -> Result<Vec<(&'static str, XMLElement)>, XMLError> {
+        let mut res = vec![];
+        for item in self.items.iter().flatten() {
+            res.extend(item.to_europass_xml()?);
+        }
+        Ok(res)
     }
 }

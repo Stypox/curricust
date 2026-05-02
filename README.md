@@ -25,6 +25,8 @@ Writing a CV in YAML allows you to:
 
 With the `--check-links` option the Rust converter will make a GET request to all of the links present in the document, to make sure they all work.
 
+With the `--attach-europass-xml` option, an `.xml` file will be generated according to [the Europass schema](https://europass-unofficial.github.io/europass-schema-docs/) ([PDF](https://europass.europa.eu/system/files/2020-07/europass-xml-schema-doc-v3.4.0_0.pdf)) and attached to the generated PDF. This should ideally make it so that automatic tools that read CVs have a simpler time interpreting the data.
+
 
 ## YAML file structure
 
@@ -50,13 +52,13 @@ Fields with nested sub-fields (e.g. `section-education`) can be put in separate 
 The root YAML file can contain the following fields. `*` fields are required, but if you don't want anything there just use `""`.
 - active attribute specifiers: `locale`, `display`, `order`, `visibility` to apply from the point they are encountered
 - `dictionary` is a dictionary of key-value pairs (attributes are supported on keys)
-- `header` contains `name`\*, `career`, `email`, `phone`, `location`, `website`, `github`, `linkedin` and:
+- `header` contains `name`\*, `surname`\*, `career`, `email`, `phone`, `location`, `website`, `github`, `linkedin` and:
     - `summary` and `skills`, which contain `title`\* (the title of the section) and `summary`\*/`skills`\*
 
 These fields specify section of different types. They all have a `title`\*, a `description`, and `items` (a list). The sub-fields in the list below are to be intended as children of `items`:
-- `section-education`: `degree`\*, `institution`\*, `when`\*, `grade`, `details`
+- `section-education`: `degree`\*, `institution`\*, `when`\*, `start`\*, `end`, `grade`, `details`
 - `section-award`: `name`\*, `when`\*, `grade`
-- `section-job`: `role`\*, `company`\*, `where`\*, `when`\*, `topics`, `details`
+- `section-job`: `role`\*, `company`\*, `where`\*, `when`\*, `start`\*, `end`, `topics`, `details`
 - `section-project`: `name`\*, `technologies`\*, `links`, `when`, `details`
 - `section-talk`: `name`\*, `event`\*, `when`\*
 

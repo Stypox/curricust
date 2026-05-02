@@ -16,7 +16,7 @@ while true; do
         echo
         echo "Arguments:"
         echo "  <BASE_YML_PATH>   The base YAML file to use as input"
-        echo "  <OUTPUT_TEX_PATH> The output LaTeX file to then convert to PDF"
+        echo "  <OUTPUT_PDF_PATH> The output PDF file"
         echo "                    (the folder it is in will be cluttered with build files!)"
         echo "  <TEMPLATE_PATH>   The .cls template to use"
         echo
@@ -38,8 +38,8 @@ while true; do
     elif [ "$BASE_YML_PATH" = "" ]; then
         BASE_YML_PATH="$1"
 
-    elif [ "$OUTPUT_TEX_PATH" = "" ]; then
-        OUTPUT_TEX_PATH="$1"
+    elif [ "$OUTPUT_PDF_PATH" = "" ]; then
+        OUTPUT_PDF_PATH="$1"
 
     elif [ "$TEMPLATE_PATH" = "" ]; then
         TEMPLATE_PATH="$1"
@@ -55,18 +55,19 @@ while true; do
 done;
 
 function buildPdf() {
-    cargo run -- "$BASE_YML_PATH" "$OUTPUT_TEX_PATH" "$@" || return
+    OUTPUT_BASE="${OUTPUT_PDF_PATH%.pdf}"
+    cargo run -- "$BASE_YML_PATH" "$OUTPUT_BASE.tex" "$@" || return
     if [ "$DARK" = "true" ]; then
-        sed -i -e "s/{resumecvrusttemplate}/{resumecvrusttemplate}\\\\pagecolor[rgb]{0,0,0}\\\\color[rgb]{1,1,1}/" "$OUTPUT_TEX_PATH"
+        sed -i -e "s/{resumecvrusttemplate}/{resumecvrusttemplate}\\\\pagecolor[rgb]{0,0,0}\\\\color[rgb]{1,1,1}/" "$OUTPUT_BASE.tex"
     fi
 
-    NEW_CLS_PATH="$(dirname "$OUTPUT_TEX_PATH")/resumecvrusttemplate.cls"
+    NEW_CLS_PATH="$(dirname "$OUTPUT_PDF_PATH")/resumecvrusttemplate.cls"
     cp "$TEMPLATE_PATH" "$NEW_CLS_PATH"
     sed -i -e "s/ProvidesClass{[^}]*}/ProvidesClass{resumecvrusttemplate}/" "$NEW_CLS_PATH"
 
-    pushd "$(dirname "$OUTPUT_TEX_PATH")" >/dev/null
+    pushd "$(dirname "$OUTPUT_PDF_PATH")" >/dev/null
     pdflatex \
-        --interaction=nonstopmode "$(basename "$OUTPUT_TEX_PATH")" \
+        --interaction=nonstopmode "$(basename "$OUTPUT_BASE.tex")" \
         | awk 'BEGIN{IGNORECASE = 1}/warning|!/,/^$/;' \
         || echo "Could not compile latex"
     popd >/dev/null
@@ -78,7 +79,7 @@ if [ "$WATCH" = "true" ]; then
     inotifywait --recursive --monitor \
         --event modify,move,create,delete \
         "$(dirname "$BASE_YML_PATH")" "./src/" "./curricust_proc_macro" "$TEMPLATE_PATH" \
-        --exclude "($(dirname "$OUTPUT_TEX_PATH"))|(\.git)" \
+        --exclude "($(dirname "$OUTPUT_PDF_PATH"))|(\.git)" \
         | while read whatchanged; do
             buildPdf "$@"
         done

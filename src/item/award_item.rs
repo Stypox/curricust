@@ -1,9 +1,10 @@
+use chrono::NaiveDate;
 use curricust_proc_macro::{CvElementBuilder, CvSectionItem};
+use xml_builder::{XMLElement, XMLError};
 
 
 use crate::writer::{
-    latex_writer::{write_latex_command_call, LatexWriter, SectionItemLatexWriter},
-    write::MyWrite,
+    europass_xml_writer::{EuropassXmlWriter, MyXmlUtils}, latex_writer::{LatexWriter, SectionItemLatexWriter, write_latex_command_call}, markdown_utils::{extract_markdown_uri, markdown_to_plaintext}, write::MyWrite
 };
 
 #[derive(Debug, CvElementBuilder, CvSectionItem)]
@@ -29,3 +30,25 @@ impl LatexWriter for AwardItem {
 impl SectionItemLatexWriter for AwardItem {
     const SECTION_COMMAND: &'static str = "sectionaward";
 }
+
+impl EuropassXmlWriter for AwardItem {
+    fn to_europass_xml(&self) -> Result<Vec<(&'static str, XMLElement)>, XMLError> {
+        // attempt to parse the date, just in case
+        let date = if let Ok(date) = NaiveDate::parse_from_str(&self.when, "%d/%m/%Y") {
+            &date.format("%Y-%m-%d").to_string()
+        } else {
+            &self.when
+        };
+
+        Ok(vec![("Certifications", XMLElement::new("Certification")
+            .my_add_text_child("hr:CertificationName", &markdown_to_plaintext(&self.name))?
+            .my_add_child(
+                XMLElement::new("eures:FirstIssuedDate")
+                    .my_add_text_child("hr:FormattedDateTime", date)?
+            )?
+            // no better known place for the grade
+            .my_add_text_child_if_nonempty("oa:Description", &self.grade.as_deref().map(markdown_to_plaintext).unwrap_or("".to_string()))?
+            .my_add_text_child_if_nonempty("Link", &self.grade.as_deref().and_then(extract_markdown_uri).unwrap_or("".to_string()))?)])
+    }
+}
+

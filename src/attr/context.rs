@@ -43,6 +43,10 @@ impl Default for Context {
 }
 
 impl Context {
+    pub fn get_base_attr(&self) -> Option<String> {
+        self.attrs[AttributeType::Locale as usize].clone().value
+    }
+
     pub fn get_active_attrs(&self, id: &Option<String>) -> Vec<String> {
         self.attrs
             .clone()

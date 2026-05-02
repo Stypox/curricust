@@ -1,7 +1,7 @@
 use proc_macro2::{Span, TokenStream};
 use quote::{quote, ToTokens};
 use syn::{
-    punctuated::Punctuated, spanned::Spanned, token::Comma,
+    punctuated::Punctuated, token::Comma,
     AngleBracketedGenericArguments, AttrStyle, ExprPath, Field,
     GenericArgument, Ident, Path, PathArguments, PathSegment, Type, TypePath,
 };
@@ -12,7 +12,6 @@ pub struct MyField {
     pub ty: TokenStream,
     pub is_optional: bool,
     pub has_text_with_attributes_attr: bool,
-    pub span: Span,
 }
 
 pub fn dummy_string_field(name: &str) -> MyField {
@@ -21,7 +20,6 @@ pub fn dummy_string_field(name: &str) -> MyField {
         ty: quote! { std::string::String },
         is_optional: false,
         has_text_with_attributes_attr: false,
-        span: Span::call_site(),
     }
 }
 
@@ -48,7 +46,6 @@ pub fn parse_fields(fields: &Punctuated<Field, Comma>) -> impl Iterator<Item = M
             ty: ty.into_token_stream(),
             is_optional,
             has_text_with_attributes_attr,
-            span: f.span(),
         }
     })
 }

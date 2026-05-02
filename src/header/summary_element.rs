@@ -1,7 +1,8 @@
 use curricust_proc_macro::CvElementBuilder;
+use xml_builder::{XMLElement, XMLError};
 use yaml_rust::Yaml;
 
-use crate::{writer::{latex_writer::{LatexWriter, write_latex_command_call}, write::MyWrite}, attr::{text_with_attributes::TextWithAttributes, context::Context}, util::yaml::YamlConversions};
+use crate::{attr::{context::Context, text_with_attributes::TextWithAttributes}, util::yaml::YamlConversions, writer::{europass_xml_writer::build_xml_text_element, latex_writer::{LatexWriter, write_latex_command_call}, markdown_utils::markdown_to_html, write::MyWrite}};
 
 #[derive(Debug, CvElementBuilder)]
 pub struct SummaryElement {
@@ -25,6 +26,10 @@ impl SummaryElement {
             };
         }
         builder.build(ctx)
+    }
+
+    pub fn to_experience_summary_xml(&self) -> Result<XMLElement, XMLError> {
+        build_xml_text_element("ExperienceSummary", &markdown_to_html(&self.summary))
     }
 }
 

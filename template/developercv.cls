@@ -197,6 +197,7 @@
 			\maybeiconleft{Github}{11}{\arggithub}
 			\maybeiconleft{LinkedinSquare}{11}{\arglinkedin}
 		\end{minipage}
+		\vspace{-0.8em}
 	\else
 		\begin{minipage}[t][][b]{0.18\textwidth}
 			\vspace{-\baselineskip}
@@ -395,8 +396,8 @@
 \newcommand{\itemjob}[6]{
 	\@entry{#4}{#5}{#1}{
 		#2%
-		\if #2\empty \else
-			\if #3\empty \else
+		\def\temp{#2}\ifx\temp\empty\else
+			\def\temp{#3}\ifx\temp\empty\else
 				,
 			\fi
 		\fi

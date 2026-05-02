@@ -58,7 +58,11 @@ impl EuropassXmlWriter for EducationItem {
             // cannot crash, split returns >=1 items; the last one is languages
             let thesis = thesis.last().unwrap();
             let thesis = COLON_REGEX.splitn(thesis, 2).map(|e| e.to_string()).collect::<Vec<_>>();
-            thesis.get(1).cloned()
+            if thesis.first().is_some_and(|t| t.len() < 10) {
+                thesis.get(1).cloned()
+            } else {
+                None // too long word for "thesis", probably not thesis
+            }
         } else {
             None
         };

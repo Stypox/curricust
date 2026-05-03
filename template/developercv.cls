@@ -282,18 +282,16 @@
 % 4 entries
 % 5 subsections
 \newcommand{\@section}[5]{
-	\begin{minipage}{\textwidth}
-		\@titlesectionorsubsection{#1}{#2}
-		\if #3\empty \else
-			#3~\\
-		\fi
-		\ifx #4\empty \else
-			\begin{@entrylist}
-				#4
-			\end{@entrylist}
-		\fi
-		#5
-	\end{minipage}
+	\@titlesectionorsubsection{#1}{#2}
+	\if #3\empty \else
+		#3~\\
+	\fi
+	\ifx #4\empty \else
+		\begin{@entrylist}
+			#4
+		\end{@entrylist}
+	\fi
+	#5
 }
 \newcommand{\sectioneducation}{\@section}
 \newcommand{\sectionjob}{\@section}
@@ -306,22 +304,19 @@
 % 4 entries
 % 5 subsections
 \newcommand{\@sectionlist}[5]{
-	\begin{minipage}{\textwidth}
-		\vspace{\baselineskip}
-		\@titlesectionorsubsection{#1}{#2}
-		\ifx #3\empty \else
-			\\[-8pt]
-			#3
-			\\[-4pt]
-		\fi
-		\ifx #4\empty \else
-			\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=9pt]
-				#4
-			\end{itemize}
-		\fi
-		#5
-		\vspace{12pt}
-	\end{minipage}
+	\@titlesectionorsubsection{#1}{#2}
+	\ifx #3\empty \else
+		\\[-8pt]
+		#3
+		\\[-4pt]
+	\fi
+	\ifx #4\empty \else
+		\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt,leftmargin=9pt]
+			#4
+		\end{itemize}
+	\fi
+	#5
+	\vspace{12pt}
 }
 \newcommand{\sectionaward}{\@sectionlist}
 \newcommand{\sectiontalk}{\@sectionlist}

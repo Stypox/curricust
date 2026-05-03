@@ -220,7 +220,8 @@ impl LatexWriter for HeaderElement {
             f,
             "cv",
             &[
-                &format!("{} {}", self.name, self.surname),
+                &self.name,
+                &self.surname,
                 self.career.as_deref().unwrap_or(""),
                 self.image.as_deref().map(|p| p.to_str().unwrap()).unwrap_or(""),
                 &email,

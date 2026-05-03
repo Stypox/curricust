@@ -149,82 +149,97 @@
 
 % Arguments:
 % 1 name
-% 2 career
-% 3 image
-% 4 email (optional)
-% 5 phone (optional)
-% 6 location (optional)
-% 7 website (optional)
-% 8 github (optional)
-% 9 linkedin (optional)
-% 10 about me section
-% 11 skills section
-% 12 sections
+% 2 surname
+% 3 career
+% 4 image
+% 5 email (optional)
+% 6 phone (optional)
+% 7 location (optional)
+% 8 website (optional)
+% 9 github (optional)
+% 10 linkedin (optional)
+% 11 about me section
+% 12 skills section
+% 13 sections
 \newcommand{\cv}[9]{
 	\edef\argname{\unexpanded{#1}}%
-	\edef\argmotto{\unexpanded{#2}}%
-	\edef\argimage{\unexpanded{#3}}%
-	\edef\argemail{\unexpanded{#4}}%
-	\edef\argphone{\unexpanded{#5}}%
-	\edef\arglocation{\unexpanded{#6}}%
-	\edef\argwebsite{\unexpanded{#7}}%
-	\edef\arggithub{\unexpanded{#8}}%
-	\edef\arglinkedin{\unexpanded{#9}}%
+	\edef\argsurname{\unexpanded{#2}}%
+	\edef\argcareer{\unexpanded{#3}}%
+	\edef\argimage{\unexpanded{#4}}%
+	\edef\argemail{\unexpanded{#5}}%
+	\edef\argphone{\unexpanded{#6}}%
+	\edef\arglocation{\unexpanded{#7}}%
+	\edef\argwebsite{\unexpanded{#8}}%
+	\edef\arggithub{\unexpanded{#9}}%
 	\cv@continued
 }
-\newcommand{\cv@continued}[3]{
-	\edef\argsummary{\unexpanded{#1}}%
-	\edef\argskills{\unexpanded{#2}}%
-	\edef\argsections{\unexpanded{#3}}%
+\newcommand{\cv@continued}[4]{
+	\edef\arglinkedin{\unexpanded{#1}}%
+	\edef\argsummary{\unexpanded{#2}}%
+	\edef\argskills{\unexpanded{#3}}%
+	\edef\argsections{\unexpanded{#4}}%
 
-	\ifx \argimage\empty
-		\begin{minipage}[t]{0.35\textwidth}
+	\ifx\argimage\empty\else
+		\hspace{-0.012\textwidth}
+		\begin{minipage}[t][][b]{0.12\textwidth}
 			\vspace{-\baselineskip}
-			{\fontsize{16}{20}\textbf{\MakeUppercase{\argname}}}
-			\vspace{6pt}\\
-			{\Large \argmotto}
-		\end{minipage}
-		\hfill
-		\begin{minipage}[t]{0.32\textwidth}
-			\vspace{-\baselineskip}
-			\maybeiconleft{Envelope}{11}{\argemail}
-			\maybeiconleft{Phone}{11}{\argphone}
-			\maybeiconleft{MapMarker}{11}{\arglocation}
-		\end{minipage}
-		\begin{minipage}[t]{0.23\textwidth}
-			\vspace{-\baselineskip}
-			\maybeiconleft{Globe}{11}{\argwebsite}
-			\maybeiconleft{Github}{11}{\arggithub}
-			\maybeiconleft{LinkedinSquare}{11}{\arglinkedin}
-		\end{minipage}
-		\vspace{-0.8em}
-	\else
-		\begin{minipage}[t][][b]{0.18\textwidth}
-			\vspace{-\baselineskip}
+			\vspace{-0.1\textwidth}
 			\includegraphics[width=\textwidth]{\argimage}
+			\vspace{-0.1\textwidth}
 		\end{minipage}
-		\hspace{0.03\textwidth}
-		\hfill
-		\begin{minipage}[t]{0.35\textwidth}
-			\vspace{0.01\textwidth}
-			\centering
-			{\fontsize{16}{20}\textbf{\MakeUppercase{\argname}}}
-			\vspace{6pt}\\
-			{\Large \argmotto}
-		\end{minipage}
-		\hfill
-		\begin{minipage}[t]{0.32\textwidth}
-			\vspace{-\baselineskip}
-			\begin{flushright}
-				\maybeiconright{Globe}{11}{\argwebsite}
-				\maybeiconright{Github}{11}{\arggithub}
-				\maybeiconright{Phone}{11}{\argphone}
-				\maybeiconright{Envelope}{11}{\argemail}
-				\maybeiconright{LinkedinSquare}{11}{\arglinkedin}
-				\maybeiconright{MapMarker}{11}{\arglocation}
-			\end{flushright}
-		\end{minipage}
+		\hspace{0.025\textwidth}
 	\fi
+	\begin{minipage}[t]{0.295\textwidth}
+		\vspace{-\baselineskip}
+		\ifx\argimage\empty\else\vspace{3pt}\fi
+		{\fontsize{16}{20}\textbf{\MakeUppercase{\argname \ifx\argimage\empty\ \else\\\fi \argsurname}}}
+		\vspace{6pt}\\
+		{\Large \argcareer}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.31\textwidth}
+		\vspace{-\baselineskip}
+		\maybeiconleft{Envelope}{11}{\argemail}
+		\maybeiconleft{Phone}{11}{\argphone}
+		\maybeiconleft{MapMarker}{11}{\arglocation}
+	\end{minipage}
+	\begin{minipage}[t]{0.205\textwidth}
+		\vspace{-\baselineskip}
+		\maybeiconleft{Globe}{11}{\argwebsite}
+		\maybeiconleft{Github}{11}{\arggithub}
+		\maybeiconleft{LinkedinSquare}{11}{\arglinkedin}
+	\end{minipage}
+	\vspace{-0.8em}
+
+	% use the following for a bigger image
+	% \else
+	% 	\begin{minipage}[t][][b]{0.18\textwidth}
+	% 		\vspace{-\baselineskip}
+	% 		\includegraphics[width=\textwidth]{\argimage}
+	% 	\end{minipage}
+	% 	\hspace{0.03\textwidth}
+	% 	\hfill
+	% 	\begin{minipage}[t]{0.35\textwidth}
+	% 		\vspace{0.01\textwidth}
+	% 		\centering
+	% 		{\fontsize{16}{20}\textbf{\MakeUppercase{\argname}}}
+	% 		\vspace{6pt}\\
+	% 		{\Large \argcareer}
+	% 	\end{minipage}
+	% 	\hfill
+	% 	\begin{minipage}[t]{0.32\textwidth}
+	% 		\vspace{-\baselineskip}
+	% 		\begin{flushright}
+	% 			\maybeiconright{Globe}{11}{\argwebsite}
+	% 			\maybeiconright{Github}{11}{\arggithub}
+	% 			\maybeiconright{Phone}{11}{\argphone}
+	% 			\maybeiconright{Envelope}{11}{\argemail}
+	% 			\maybeiconright{LinkedinSquare}{11}{\arglinkedin}
+	% 			\maybeiconright{MapMarker}{11}{\arglocation}
+	% 			\maybeiconleft{Github}{11}{\arggithub}
+	% 		\end{flushright}
+	% 	\end{minipage}
+	% \fi
 
 	\ifx \argsummary\empty
 		% show just the skills full width, if there are any

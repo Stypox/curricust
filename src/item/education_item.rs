@@ -53,10 +53,8 @@ static COLON_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(":[ \\n]+").un
 impl EuropassXmlWriter for EducationItem {
     fn to_europass_xml(&self) -> Result<Vec<(&'static str, XMLElement)>, XMLError> {
         let thesis = if let Some(thesis) = &self.details {
-            let thesis = markdown_to_plaintext(thesis);
-            let thesis = thesis.split("\n\n").collect::<Vec<_>>();
-            // cannot crash, split returns >=1 items; the last one is languages
-            let thesis = thesis.last().unwrap();
+            let thesis = thesis.split("\n").filter(|s| !s.is_empty()).collect::<Vec<_>>();
+            let thesis = &markdown_to_plaintext(thesis.last().unwrap_or(&""));
             let thesis = COLON_REGEX.splitn(thesis, 2).map(|e| e.to_string()).collect::<Vec<_>>();
             if thesis.first().is_some_and(|t| t.len() < 10) {
                 thesis.get(1).cloned()

@@ -4,6 +4,7 @@ use std::path::Path;
 use crate::attr::context::Context;
 use crate::attr::parse::try_parse_group;
 use crate::attr::text_with_attributes::TextWithAttributes;
+use crate::item::hobby_item::HobbyItem;
 use crate::item::talk_item::TalkItem;
 use crate::writer::europass_xml_writer::{ATTACHMENT_XML_FILENAME, MyXmlUtils};
 use crate::writer::latex_writer::LatexWriter;
@@ -115,6 +116,12 @@ impl BaseElement {
                 }
                 "include-section-talk" => {
                     Self::parse_include_section::<TalkItem>(&mut sections, &ctx, root, value)?
+                }
+                "section-hobby" => {
+                    Self::parse_section::<HobbyItem>(&mut sections, &ctx, value)?
+                }
+                "include-section-hobby" => {
+                    Self::parse_include_section::<HobbyItem>(&mut sections, &ctx, root, value)?
                 }
                 _ => return Err(format!("Base element can't have children of type {key}")),
             }

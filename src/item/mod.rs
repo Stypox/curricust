@@ -7,6 +7,7 @@ pub mod education_item;
 pub mod job_item;
 pub mod project_item;
 pub mod talk_item;
+pub mod hobby_item;
 
 pub trait SectionItem
 where

@@ -36,7 +36,7 @@ pub fn extract_markdown_uri_or_original(md: &str) -> String {
 
 pub fn markdown_to_plaintext(md: &str) -> String {
     // calling unwrap since it can't return an error with the default settings
-    let root = markdown::to_mdast(md, &markdown::ParseOptions::default()).unwrap();
+    let root = markdown::to_mdast(&md.replace("\n- ", "\n\n"), &markdown::ParseOptions::default()).unwrap();
     replace_newlines(&root.to_string(), "\n")
 }
 

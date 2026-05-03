@@ -448,3 +448,12 @@
 	\emph{#2},
 	#3
 }
+
+% Arguments:
+% 1 title
+% 2 institution (optional)
+% 3 when (optional)
+% 4 details (optional)
+\newcommand{\itemhobby}[4]{
+	\@entry{#3}{}{#1}{#2}{#4}
+}

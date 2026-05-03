@@ -61,6 +61,7 @@ These fields specify section of different types. They all have a `title`\*, a `d
 - `section-job`: `role`\*, `company`\*, `where`\*, `when`\*, `start`\*, `end`, `topics`, `details`
 - `section-project`: `name`\*, `technologies`\*, `links`, `when`, `details`
 - `section-talk`: `name`\*, `event`\*, `when`\*
+- `section-hobby`: `title`\*, `institution`, `when`, `start`, `end`, `details`
 
 
 ## build.sh usage

@@ -17,7 +17,6 @@ while true; do
         echo "Arguments:"
         echo "  <BASE_YML_PATH>   The base YAML file to use as input"
         echo "  <OUTPUT_PDF_PATH> The output PDF file"
-        echo "                    (the folder it is in will be cluttered with build files!)"
         echo "  <TEMPLATE_PATH>   The .cls template to use"
         echo
         echo "Options:"
@@ -54,24 +53,33 @@ while true; do
     shift;
 done;
 
+TEMP_DIR="$(mktemp -d)"
+
 function buildPdf() {
-    OUTPUT_BASE="${OUTPUT_PDF_PATH%.pdf}"
-    cargo run -- "$BASE_YML_PATH" "$OUTPUT_BASE.tex" "$@" || return
+    cargo run -- "$BASE_YML_PATH" "$TEMP_DIR/cv.tex" "$@" || return
     if [ "$DARK" = "true" ]; then
-        sed -i -e "s/{resumecvrusttemplate}/{resumecvrusttemplate}\\\\pagecolor[rgb]{0,0,0}\\\\color[rgb]{1,1,1}/" "$OUTPUT_BASE.tex"
+        sed -i -e "s/{resumecvrusttemplate}/{resumecvrusttemplate}\\\\pagecolor[rgb]{0,0,0}\\\\color[rgb]{1,1,1}/" "$TEMP_DIR/cv.tex"
     fi
 
-    NEW_CLS_PATH="$(dirname "$OUTPUT_PDF_PATH")/resumecvrusttemplate.cls"
+    NEW_CLS_PATH="$TEMP_DIR/resumecvrusttemplate.cls"
     cp "$TEMPLATE_PATH" "$NEW_CLS_PATH"
     sed -i -e "s/ProvidesClass{[^}]*}/ProvidesClass{resumecvrusttemplate}/" "$NEW_CLS_PATH"
 
-    pushd "$(dirname "$OUTPUT_PDF_PATH")" >/dev/null
+    pushd "$TEMP_DIR" >/dev/null
     pdflatex \
-        --interaction=nonstopmode "$(basename "$OUTPUT_BASE.tex")" \
+        --interaction=nonstopmode "cv.tex" \
         | awk 'BEGIN{IGNORECASE = 1}/warning|!/,/^$/;' \
         || echo "Could not compile latex"
     popd >/dev/null
+
+    mv "$TEMP_DIR/cv.pdf" "$OUTPUT_PDF_PATH"
 }
+
+function cleanup() {
+    rm -rf "$TEMP_DIR"
+}
+
+trap cleanup EXIT
 
 buildPdf "$@"
 
